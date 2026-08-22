@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grammar Bid — Help, Rules & Game Guide</title>
+    <meta name="description"
+        content="Complete game guide, rules, room modes, power card details, daily rewards, and XP progression for Grammar Bid." />
+    <link rel="icon" type="image/webp" href="icon.webp" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind CSS & Custom Styles -->
+    <link rel="stylesheet" href="tailwind.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body
+    class="bg-slate-950 text-white font-sans antialiased min-h-screen flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200">
+
+    <!-- ════════════════ TOP NAVIGATION BAR ════════════════ -->
+    <header
+        class="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-lg">
+        <div class="flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2 group">
+                <span class="text-2xl sm:text-3xl group-hover:scale-110 transition-transform">⚖️</span>
+                <span
+                    class="font-cinzel text-lg sm:text-xl font-bold tracking-wider text-white group-hover:text-amber-300 transition-colors">
+                    GRAMMAR BID
+                </span>
+            </a>
+            <span
+                class="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 text-xs font-semibold">
+                Official Guide
+            </span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/"
+                class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-sans font-bold text-xs sm:text-sm shadow-md hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5">
+                <span>🏰</span> Back to Game
+            </a>
+        </div>
+    </header>
+
+    <!-- ════════════════ MAIN CONTENT CONTAINER ════════════════ -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 flex flex-col gap-8 sm:gap-12">
+
+        <!-- Hero Header Banner -->
+        <section class="text-center flex flex-col items-center gap-3 sm:gap-4 relative">
+            <div
+                class="absolute -top-12 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 blur-[100px] rounded-full pointer-events-none">
+            </div>
+
+            <span
+                class="px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-400/30 text-amber-300 text-xs font-sans font-bold tracking-widest uppercase shadow-inner">
+                📖 Master the Auction & Dominate Syntax
+            </span>
+
+            <h1
+                class="font-cinzel text-3xl sm:text-5xl font-extrabold tracking-wide text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.2)] max-w-3xl">
+                Game Rules & Power Guide
+            </h1>
+
+            <p class="font-serif italic text-base sm:text-lg text-white/70 max-w-2xl leading-relaxed">
+                Everything you need to know about starting a game, Public vs. Private rooms, bidding mechanics, Gold
+                Tokens, Power Cards, and XP Ranks.
+            </p>
+        </section>
+
+        <!-- Dynamic Navigation Tabs -->
+        <nav
+            class="flex items-center justify-center gap-2 overflow-x-auto p-1.5 bg-slate-900/90 border border-white/15 rounded-2xl custom-scrollbar shadow-xl sticky top-16 z-30 backdrop-blur-lg">
+            <button onclick="switchTab('start')" id="tab-btn-start"
+                class="tab-btn px-4 py-2.5 rounded-xl font-sans font-bold text-xs sm:text-sm transition-all whitespace-nowrap flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md">
+                <span>🚀</span> Getting Started
+            </button>
+            <button onclick="switchTab('rules')" id="tab-btn-rules"
+                class="tab-btn px-4 py-2.5 rounded-xl font-sans font-semibold text-xs sm:text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap flex items-center gap-2">
+                <span>🎮</span> 5-Phase Loop
+            </button>
+            <button onclick="switchTab('tokens')" id="tab-btn-tokens"
+                class="tab-btn px-4 py-2.5 rounded-xl font-sans font-semibold text-xs sm:text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap flex items-center gap-2">
+                <span>🪙</span> Gold Tokens
+            </button>
+            <button onclick="switchTab('cards')" id="tab-btn-cards"
+                class="tab-btn px-4 py-2.5 rounded-xl font-sans font-semibold text-xs sm:text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap flex items-center gap-2">
+                <span>⚡</span> Power Cards
+            </button>
+            <button onclick="switchTab('rewards')" id="tab-btn-rewards"
+                class="tab-btn px-4 py-2.5 rounded-xl font-sans font-semibold text-xs sm:text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap flex items-center gap-2">
+                <span>🎁</span> Daily Rewards
+            </button>
+            <button onclick="switchTab('ranks')" id="tab-btn-ranks"
+                class="tab-btn px-4 py-2.5 rounded-xl font-sans font-semibold text-xs sm:text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap flex items-center gap-2">
+                <span>🏆</span> XP Ranks
+            </button>
+            <button onclick="switchTab('faq')" id="tab-btn-faq"
+                class="tab-btn px-4 py-2.5 rounded-xl font-sans font-semibold text-xs sm:text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap flex items-center gap-2">
+                <span>❓</span> FAQ & Tips
+            </button>
+        </nav>
+
+        <!-- ════════════════ TAB 0: GETTING STARTED & ROOM MODES ════════════════ -->
+        <section id="tab-start" class="tab-content flex flex-col gap-8">
+            <div
+                class="bg-slate-900/80 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-8">
+
+                <!-- 1. Clicking LET'S GO -->
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">🚀</span>
+                        <div>
+                            <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide">First Steps:
+                                Pressing "LET'S GO!"</h2>
+                            <p class="text-xs font-serif italic text-white/60">How to launch into an auction match from
+                                the homepage.</p>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-slate-950/70 border border-white/15 rounded-2xl p-5 text-sm leading-relaxed text-white/80 flex flex-col gap-2">
+                        <p>
+                            When you land on the homepage, clicking the golden <strong>"LET'S GO!"</strong> button
+                            brings up the Game Mode Selection modal. From here, you can choose how you want to play:
+                        </p>
+                        <ul class="list-disc list-inside space-y-1 text-xs text-cyan-200 font-sans">
+                            <li><strong>Play Quick Match</strong> (Public Matchmaking)</li>
+                            <li><strong>Create Private Room</strong> (Custom match code for friends)</li>
+                            <li><strong>Join Private Room</strong> (Enter a friend's 4-digit code)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 2. Public vs Private Rooms -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Public Matchmaking -->
+                    <div
+                        class="bg-slate-950/80 border border-cyan-400/30 rounded-2xl p-6 flex flex-col justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">🌐</span>
+                            <div>
+                                <h3 class="font-cinzel text-xl font-bold text-cyan-300">Public Matchmaking</h3>
+                                <span class="text-[11px] font-sans text-cyan-200/60 uppercase font-semibold">Instant
+                                    Global Play</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-white/75 leading-relaxed">
+                            Jump straight into instant live auction rounds with players worldwide and intelligent AI
+                            bots! Public matches automatically fill empty player slots with bots after 10 seconds so you
+                            never wait.
+                        </p>
+                        <div
+                            class="pt-3 border-t border-white/10 text-xs font-mono text-cyan-300 flex items-center justify-between">
+                            <span>⚡ Matchmaking: Instant</span>
+                            <span>🏆 Earns XP & Tokens</span>
+                        </div>
+                    </div>
+
+                    <!-- Private Rooms -->
+                    <div
+                        class="bg-slate-950/80 border border-amber-400/30 rounded-2xl p-6 flex flex-col justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-3xl">🔒</span>
+                            <div>
+                                <h3 class="font-cinzel text-xl font-bold text-amber-300">Private Custom Rooms</h3>
+                                <span class="text-[11px] font-sans text-amber-200/60 uppercase font-semibold">Play with
+                                    Friends</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-white/75 leading-relaxed">
+                            Create an exclusive room with a unique <strong>4-digit code</strong> (e.g.
+                            <code>4892</code>). Share your code or direct invite link with your friends to host private
+                            grammar face-offs!
+                        </p>
+                        <div
+                            class="pt-3 border-t border-white/10 text-xs font-mono text-amber-300 flex items-center justify-between">
+                            <span>🔑 4-Digit Room Code</span>
+                            <span>👥 Custom Invite Link</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. How to Bid & Basic Bidding Rules -->
+                <div class="bg-slate-950/70 border border-emerald-500/30 rounded-2xl p-6 flex flex-col gap-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">💵</span>
+                        <div>
+                            <h3 class="font-cinzel text-xl font-bold text-emerald-300">How to Bid & Financial Rules</h3>
+                            <p class="text-xs font-serif italic text-white/60">Learn starting balance, minimum raises,
+                                anti-sniping, and win/loss payouts.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
+                        <div class="bg-slate-900/90 border border-white/10 rounded-xl p-4 flex flex-col gap-1">
+                            <span class="text-xs font-bold text-amber-300">💰 Starting Cash</span>
+                            <span class="font-mono text-lg font-bold text-white">$10,000</span>
+                            <span class="text-[11px] text-white/50">Vault balance at the start of every match.</span>
+                        </div>
+
+                        <div class="bg-slate-900/90 border border-white/10 rounded-xl p-4 flex flex-col gap-1">
+                            <span class="text-xs font-bold text-cyan-300">📈 Minimum Raise</span>
+                            <span class="font-mono text-lg font-bold text-white">+$100</span>
+                            <span class="text-[11px] text-white/50">Your bid must exceed the top bid by at least
+                                $100.</span>
+                        </div>
+
+                        <div class="bg-slate-900/90 border border-white/10 rounded-xl p-4 flex flex-col gap-1">
+                            <span class="text-xs font-bold text-rose-300">⏱️ Anti-Sniping</span>
+                            <span class="font-mono text-lg font-bold text-white">+2s Extension</span>
+                            <span class="text-[11px] text-white/50">Bids in final 3s extend the timer by 2
+                                seconds.</span>
+                        </div>
+
+                        <div class="bg-slate-900/90 border border-white/10 rounded-xl p-4 flex flex-col gap-1">
+                            <span class="text-xs font-bold text-emerald-300">🏆 Win/Loss Payout</span>
+                            <span class="font-mono text-lg font-bold text-white">Bid Cash</span>
+                            <span class="text-[11px] text-white/50">Win bid on correct; lose bid on incorrect
+                                sentence.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ════════════════ TAB 1: GAME RULES (5-PHASE LOOP) ════════════════ -->
+        <section id="tab-rules" class="tab-content hidden flex-col gap-8">
+            <div class="bg-slate-900/80 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="text-3xl">⚖️</span>
+                    <div>
+                        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide">The 5-Phase
+                            Auction Loop</h2>
+                        <p class="text-xs font-serif italic text-white/60">Every match consists of 5 competitive rounds
+                            with dynamic AI sentences.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Phase 1 -->
+                    <div
+                        class="bg-slate-950/70 border border-cyan-500/20 rounded-2xl p-5 flex flex-col gap-3 hover:border-cyan-400/50 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold border border-cyan-400/30">Phase
+                                1</span>
+                            <span class="font-mono text-xs text-amber-300 font-bold">⏱️ 30 Seconds</span>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">
+                            <span>🔍</span> Inspection
+                        </h3>
+                        <p class="text-xs text-white/75 leading-relaxed">
+                            Analyze the candidate sentence on the block. Players can spend <strong>$300 Vault
+                                Cash</strong> to buy a hint, or activate the <strong>💡 Double Hint</strong> card for
+                            detailed rule explanations.
+                        </p>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div
+                        class="bg-slate-950/70 border border-amber-500/20 rounded-2xl p-5 flex flex-col gap-3 hover:border-amber-400/50 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold border border-amber-400/30">Phase
+                                2</span>
+                            <span class="font-mono text-xs text-amber-300 font-bold">⏱️ 30 Seconds</span>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">
+                            <span>💰</span> Bidding
+                        </h3>
+                        <p class="text-xs text-white/75 leading-relaxed">
+                            Place live cash bids to acquire the lot. Bids must exceed current top bid by +$100. Bids in
+                            the final 3s trigger <strong>Anti-Sniping</strong> (+2s timer). Activate ⚡ <strong>Bid
+                                Boost</strong>, 🛡️ <strong>Bid Shield</strong>, or 💰 <strong>Cashback</strong>.
+                        </p>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div
+                        class="bg-slate-950/70 border border-emerald-500/20 rounded-2xl p-5 flex flex-col gap-3 hover:border-emerald-400/50 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30">Phase
+                                3</span>
+                            <span class="font-mono text-xs text-amber-300 font-bold">⏱️ 10 Seconds</span>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">
+                            <span>📊</span> Result Reveal
+                        </h3>
+                        <p class="text-xs text-white/75 leading-relaxed">
+                            The gavel falls! Winning a <strong>Correct</strong> sentence awards bid amount cash. Winning
+                            an <strong>Incorrect</strong> sentence loses the bid amount cash (unless protected by Bid
+                            Shield/Cashback).
+                        </p>
+                    </div>
+
+                    <!-- Phase 4 -->
+                    <div
+                        class="bg-slate-950/70 border border-purple-500/20 rounded-2xl p-5 flex flex-col gap-3 hover:border-purple-400/50 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold border border-purple-400/30">Phase
+                                4</span>
+                            <span class="font-mono text-xs text-amber-300 font-bold">⏱️ 30 Seconds</span>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">
+                            <span>✏️</span> Bonus Correction
+                        </h3>
+                        <p class="text-xs text-white/75 leading-relaxed">
+                            If sentence was flawed, all players rush to fix the phrase. First correct fix wins
+                            <strong>+$500</strong> bonus & XP. Activate 🔄 <strong>Second Chance</strong> directly
+                            inside the modal for a 2nd attempt!
+                        </p>
+                    </div>
+
+                    <!-- Phase 5 -->
+                    <div
+                        class="bg-slate-950/70 border border-rose-500/20 rounded-2xl p-5 flex flex-col gap-3 hover:border-rose-400/50 transition-all md:col-span-2 lg:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <span
+                                class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-400/30">Phase
+                                5</span>
+                            <span class="font-mono text-xs text-amber-300 font-bold">⏱️ 8 Seconds</span>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-bold text-white flex items-center gap-2">
+                            <span>📖</span> Solution & Ranks Reveal
+                        </h3>
+                        <p class="text-xs text-white/75 leading-relaxed">
+                            Review the official solution, comprehensive grammar rule breakdown, player submission
+                            results, and updated XP ranks before advancing to the next round.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ TAB 2: GOLD TOKENS ECONOMY ════════════════ -->
+        <section id="tab-tokens" class="tab-content hidden flex-col gap-8">
+            <div
+                class="bg-slate-900/80 border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🪙</span>
+                    <div>
+                        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide">Gold Tokens
+                            Economy</h2>
+                        <p class="text-xs font-serif italic text-white/60">Gold Tokens are the exclusive currency used
+                            to purchase tactical Power Cards.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div
+                        class="bg-slate-950/80 border border-amber-400/30 rounded-2xl p-5 flex flex-col items-center text-center gap-3">
+                        <span class="text-4xl">🎁</span>
+                        <h3 class="font-cinzel text-lg font-bold text-amber-300">Signup Bonus</h3>
+                        <p class="text-xs text-white/70 leading-relaxed">
+                            Every newly registered player receives <strong>50 Gold Tokens</strong> automatically on
+                            account creation.
+                        </p>
+                    </div>
+
+                    <div
+                        class="bg-slate-950/80 border border-cyan-400/30 rounded-2xl p-5 flex flex-col items-center text-center gap-3">
+                        <span class="text-4xl">🏆</span>
+                        <h3 class="font-cinzel text-lg font-bold text-cyan-300">Rank Up Gift</h3>
+                        <p class="text-xs text-white/70 leading-relaxed">
+                            Climbing to a new XP rank awards a bonus gift of <strong>+20 Gold Tokens</strong> per rank
+                            unlock.
+                        </p>
+                    </div>
+
+                    <div
+                        class="bg-slate-950/80 border border-purple-400/30 rounded-2xl p-5 flex flex-col items-center text-center gap-3">
+                        <span class="text-4xl">📅</span>
+                        <h3 class="font-cinzel text-lg font-bold text-purple-300">Daily Rewards</h3>
+                        <p class="text-xs text-white/70 leading-relaxed">
+                            Claim 10 to 50 Gold Tokens daily through the 7-day streak calendar!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ TAB 3: POWER CARDS GUIDE ════════════════ -->
+        <section id="tab-cards" class="tab-content hidden flex-col gap-8">
+            <div
+                class="bg-slate-900/80 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
+                <div class="flex items-center justify-between flex-wrap gap-4 border-b border-white/15 pb-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl">⚡</span>
+                        <div>
+                            <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide">Power Cards
+                                Store Guide</h2>
+                            <p class="text-xs font-serif italic text-white/60">Power Cards are consumable items
+                                purchased with Gold Tokens in the Power Store.</p>
+                        </div>
+                    </div>
+                    <a href="/"
+                        onclick="setTimeout(() => { if (window.powerCardsUI) window.powerCardsUI.fetchAndOpenStore(); }, 300)"
+                        class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-bold text-xs shadow-md hover:scale-105 transition-all">
+                        🛒 Open Store In Game
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Double Hint -->
+                    <div
+                        class="bg-slate-950/80 border border-cyan-400/30 rounded-2xl p-5 flex flex-col justify-between gap-4">
+                        <div class="flex items-center justify-between">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-xl">
+                                💡</div>
+                            <span
+                                class="px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-bold border border-cyan-400/30">INSPECTION</span>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-base font-bold text-white">DOUBLE HINT</h3>
+                            <p class="text-xs font-serif italic text-white/70 mt-1">Explains the grammar rule for the
+                                lot without revealing the exact answer.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+                            <span class="text-amber-300 font-bold">🪙 5 Gold Tokens</span>
+                            <span class="text-white/40">Consumable</span>
+                        </div>
+                    </div>
+
+                    <!-- Bid Boost -->
+                    <div
+                        class="bg-slate-950/80 border border-cyan-400/30 rounded-2xl p-5 flex flex-col justify-between gap-4">
+                        <div class="flex items-center justify-between">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-xl">
+                                ⚡</div>
+                            <span
+                                class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-400/30">BIDDING</span>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-base font-bold text-white">BID BOOST</h3>
+                            <p class="text-xs font-serif italic text-white/70 mt-1">Doubles your bid power (2x bid
+                                strength). Win 2x payout on correct lot; lose 2x penalty on incorrect lot.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+                            <span class="text-amber-300 font-bold">🪙 8 Gold Tokens</span>
+                            <span class="text-white/40">Consumable</span>
+                        </div>
+                    </div>
+
+                    <!-- Second Chance -->
+                    <div
+                        class="bg-slate-950/80 border border-cyan-400/30 rounded-2xl p-5 flex flex-col justify-between gap-4">
+                        <div class="flex items-center justify-between">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-purple-500/20 border border-purple-400/40 flex items-center justify-center text-xl">
+                                🔄</div>
+                            <span
+                                class="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold border border-purple-400/30">CORRECTION</span>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-base font-bold text-white">SECOND CHANCE</h3>
+                            <p class="text-xs font-serif italic text-white/70 mt-1">Grants 1 extra correction attempt if
+                                your initial correction is wrong. Activatable directly inside the modal!</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+                            <span class="text-amber-300 font-bold">🪙 10 Gold Tokens</span>
+                            <span class="text-white/40">Consumable</span>
+                        </div>
+                    </div>
+
+                    <!-- Cashback -->
+                    <div
+                        class="bg-slate-950/80 border border-cyan-400/30 rounded-2xl p-5 flex flex-col justify-between gap-4">
+                        <div class="flex items-center justify-between">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-xl">
+                                💰</div>
+                            <span
+                                class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-400/30">BIDDING</span>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-base font-bold text-white">CASHBACK</h3>
+                            <p class="text-xs font-serif italic text-white/70 mt-1">Returns 25% of your lost cash back
+                                if you win an incorrect sentence lot and lose money.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+                            <span class="text-amber-300 font-bold">🪙 12 Gold Tokens</span>
+                            <span class="text-white/40">Consumable</span>
+                        </div>
+                    </div>
+
+                    <!-- Bid Shield -->
+                    <div
+                        class="bg-slate-950/80 border border-cyan-400/30 rounded-2xl p-5 flex flex-col justify-between gap-4 md:col-span-2 lg:col-span-1">
+                        <div class="flex items-center justify-between">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-xl">
+                                🛡️</div>
+                            <span
+                                class="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-bold border border-rose-400/30">BIDDING</span>
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-base font-bold text-white">BID SHIELD</h3>
+                            <p class="text-xs font-serif italic text-white/70 mt-1">Guarantees 100% loss protection —
+                                lose $0 cash penalty if you win an incorrect sentence lot.</p>
+                        </div>
+                        <div class="pt-3 border-t border-white/10 flex items-center justify-between font-mono text-xs">
+                            <span class="text-amber-300 font-bold">🪙 15 Gold Tokens</span>
+                            <span class="text-white/40">Consumable</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ TAB 4: DAILY REWARDS ════════════════ -->
+        <section id="tab-rewards" class="tab-content hidden flex-col gap-8">
+            <div
+                class="bg-slate-900/80 border border-purple-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🎁</span>
+                    <div>
+                        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide">7-Day Daily
+                            Rewards Schedule</h2>
+                        <p class="text-xs font-serif italic text-white/60">Log in daily to claim Gold Tokens, XP, and
+                            Power Cards!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Day 1 -->
+                    <div class="bg-slate-950/80 border border-white/15 rounded-2xl p-4 flex flex-col gap-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase">Day 1</span>
+                        <p class="text-sm font-bold text-white">🪙 10 Tokens + 100 XP</p>
+                        <p class="text-[11px] text-white/50 italic">Kickstart your streak with tokens & XP.</p>
+                    </div>
+                    <!-- Day 2 -->
+                    <div class="bg-slate-950/80 border border-white/15 rounded-2xl p-4 flex flex-col gap-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase">Day 2</span>
+                        <p class="text-sm font-bold text-white">🪙 15 Tokens + 💡 Double Hint</p>
+                        <p class="text-[11px] text-white/50 italic">Receive 1x Double Hint card.</p>
+                    </div>
+                    <!-- Day 3 -->
+                    <div class="bg-slate-950/80 border border-white/15 rounded-2xl p-4 flex flex-col gap-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase">Day 3</span>
+                        <p class="text-sm font-bold text-white">🪙 20 Tokens + 150 XP</p>
+                        <p class="text-[11px] text-white/50 italic">Tokens & XP boost.</p>
+                    </div>
+                    <!-- Day 4 -->
+                    <div class="bg-slate-950/80 border border-white/15 rounded-2xl p-4 flex flex-col gap-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase">Day 4</span>
+                        <p class="text-sm font-bold text-white">🪙 25 Tokens + ⚡ Bid Boost</p>
+                        <p class="text-[11px] text-white/50 italic">Receive 1x Bid Boost card.</p>
+                    </div>
+                    <!-- Day 5 -->
+                    <div class="bg-slate-950/80 border border-white/15 rounded-2xl p-4 flex flex-col gap-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase">Day 5</span>
+                        <p class="text-sm font-bold text-white">🪙 30 Tokens + 🔄 Second Chance</p>
+                        <p class="text-[11px] text-white/50 italic">Receive 1x Second Chance card.</p>
+                    </div>
+                    <!-- Day 6 -->
+                    <div class="bg-slate-950/80 border border-white/15 rounded-2xl p-4 flex flex-col gap-2">
+                        <span class="text-xs font-bold text-amber-300 uppercase">Day 6</span>
+                        <p class="text-sm font-bold text-white">🪙 40 Tokens + 💰 Cashback + 🛡️ Shield</p>
+                        <p class="text-[11px] text-white/50 italic">Receive Cashback & Bid Shield cards.</p>
+                    </div>
+                    <!-- Day 7 Jackpot -->
+                    <div
+                        class="bg-gradient-to-br from-amber-500/20 to-purple-500/20 border border-amber-400/50 rounded-2xl p-4 flex flex-col gap-2 sm:col-span-2 lg:col-span-2 shadow-lg">
+                        <span class="text-xs font-bold text-amber-300 uppercase flex items-center gap-1">👑 Day 7 —
+                            Jackpot Pack</span>
+                        <p class="text-base font-extrabold text-amber-200">🪙 50 Tokens + 500 XP + 🦉 Owl Avatar + 1x
+                            ALL 5 Cards!</p>
+                        <p class="text-[11px] text-white/70 italic">The ultimate reward package for completing a full
+                            7-day streak.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ TAB 5: XP RANKS ════════════════ -->
+        <section id="tab-ranks" class="tab-content hidden flex-col gap-8">
+            <div
+                class="bg-slate-900/80 border border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🏆</span>
+                    <div>
+                        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide">7-Tier XP Rank
+                            System</h2>
+                        <p class="text-xs font-serif italic text-white/60">Earn XP by winning auctions and making
+                            correct corrections. Unlock +20 Tokens per rank!</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse font-sans text-xs sm:text-sm">
+                        <thead>
+                            <tr class="border-b border-white/15 text-white/60 uppercase tracking-wider text-[11px]">
+                                <th class="py-3 px-4">Tier Rank</th>
+                                <th class="py-3 px-4">XP Required</th>
+                                <th class="py-3 px-4">Unlock Gift</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/10">
+                            <tr>
+                                <td class="py-3.5 px-4 font-bold text-slate-300">🌱 Grammar Novice</td>
+                                <td class="py-3.5 px-4 font-mono">0 XP</td>
+                                <td class="py-3.5 px-4 text-white/50">Starting Rank</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 px-4 font-bold text-cyan-300">🔍 Sentence Scout</td>
+                                <td class="py-3.5 px-4 font-mono text-cyan-200">250 XP</td>
+                                <td class="py-3.5 px-4 font-bold text-amber-300">+20 Gold Tokens 🪙</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 px-4 font-bold text-blue-300">📝 Proofreader</td>
+                                <td class="py-3.5 px-4 font-mono text-blue-200">750 XP</td>
+                                <td class="py-3.5 px-4 font-bold text-amber-300">+20 Gold Tokens 🪙</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 px-4 font-bold text-indigo-300">⚖️ Grammar Judge</td>
+                                <td class="py-3.5 px-4 font-mono text-indigo-200">1,500 XP</td>
+                                <td class="py-3.5 px-4 font-bold text-amber-300">+20 Gold Tokens 🪙</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 px-4 font-bold text-purple-300">🧠 Grammar Expert</td>
+                                <td class="py-3.5 px-4 font-mono text-purple-200">3,000 XP</td>
+                                <td class="py-3.5 px-4 font-bold text-amber-300">+20 Gold Tokens 🪙</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3.5 px-4 font-bold text-amber-300">👑 Grammar Master</td>
+                                <td class="py-3.5 px-4 font-mono text-amber-200">5,500 XP</td>
+                                <td class="py-3.5 px-4 font-bold text-amber-300">+20 Gold Tokens 🪙</td>
+                            </tr>
+                            <tr class="bg-amber-500/10">
+                                <td class="py-3.5 px-4 font-extrabold text-amber-200">🌟 Grammar Legend</td>
+                                <td class="py-3.5 px-4 font-mono font-bold text-amber-300">9,000 XP</td>
+                                <td class="py-3.5 px-4 font-bold text-amber-300">+20 Gold Tokens 🪙</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ════════════════ TAB 6: FAQ & TIPS ════════════════ -->
+        <section id="tab-faq" class="tab-content hidden flex-col gap-6">
+            <div
+                class="bg-slate-900/80 border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl flex flex-col gap-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">❓</span>
+                    <div>
+                        <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide">Frequently Asked
+                            Questions</h2>
+                        <p class="text-xs font-serif italic text-white/60">Quick answers to common questions.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <details class="group bg-slate-950/80 border border-white/10 rounded-2xl p-4 transition-all">
+                        <summary class="font-bold text-sm text-white cursor-pointer flex items-center justify-between">
+                            <span>How do I join a private room with a 4-digit code?</span>
+                            <span class="transition-transform group-open:rotate-180">▼</span>
+                        </summary>
+                        <p class="text-xs text-white/70 mt-3 leading-relaxed">
+                            On the homepage header, type the 4-digit room code into the <strong>"Enter Room
+                                Code..."</strong> box and click <strong>Join</strong>! Or ask your friend for their
+                            direct private room link.
+                        </p>
+                    </details>
+
+                    <details class="group bg-slate-950/80 border border-white/10 rounded-2xl p-4 transition-all">
+                        <summary class="font-bold text-sm text-white cursor-pointer flex items-center justify-between">
+                            <span>How do I earn more Gold Tokens?</span>
+                            <span class="transition-transform group-open:rotate-180">▼</span>
+                        </summary>
+                        <p class="text-xs text-white/70 mt-3 leading-relaxed">
+                            Gold Tokens are earned through <strong>Daily Reward claims</strong>, leveling up your
+                            <strong>XP Rank (+20 Tokens per rank)</strong>, and newly registered accounts automatically
+                            receive a <strong>50 Token Signup Bonus</strong>!
+                        </p>
+                    </details>
+
+                    <details class="group bg-slate-950/80 border border-white/10 rounded-2xl p-4 transition-all">
+                        <summary class="font-bold text-sm text-white cursor-pointer flex items-center justify-between">
+                            <span>How do Anti-Sniping bids work?</span>
+                            <span class="transition-transform group-open:rotate-180">▼</span>
+                        </summary>
+                        <p class="text-xs text-white/70 mt-3 leading-relaxed">
+                            If any player places a valid bid in the final 3 seconds of the Bidding Phase, the round
+                            timer automatically extends by +2 seconds to ensure everyone has a fair chance to respond.
+                        </p>
+                    </details>
+
+                    <details class="group bg-slate-950/80 border border-white/10 rounded-2xl p-4 transition-all">
+                        <summary class="font-bold text-sm text-white cursor-pointer flex items-center justify-between">
+                            <span>What happens if I use Second Chance in the correction modal?</span>
+                            <span class="transition-transform group-open:rotate-180">▼</span>
+                        </summary>
+                        <p class="text-xs text-white/70 mt-3 leading-relaxed">
+                            Activating <strong>Second Chance</strong> inside the Correction Modal grants you 1
+                            additional correction attempt during that round if your first correction attempt turns out
+                            to be incorrect.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ════════════════ FOOTER ════════════════ -->
+    <footer class="border-t border-white/10 bg-slate-950/90 py-6 text-center text-xs text-white/50 font-serif italic">
+        ⚖️ Grammar Bid — Auction. Correct. Dominate.
+    </footer>
+
+    <!-- Interactive Tab Script -->
+    <script src="bgMusic.js"></script>
+    <script>
+        function switchTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2.5 rounded-xl font-sans font-semibold text-xs sm:text-sm text-white/70 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap flex items-center gap-2";
+            });
+
+            // Show selected tab content
+            const activeTab = document.getElementById('tab-' + tabId);
+            if (activeTab) {
+                activeTab.classList.remove('hidden');
+                activeTab.classList.add('flex');
+            }
+
+            // Highlight selected tab button
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-4 py-2.5 rounded-xl font-sans font-bold text-xs sm:text-sm transition-all whitespace-nowrap flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md";
+            }
+        }
+    </script>
+</body>
+
+</html>

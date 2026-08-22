@@ -1,0 +1,749 @@
+/* ── Navbar Black Header ───────────────────────────────────── */
+.black-header {
+  background: #111115;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Glassmorphism Pills (Navbar Buttons & Inputs) ──────────── */
+.glass-pill {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.glass-pill:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.40);
+}
+
+/* ── "Let's Go" Button Glassmorphism ───────────────────────── */
+.glass-cta {
+  background: rgba(35, 35, 45, 0.70);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.glass-cta:hover {
+  background: rgba(55, 55, 70, 0.85);
+  border-color: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* ── Vignette Layer on Background Image ─────────────────────── */
+.vignette-overlay {
+  background: radial-gradient(ellipse at center,
+      rgba(0, 0, 0, 0.20) 0%,
+      rgba(0, 0, 0, 0.60) 65%,
+      rgba(0, 0, 0, 0.92) 100%);
+  pointer-events: none;
+}
+
+/* ── Film Grain Noise Overlay ──────────────────────────────── */
+.grain-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ── Navbar input placeholder ────────────── */
+.nav-input::placeholder {
+  color: rgba(255, 255, 255, 0.60);
+  font-style: italic;
+}
+
+/* ── Smooth hover lifts ───── */
+.hover-lift {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+/* ── Mobile Glass Drawer Bottom Sheet ───────────────────────── */
+.glass-drawer {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9);
+}
+
+.drawer-hidden {
+  transform: translateY(100%) !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+.drawer-visible {
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+}
+
+/* ── Stagger delay utilities ──────────── */
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+.delay-700 {
+  animation-delay: 0.7s;
+}
+
+/* ── Mode Selection Modal Backdrop ───────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.modal-backdrop.hidden {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+@media (min-width: 640px) {
+  .modal-backdrop {
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+/* ── Mode Selection Modal Container ──────────────────────────── */
+.modal-container {
+  width: 100%;
+  max-width: 36rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), 0 0 45px rgba(255, 255, 255, 0.18), inset 0 1px 2px rgba(255, 255, 255, 0.35);
+  filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.15));
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  transform: translateY(0);
+}
+
+@media (min-width: 640px) {
+  .modal-container {
+    max-width: 42rem;
+    border-radius: 1.5rem;
+    padding: 2.25rem;
+    gap: 1.5rem;
+    transform: scale(1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-container {
+    max-width: 56rem;
+    padding: 3rem;
+  }
+}
+
+/* ── Desktop Close Button ────────────────────────────────────── */
+.modal-close-btn {
+  display: none;
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  color: #ffffff;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  .modal-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-close-btn {
+    top: 1.5rem;
+    right: 1.5rem;
+  }
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* ── Mobile Drag Bar ─────────────────────────────────────────── */
+.modal-drag-bar {
+  width: 3rem;
+  height: 0.375rem;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 9999px;
+  margin: -0.25rem auto 0.25rem auto;
+}
+
+@media (min-width: 640px) {
+  .modal-drag-bar {
+    display: none;
+  }
+}
+
+/* ── Modal Glass Cards ────────────────────────────────────────── */
+.modal-card {
+  background: rgba(28, 41, 64, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 255, 255, 0.14), inset 0 1px 2px rgba(255, 255, 255, 0.30);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.625rem;
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .modal-card {
+    padding: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-card {
+    padding: 2.5rem;
+  }
+}
+
+.modal-card:hover {
+  background: rgba(35, 52, 80, 0.75);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 35px rgba(255, 255, 255, 0.25), inset 0 1px 3px rgba(255, 255, 255, 0.45);
+}
+
+/* ── Modal Title ─────────────────────────────────────────────── */
+.modal-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #ffffff;
+  font-family: 'Cinzel', serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 255, 255, 0.25);
+}
+
+@media (min-width: 640px) {
+  .modal-title {
+    font-size: 2rem;
+    gap: 0.75rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-title {
+    font-size: 2.6rem;
+  }
+}
+
+/* ── Modal Subtitle ───────────────────────────────────────────── */
+.modal-subtitle {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-family: 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.025em;
+  margin-top: 0.125rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+@media (min-width: 640px) {
+  .modal-subtitle {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* ── Modal Action Button ─────────────────────────────────────── */
+.modal-action-btn {
+  background: rgba(70, 85, 110, 0.60);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 255, 255, 0.22), inset 0 1px 2px rgba(255, 255, 255, 0.50);
+  margin-top: 1rem;
+  padding: 0.625rem 2.5rem;
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 1rem;
+  letter-spacing: 0.025em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+@media (min-width: 640px) {
+  .modal-action-btn {
+    padding: 0.625rem 3rem;
+    font-size: 1.125rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .modal-action-btn {
+    padding: 0.75rem 3rem;
+    font-size: 1.25rem;
+  }
+}
+
+.modal-action-btn:hover {
+  background: rgba(90, 110, 140, 0.85);
+  border-color: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 255, 255, 0.35), inset 0 1px 3px rgba(255, 255, 255, 0.70);
+  transform: translateY(-1px) scale(1.03);
+}
+
+/* ── Remove HTML5 Number Input Spin Buttons (Up/Down Arrows) ─ */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* ── Rank Unlock CSS Emoji Animation FX ───────────────────────── */
+@keyframes emojiBurst {
+  0% {
+    transform: scale(0) translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.4) translateY(-40px) rotate(180deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) translateY(-80px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes spinRays {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes floatParticle {
+  0% {
+    transform: translateY(0px) rotate(0deg) scale(0.8);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: translateY(-120px) rotate(180deg) scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-240px) rotate(360deg) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@keyframes badgeGlowPulse {
+  0% {
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.4), inset 0 0 15px rgba(251, 191, 36, 0.4);
+    transform: scale(1);
+  }
+
+  100% {
+    box-shadow: 0 0 80px rgba(251, 191, 36, 0.9), 0 0 120px rgba(168, 85, 247, 0.8), inset 0 0 30px rgba(251, 191, 36, 0.8);
+    transform: scale(1.08);
+  }
+}
+
+@keyframes rankTextShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-emoji-burst {
+  animation: emojiBurst 2s ease-out infinite;
+}
+
+.animate-spin-rays {
+  animation: spinRays 20s linear infinite;
+}
+
+.animate-badge-pulse {
+  animation: badgeGlowPulse 1.5s ease-in-out infinite alternate;
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #fef08a, #f59e0b, #d946ef, #3b82f6, #10b981, #fef08a);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: rankTextShimmer 4s linear infinite;
+}
+
+/* Custom scrollbar for mobile profile and modal overlays */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(245, 158, 11, 0.4);
+  border-radius: 9999px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 158, 11, 0.7);
+}
+
+/* ── Interactive Onboarding Tutorial Finger Tap FX ───────────── */
+@keyframes tapFinger {
+
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: translateY(12px) scale(1.18);
+    opacity: 1;
+  }
+}
+
+.animate-tap-finger {
+  animation: tapFinger 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  filter: drop-shadow(0 4px 15px rgba(251, 191, 36, 0.6));
+}
+
+/* ── Arcade Deck & Mini Games Custom Styles ─────────────────── */
+.font-space {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
+}
+
+.light-grey-card {
+  background: #232936;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.glass-card {
+  background: #232936;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+}
+
+/* ── Help AI / Canvas Circuit ────────────────────────────────── */
+.canvas-container {
+  position: relative;
+  background: #181d28;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas#circuit-canvas {
+  display: block;
+  border-radius: 14px;
+  background: #121620;
+  cursor: crosshair;
+}
+
+/* ── Flappy Bird Canvas ─────────────────────────────────────── */
+#game-canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  background: linear-gradient(to bottom, #121620 0%, #1e2430 60%, #29303d 80%, #0891b2 80%, #06b6d4 100%);
+}
+
+/* ── Tic Tac Toe Win Animations ──────────────────────────────── */
+.cell-win-cyan {
+  animation: pulse-cyan 1s infinite alternate;
+}
+
+.cell-win-grey {
+  animation: pulse-grey 1s infinite alternate;
+}
+
+@keyframes pulse-cyan {
+  from {
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+    border-color: rgba(6, 182, 212, 0.8);
+  }
+
+  to {
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.9);
+    border-color: rgba(34, 211, 238, 1);
+  }
+}
+
+@keyframes pulse-grey {
+  from {
+    box-shadow: 0 0 10px rgba(148, 163, 184, 0.4);
+    border-color: rgba(148, 163, 184, 0.8);
+  }
+
+  to {
+    box-shadow: 0 0 25px rgba(148, 163, 184, 0.9);
+    border-color: rgba(226, 232, 240, 1);
+  }
+}
+
+/* ── Pattern Sequence Boxes & Animations ────────────────────── */
+.num-box {
+  background: #181d28;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.num-box.blank {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1.5px dashed rgba(34, 211, 238, 0.6);
+  color: #67e8f9;
+}
+
+.num-box.blank.filled-correct {
+  background: rgba(6, 182, 212, 0.25);
+  border: 1.5px solid #22d3ee;
+  color: #a5f3fc;
+}
+
+.option-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.15s ease;
+}
+
+.option-btn:hover:not(:disabled) {
+  background: rgba(51, 65, 85, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.option-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+@keyframes floatUpFade {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+}
+
+.penalty-anim {
+  animation: floatUpFade 0.8s ease-out forwards;
+}
+
+/* ── Cold Start Launcher (Root Index) ────────────────────────── */
+.bg-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.launcher-glass-card {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 380px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 24px;
+  padding: 36px 28px;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 22px;
+}
+
+.icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+}
+
+.brand-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+}
+
+.status-text {
+  font-size: 14px;
+  font-style: italic;
+  color: #fef08a;
+  animation: pulseText 2s infinite ease-in-out;
+}
+
+@keyframes pulseText {
+
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(245, 158, 11, 0.25);
+  border-top-color: #f59e0b;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lets-play-btn {
+  width: 100%;
+  padding: 14px 28px;
+  border-radius: 9999px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  border: 1px solid rgba(251, 191, 36, 0.6);
+  box-shadow: 0 6px 25px rgba(217, 119, 6, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.lets-play-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  border-color: rgba(251, 191, 36, 0.9);
+  box-shadow: 0 10px 35px rgba(245, 158, 11, 0.6), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+.lets-play-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+  box-shadow: none;
+}

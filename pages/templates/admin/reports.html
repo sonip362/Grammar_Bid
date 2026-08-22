@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Bid — Question Reports</title>
+    <link href="../tailwind.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cinzel:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0f1a;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        .status-pending {
+            background: #fbbf2420;
+            border-color: #fbbf2460;
+            color: #fbbf24;
+        }
+
+        .status-valid {
+            background: #34d39920;
+            border-color: #34d39960;
+            color: #34d399;
+        }
+
+        .status-rejected {
+            background: #f8717120;
+            border-color: #f8717160;
+            color: #f87171;
+        }
+
+        .status-question_disabled {
+            background: #a78bfa20;
+            border-color: #a78bfa60;
+            color: #a78bfa;
+        }
+
+        .report-card {
+            transition: all 0.2s;
+        }
+
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-white">
+    <!-- Lock Screen -->
+    <div id="lock-screen"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-[#0b0f1a] to-slate-950">
+        <div
+            class="w-full max-w-sm bg-slate-900/90 border border-amber-500/40 rounded-3xl p-8 shadow-[0_0_60px_rgba(212,150,15,0.2)] flex flex-col gap-5 text-center">
+            <div>
+                <span class="text-5xl">🔐</span>
+                <h1 class="font-cinzel text-2xl font-bold text-amber-300 mt-3 tracking-wide">Admin Access</h1>
+                <p class="text-xs text-white/50 mt-1">Enter your secure admin code</p>
+            </div>
+            <input id="admin-code-input" type="password" placeholder="Admin Code"
+                class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/20 text-white text-center tracking-[0.3em] font-bold focus:outline-none focus:border-amber-400 transition-all"
+                autocomplete="off">
+            <button id="admin-unlock-btn"
+                class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-900 font-bold hover:brightness-110 transition-all cursor-pointer">
+                Unlock Panel
+            </button>
+            <p id="lock-error" class="text-xs text-rose-400 hidden"></p>
+        </div>
+    </div>
+
+    <!-- Reports Dashboard -->
+    <div id="reports-dashboard" class="hidden">
+        <!-- Top Bar -->
+        <header
+            class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">📋</span>
+                <h1 class="font-cinzel text-xl sm:text-2xl font-bold text-white tracking-wide">Question Reports</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="index.html"
+                    class="px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold hover:bg-amber-500/30 transition-all">
+                    ⚙️ Dashboard
+                </a>
+                <a href="broadcast.html"
+                    class="px-4 py-2 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold hover:bg-emerald-500/30 transition-all">
+                    📣 Broadcast & Rewards
+                </a>
+                <button id="refresh-btn"
+                    class="px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 text-xs font-bold hover:bg-cyan-500/30 transition-all cursor-pointer">
+                    🔄 Refresh
+                </button>
+            </div>
+        </header>
+
+        <!-- Filter Tabs -->
+        <div class="px-4 sm:px-8 py-4 flex flex-wrap items-center gap-2">
+            <button
+                class="filter-btn active px-4 py-2 rounded-full text-xs font-bold border cursor-pointer transition-all bg-white/10 border-white/30 text-white"
+                data-filter="all">All</button>
+            <button
+                class="filter-btn px-4 py-2 rounded-full text-xs font-bold border cursor-pointer transition-all status-pending"
+                data-filter="pending">🟡 Pending</button>
+            <button
+                class="filter-btn px-4 py-2 rounded-full text-xs font-bold border cursor-pointer transition-all status-valid"
+                data-filter="valid">🟢 Valid</button>
+            <button
+                class="filter-btn px-4 py-2 rounded-full text-xs font-bold border cursor-pointer transition-all status-rejected"
+                data-filter="rejected">🔴 Rejected</button>
+            <button
+                class="filter-btn px-4 py-2 rounded-full text-xs font-bold border cursor-pointer transition-all status-question_disabled"
+                data-filter="question_disabled">🚫 Disabled</button>
+            <span id="reports-count" class="ml-auto text-xs text-white/50"></span>
+        </div>
+
+        <!-- Reports List -->
+        <main class="px-4 sm:px-8 pb-8">
+            <div id="reports-list" class="flex flex-col gap-4">
+                <div class="text-center text-white/40 text-sm py-12 animate-pulse">Loading reports...</div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Report Detail Modal -->
+    <div id="report-modal"
+        class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+        <div
+            class="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-900 border border-white/15 rounded-2xl shadow-2xl">
+            <div class="sticky top-0 bg-slate-900 border-b border-white/10 p-4 flex items-center justify-between">
+                <h2 class="font-cinzel text-lg font-bold text-white">Report Detail</h2>
+                <button id="close-modal-btn"
+                    class="text-white/40 hover:text-white text-2xl cursor-pointer">&times;</button>
+            </div>
+            <div id="modal-content" class="p-5 space-y-4 text-sm"></div>
+            <div id="modal-actions" class="p-4 border-t border-white/10 flex flex-wrap gap-2"></div>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_SESSION_KEY = 'gb_admin_token';
+        const lockScreen = document.getElementById('lock-screen');
+        const dashboard = document.getElementById('reports-dashboard');
+        const codeInput = document.getElementById('admin-code-input');
+        const unlockBtn = document.getElementById('admin-unlock-btn');
+        const lockError = document.getElementById('lock-error');
+        const reportsList = document.getElementById('reports-list');
+        const reportsCount = document.getElementById('reports-count');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const reportModal = document.getElementById('report-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const modalContent = document.getElementById('modal-content');
+        const modalActions = document.getElementById('modal-actions');
+
+        let adminToken = sessionStorage.getItem(ADMIN_SESSION_KEY);
+        let currentFilter = 'all';
+
+        if (adminToken) showDashboard();
+
+        // Auth
+        unlockBtn.addEventListener('click', async () => {
+            const code = codeInput.value.trim();
+            if (!code) return;
+            try {
+                const res = await fetch('/api/admin/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+                if (data.success && data.token) {
+                    adminToken = data.token;
+                    sessionStorage.setItem(ADMIN_SESSION_KEY, adminToken);
+                    showDashboard();
+                } else {
+                    lockError.textContent = data.error || 'Invalid code.';
+                    lockError.classList.remove('hidden');
+                }
+            } catch (e) { lockError.textContent = 'Network error.'; lockError.classList.remove('hidden'); }
+        });
+        codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') unlockBtn.click(); });
+
+        function showDashboard() {
+            lockScreen.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            loadReports();
+        }
+
+        // Filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'ring-2', 'ring-white/40'));
+                btn.classList.add('active', 'ring-2', 'ring-white/40');
+                currentFilter = btn.dataset.filter;
+                loadReports();
+            });
+        });
+
+        refreshBtn.addEventListener('click', () => loadReports());
+
+        async function loadReports() {
+            try {
+                const url = currentFilter === 'all' ? '/api/admin/reports' : `/api/admin/reports?status=${currentFilter}`;
+                const res = await fetch(url, { headers: { Authorization: `Bearer ${adminToken}` } });
+                if (res.status === 401) { sessionStorage.removeItem(ADMIN_SESSION_KEY); location.reload(); return; }
+                const data = await res.json();
+                renderReports(data.reports || []);
+            } catch (e) {
+                reportsList.innerHTML = '<div class="text-center text-rose-400 py-8">Failed to load reports.</div>';
+            }
+        }
+
+        function renderReports(reports) {
+            reportsCount.textContent = `${reports.length} report(s)`;
+            if (reports.length === 0) {
+                reportsList.innerHTML = '<div class="text-center text-white/40 py-12">No reports found.</div>';
+                return;
+            }
+            reportsList.innerHTML = reports.map(r => `
+                <div class="report-card bg-slate-800/60 border border-white/10 rounded-xl p-4 cursor-pointer hover:border-amber-500/40" onclick="openReport('${r.reportId}')">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1 flex-wrap">
+                                <span class="status-${r.status} px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase">${r.status.replace('_', ' ')}</span>
+                                <span class="text-[10px] text-white/40 font-mono">${r.reportId}</span>
+                            </div>
+                            <p class="text-sm text-white/90 font-medium truncate">"${escapeHtml(r.questionSnapshot?.sentence || '—')}"</p>
+                            <div class="flex flex-wrap gap-3 mt-2 text-[11px] text-white/50">
+                                <span>👤 ${escapeHtml(r.reporterUsername)}</span>
+                                <span>📎 ${r.reason.replace('_', ' ')}</span>
+                                <span>💰 $${(r.bidAmount || 0).toLocaleString()}</span>
+                                <span>🕐 ${new Date(r.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        <span class="text-white/30 text-lg">›</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function openReport(reportId) {
+            try {
+                const res = await fetch(`/api/admin/reports/${reportId}`, { headers: { Authorization: `Bearer ${adminToken}` } });
+                const data = await res.json();
+                if (!data.report) return;
+                showModal(data.report, data.relatedReports || [], data.transactions || []);
+            } catch (e) { alert('Failed to load report.'); }
+        }
+
+        function showModal(report, relatedReports, transactions) {
+            const s = report.questionSnapshot || {};
+            modalContent.innerHTML = `
+                <div class="space-y-3">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="status-${report.status} px-3 py-1 rounded-full text-xs font-bold border uppercase">${report.status.replace('_', ' ')}</span>
+                        <span class="text-xs text-white/40 font-mono">${report.reportId}</span>
+                    </div>
+
+                    <div class="bg-slate-800/80 rounded-lg p-3 border border-white/10">
+                        <div class="text-[10px] text-white/40 uppercase tracking-wider mb-1">Original Sentence</div>
+                        <p class="text-white font-medium">"${escapeHtml(s.sentence || '—')}"</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                            <div class="text-[10px] text-white/40 uppercase">Verdict</div>
+                            <p class="text-sm font-bold ${s.isCorrect ? 'text-emerald-400' : 'text-rose-400'}">${s.isCorrect ? '✅ Correct' : '❌ Incorrect'}</p>
+                        </div>
+                        <div class="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                            <div class="text-[10px] text-white/40 uppercase">Category</div>
+                            <p class="text-sm text-white/80">${escapeHtml(s.category || '—')}</p>
+                        </div>
+                        <div class="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                            <div class="text-[10px] text-white/40 uppercase">Correction</div>
+                            <p class="text-sm text-white/80">${escapeHtml(s.correction || '—')}</p>
+                        </div>
+                        <div class="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                            <div class="text-[10px] text-white/40 uppercase">English Variety</div>
+                            <p class="text-sm text-white/80">${escapeHtml(s.englishVariety || '—')}</p>
+                        </div>
+                    </div>
+
+                    ${s.validationReasoning ? `
+                    <div class="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                        <div class="text-[10px] text-white/40 uppercase">Validation Reasoning</div>
+                        <p class="text-xs text-white/70 mt-1">${escapeHtml(s.validationReasoning)}</p>
+                    </div>` : ''}
+
+                    <div class="bg-slate-800/80 rounded-lg p-3 border border-amber-500/20">
+                        <div class="text-[10px] text-amber-400 uppercase tracking-wider mb-1">Report Details</div>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-white/70">
+                            <div>👤 Reporter: <span class="text-white">${escapeHtml(report.reporterUsername)}</span></div>
+                            <div>📎 Reason: <span class="text-white">${report.reason.replace('_', ' ')}</span></div>
+                            <div>💰 Bid: <span class="text-white">$${(report.bidAmount || 0).toLocaleString()}</span></div>
+                            <div>🏠 Room: <span class="text-white">${report.roomCode || '—'}</span></div>
+                            <div>🔄 Round: <span class="text-white">${report.roundNumber || '—'}</span></div>
+                            <div>🕐 Date: <span class="text-white">${new Date(report.createdAt).toLocaleString()}</span></div>
+                        </div>
+                        ${report.playerExplanation ? `<div class="mt-2 text-xs text-white/60">💬 "${escapeHtml(report.playerExplanation)}"</div>` : ''}
+                    </div>
+
+                    ${relatedReports.length > 1 ? `
+                    <div class="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                        <div class="text-[10px] text-white/40 uppercase">Related Reports (${relatedReports.length})</div>
+                        ${relatedReports.map(r => `<div class="text-xs text-white/60 mt-1">• ${escapeHtml(r.reporterUsername)} — ${r.reason.replace('_', ' ')} (bid: $${(r.bidAmount || 0).toLocaleString()}) — <span class="status-${r.status} px-1.5 py-0.5 rounded text-[9px]">${r.status}</span></div>`).join('')}
+                    </div>` : ''}
+
+                    ${transactions.length > 0 ? `
+                    <div class="bg-slate-800/50 rounded-lg p-3 border border-white/10">
+                        <div class="text-[10px] text-white/40 uppercase">Transactions (${transactions.length})</div>
+                        ${transactions.map(t => `<div class="text-xs text-emerald-400 mt-1">• ${escapeHtml(t.username)}: +$${t.amount.toLocaleString()} (${t.transactionId})</div>`).join('')}
+                    </div>` : ''}
+                </div>
+            `;
+
+            // Actions
+            if (report.status === 'pending') {
+                modalActions.innerHTML = `
+                    <button onclick="approveReport('${report.reportId}')" class="px-5 py-2.5 rounded-xl bg-emerald-500 text-white font-bold text-sm hover:bg-emerald-400 transition-all cursor-pointer">✅ Approve & Compensate</button>
+                    <button onclick="rejectReport('${report.reportId}')" class="px-5 py-2.5 rounded-xl bg-rose-500 text-white font-bold text-sm hover:bg-rose-400 transition-all cursor-pointer">❌ Reject</button>
+                    <button onclick="disableQuestion('${report.reportId}')" class="px-5 py-2.5 rounded-xl bg-purple-500 text-white font-bold text-sm hover:bg-purple-400 transition-all cursor-pointer">🚫 Disable Question</button>
+                `;
+            } else {
+                modalActions.innerHTML = `
+                    <button onclick="disableQuestion('${report.reportId}')" class="px-5 py-2.5 rounded-xl bg-purple-500/60 text-white font-bold text-sm hover:bg-purple-400 transition-all cursor-pointer">🚫 Disable Question</button>
+                    <span class="text-xs text-white/40 ml-auto">Reviewed ${report.reviewedAt ? new Date(report.reviewedAt).toLocaleString() : '—'}</span>
+                `;
+            }
+
+            reportModal.classList.remove('hidden');
+            reportModal.classList.add('flex');
+        }
+
+        closeModalBtn.addEventListener('click', () => { reportModal.classList.add('hidden'); reportModal.classList.remove('flex'); });
+        reportModal.addEventListener('click', (e) => { if (e.target === reportModal) closeModalBtn.click(); });
+
+        async function approveReport(reportId) {
+            if (!confirm('Approve this report and compensate affected players (2× bid)?')) return;
+            try {
+                const res = await fetch(`/api/admin/reports/${reportId}/approve`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${adminToken}`, 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ ${data.message}\n\n${data.affectedPlayers?.map(p => `${p.username}: +$${p.compensation.toLocaleString()}`).join('\n') || 'No financial impact.'}`);
+                    closeModalBtn.click();
+                    loadReports();
+                } else {
+                    alert(data.error || 'Failed.');
+                }
+            } catch (e) { alert('Network error.'); }
+        }
+
+        async function rejectReport(reportId) {
+            if (!confirm('Reject this report?')) return;
+            try {
+                const res = await fetch(`/api/admin/reports/${reportId}/reject`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await res.json();
+                if (data.success) { alert('❌ Report rejected.'); closeModalBtn.click(); loadReports(); }
+                else alert(data.error || 'Failed.');
+            } catch (e) { alert('Network error.'); }
+        }
+
+        async function disableQuestion(reportId) {
+            if (!confirm('Disable this question permanently?')) return;
+            try {
+                const res = await fetch(`/api/admin/reports/${reportId}/disable-question`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${adminToken}`, 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.success) { alert('🚫 Question disabled.'); closeModalBtn.click(); loadReports(); }
+                else alert(data.error || 'Failed.');
+            } catch (e) { alert('Network error.'); }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+
+</html>

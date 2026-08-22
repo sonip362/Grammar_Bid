@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tic Tac Toe — Arcade Mini Game</title>
+    <!-- Local Stylesheets -->
+    <link rel="stylesheet" href="../../pages/styles/tailwind.css">
+    <link rel="stylesheet" href="../../pages/styles/style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="w-screen h-screen flex flex-col justify-between items-center p-4 bg-[#121620] overflow-hidden">
+
+    <!-- Header Navigation -->
+    <header class="w-full max-w-sm flex items-center justify-between gap-3 shrink-0">
+        <a href="index.html"
+            class="px-3.5 py-1.5 rounded-xl bg-[#232936] border border-white/15 text-xs font-bold text-white/80 hover:text-white hover:bg-[#2c3344] transition-all flex items-center gap-1.5">
+            <span>⬅️</span> Back to Arcade
+        </a>
+        <div class="flex items-center gap-2">
+            <span
+                class="px-3 py-1 rounded-full bg-[#232936] border border-cyan-400/40 text-cyan-300 text-xs font-mono font-bold">
+                ⚡ Tries: <span id="tries-display">5/5</span>
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Container - Fixed Dimensions to Eliminate Layout Shift -->
+    <main class="w-full max-w-sm flex flex-col items-center justify-center shrink-0">
+        <!-- Title Box -->
+        <div class="text-center mb-3">
+            <h1
+                class="font-space text-3xl font-extrabold text-white tracking-tight flex items-center justify-center gap-2">
+                <span>❌</span> TIC TAC TOE <span>🔵</span>
+            </h1>
+            <p class="text-xs text-slate-400 mt-0.5">Win: <strong class="text-cyan-300 font-mono">+2 Gold Tokens
+                    🪙</strong> | Draw: <strong class="text-cyan-300 font-mono">+1 Token 🪙</strong></p>
+        </div>
+
+        <!-- 3x3 Game Board Card (Strict Fixed Dimensions) -->
+        <div
+            class="w-full bg-[#232936] border border-slate-700/80 rounded-3xl p-5 shadow-[0_0_40px_rgba(6,182,212,0.1)] flex flex-col items-center gap-3">
+
+            <!-- Fixed Height Turn Indicator Bar -->
+            <div id="turn-indicator"
+                class="w-full h-9 flex items-center justify-center rounded-xl bg-[#181d28] border border-white/10 text-xs font-bold font-mono text-cyan-300">
+                Your Turn (❌)
+            </div>
+
+            <!-- Fixed Aspect 3x3 Grid (Strict 300px Grid) -->
+            <div class="grid grid-cols-3 gap-2.5 w-[300px] h-[300px] shrink-0">
+                <button onclick="makeMove(0)" id="cell-0"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(1)" id="cell-1"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(2)" id="cell-2"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(3)" id="cell-3"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(4)" id="cell-4"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(5)" id="cell-5"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(6)" id="cell-6"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(7)" id="cell-7"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+                <button onclick="makeMove(8)" id="cell-8"
+                    class="w-[92px] h-[92px] rounded-2xl bg-[#181d28] border border-slate-700/80 hover:border-cyan-400/60 transition-all flex items-center justify-center text-3xl font-extrabold cursor-pointer box-border"></button>
+            </div>
+
+            <!-- Start / Reset Controls -->
+            <button id="reset-btn" onclick="resetBoard()"
+                class="w-full h-11 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-space font-extrabold text-xs shadow-lg transition-all cursor-pointer flex items-center justify-center">
+                🔄 NEW GAME
+            </button>
+
+            <!-- Reserved Height Warning El to Prevent Vertical Shift -->
+            <div class="h-4 flex items-center justify-center">
+                <p id="limit-warning" class="hidden text-[11px] text-rose-400 font-bold text-center">⚠️ Daily limit of 5
+                    tries reached!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Match Result Modal Overlay -->
+    <div id="result-modal"
+        class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-30">
+        <span id="result-icon" class="text-5xl mb-2">🏆</span>
+        <h2 id="result-title" class="font-space text-3xl font-extrabold text-amber-300 tracking-tight">YOU WON!</h2>
+
+        <!-- Score Box -->
+        <div
+            class="w-full max-w-xs bg-slate-900 border border-white/15 rounded-2xl p-4 my-4 flex flex-col gap-2 shadow-inner">
+            <div class="flex justify-between items-center text-sm">
+                <span class="text-white/60">Match Outcome:</span>
+                <span id="result-outcome-text" class="font-mono font-bold text-purple-300">VICTORY</span>
+            </div>
+            <div class="flex justify-between items-center text-sm border-t border-white/10 pt-2">
+                <span class="text-emerald-400 font-bold">Real Cash Reward:</span>
+                <span id="result-cash-text" class="font-mono font-bold text-emerald-300">+$2,500</span>
+            </div>
+            <div class="flex justify-between items-center text-xs border-t border-white/10 pt-2 text-white/50">
+                <span>Daily Tries Remaining:</span>
+                <span id="modal-tries-left" class="font-mono font-bold text-amber-300">5 / 5</span>
+            </div>
+        </div>
+
+        <div class="flex gap-3 w-full max-w-xs">
+            <button id="modal-play-again-btn" onclick="closeResultModalAndReset()"
+                class="flex-1 py-3 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-bold text-xs shadow-md transition-all cursor-pointer">
+                PLAY AGAIN
+            </button>
+            <a href="index.html"
+                class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-white/15 transition-all flex items-center justify-center">
+                EXIT ARCADE
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-sm text-center text-[11px] text-white/40 shrink-0">
+        Tic Tac Toe Mini Game • Grammar Bid Arcade
+    </footer>
+
+    <!-- Game Logic Scripts -->
+    <script src="../javascript/arcadeMusic.js"></script>
+    <script src="../javascript/games.js"></script>
+    <script src="../javascript/tic_tac_toe.js"></script>
+</body>
+
+</html>

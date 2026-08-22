@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grammar Bid</title>
+    <link rel="icon" type="image/webp" href="./icon.webp" />
+
+    <!-- Local Stylesheets -->
+    <link rel="stylesheet" href="./pages/styles/tailwind.css" />
+    <link rel="stylesheet" href="./pages/styles/style.css" />
+</head>
+
+<body>
+
+    <!-- Background hero image -->
+    <img src="./hero.webp" alt="Background" class="bg-layer" onerror="this.style.display='none'" />
+    <div class="vignette-overlay"></div>
+    <div class="grain-overlay"></div>
+
+    <!-- Main Glass Container -->
+    <div class="launcher-glass-card">
+
+        <!-- Logo Icon -->
+        <div class="icon-box">
+            <svg class="w-9 h-9 text-amber-500" viewBox="0 0 63 63" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                    d="M16.6509 39.934V42.1041C16.6509 42.7034 17.1025 43.1891 17.6596 43.1891H29.7639C30.321 43.1891 30.7726 42.7034 30.7726 42.1041V39.934C30.7726 39.3348 30.321 38.849 29.7639 38.849H17.6596C17.1025 38.849 16.6509 39.3348 16.6509 39.934Z"
+                    stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <path
+                    d="M16.6509 3.58502V5.7551C16.6509 6.35436 17.1025 6.84015 17.6596 6.84015L29.7639 6.84015C30.321 6.84015 30.7726 6.35436 30.7726 5.7551V3.58502C30.7726 2.98576 30.321 2.49997 29.7639 2.49997L17.6596 2.49997C17.1025 2.49997 16.6509 2.98576 16.6509 3.58502Z"
+                    stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <path
+                    d="M17.9119 36.4076V38.0352C17.9119 38.4847 18.2506 38.849 18.6684 38.849H28.7553C29.1732 38.849 29.5119 38.4847 29.5119 38.0352V36.4076C29.5119 35.9582 29.1732 35.5939 28.7553 35.5939H18.6684C18.2506 35.5939 17.9119 35.9582 17.9119 36.4076Z"
+                    stroke="currentColor" stroke-width="3" />
+                <path
+                    d="M17.9119 7.65399V9.28155C17.9119 9.73099 18.2506 10.0953 18.6684 10.0953L28.7553 10.0953C29.1732 10.0953 29.5119 9.73099 29.5119 9.28155V7.65399C29.5119 7.20455 29.1732 6.8402 28.7553 6.8402L18.6684 6.8402C18.2506 6.8402 17.9119 7.20455 17.9119 7.65399Z"
+                    stroke="currentColor" stroke-width="3" />
+                <path
+                    d="M19.1725 11.4516L19.1725 34.2375C19.1725 34.9866 19.737 35.5938 20.4334 35.5938H26.9899C27.6862 35.5938 28.2507 34.9866 28.2507 34.2375V11.4516C28.2507 10.7025 27.6862 10.0953 26.9899 10.0953H20.4334C19.737 10.0953 19.1725 10.7025 19.1725 11.4516Z"
+                    stroke="currentColor" stroke-width="4" />
+                <path
+                    d="M17.9119 20.4032V25.2859C17.9119 25.8852 18.3635 26.371 18.9206 26.371H28.5032C29.0603 26.371 29.5119 25.8852 29.5119 25.2859V20.4032C29.5119 19.804 29.0603 19.3182 28.5032 19.3182H18.9206C18.3635 19.3182 17.9119 19.804 17.9119 20.4032Z"
+                    stroke="currentColor" stroke-width="3" />
+                <path d="M28.2509 24.7434H30.7726V20.9458H28.2509V24.7434Z" stroke="currentColor" stroke-width="3" />
+                <path
+                    d="M30.7725 24.2009L58.2594 23.6584C60.2768 23.6584 60.2768 22.0308 58.2594 22.0308L30.7725 21.4883V24.2009Z"
+                    stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <path
+                    d="M49.4043 50.7346H13.5956C13.0385 50.7346 12.5869 51.2204 12.5869 51.8197V53.4472C12.5869 54.0465 13.0385 54.5323 13.5956 54.5323H49.4043C49.9614 54.5323 50.413 54.0465 50.413 53.4472V51.8197C50.413 51.2204 49.9614 50.7346 49.4043 50.7346Z"
+                    stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                <path
+                    d="M58.987 54.5323H4.01304C3.17741 54.5323 2.5 55.261 2.5 56.1599V58.8725C2.5 59.7713 3.17741 60.5 4.01304 60.5H58.987C59.8226 60.5 60.5 59.7713 60.5 58.8725V56.1599C60.5 55.261 59.8226 54.5323 58.987 54.5323Z"
+                    stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+
+        <!-- Title & Status -->
+        <div class="flex flex-col gap-1.5">
+            <h1 class="brand-title">Grammar Bid</h1>
+            <p id="status-text" class="status-text">Waking up server...</p>
+        </div>
+
+        <!-- Spinner -->
+        <div id="spinner-box" class="my-1">
+            <div class="spinner"></div>
+        </div>
+
+        <!-- Let's Play Button -->
+        <button id="play-btn" disabled class="play-btn lets-play-btn">
+            Connecting...
+        </button>
+    </div>
+
+    <script>
+        const RENDER_URL = 'https://grammer-bid.onrender.com';
+        const spinnerBox = document.getElementById('spinner-box');
+        const statusText = document.getElementById('status-text');
+        const playBtn = document.getElementById('play-btn');
+
+        let isReady = false;
+
+        async function ping() {
+            if (isReady) return;
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const res = await fetch(`${RENDER_URL}/api/leaderboard?t=${Date.now()}`, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (res.ok) setReady();
+            } catch (e) {
+                try {
+                    const fallbackController = new AbortController();
+                    const fbTimeoutId = setTimeout(() => fallbackController.abort(), 8000);
+                    await fetch(`${RENDER_URL}/?t=${Date.now()}`, { mode: 'no-cors', signal: fallbackController.signal });
+                    clearTimeout(fbTimeoutId);
+                    setReady();
+                } catch (err) { }
+            }
+        }
+
+        function setReady() {
+            if (isReady) return;
+            isReady = true;
+
+            spinnerBox.style.display = 'none';
+            statusText.innerText = 'Server Ready!';
+            statusText.style.color = '#34d399';
+            statusText.style.animation = 'none';
+            statusText.style.fontWeight = '700';
+
+            playBtn.disabled = false;
+            playBtn.classList.add('active');
+            playBtn.innerText = "Let's Play";
+
+            playBtn.onclick = () => {
+                window.location.href = RENDER_URL;
+            };
+        }
+
+        ping();
+        const interval = setInterval(() => {
+            if (isReady) clearInterval(interval);
+            else ping();
+        }, 3000);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Bid — Admin Broadcast & Rewards</title>
+    <link href="../tailwind.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cinzel:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0f1a;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-white">
+
+    <!-- ═══════════ LOCK SCREEN ═══════════ -->
+    <div id="lock-screen"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-[#0b0f1a] to-slate-950">
+        <div
+            class="w-full max-w-sm bg-slate-900/90 border border-amber-500/40 rounded-3xl p-8 shadow-[0_0_60px_rgba(212,150,15,0.2)] flex flex-col gap-5 text-center">
+            <div>
+                <span class="text-5xl">🔐</span>
+                <h1 class="font-cinzel text-2xl font-bold text-amber-300 mt-3 tracking-wide">Admin Access</h1>
+                <p class="text-xs text-white/50 mt-1">Enter your secure admin code</p>
+            </div>
+            <input id="admin-code-input" type="password" placeholder="Admin Code..."
+                class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-center text-lg font-mono tracking-[0.3em] placeholder-white/30 outline-none focus:border-amber-400 transition-all" />
+            <button id="admin-unlock-btn"
+                class="w-full py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-300 text-slate-950 font-bold text-sm shadow-lg hover:scale-105 transition-all cursor-pointer">
+                Unlock Panel
+            </button>
+            <p id="lock-error" class="text-xs text-rose-400 hidden"></p>
+        </div>
+    </div>
+
+    <!-- ═══════════ BROADCAST DASHBOARD ═══════════ -->
+    <div id="broadcast-dashboard" class="hidden">
+        <!-- Top Bar -->
+        <header
+            class="sticky top-0 z-40 bg-slate-950/95 backdrop-blur-xl border-b border-white/10 px-4 sm:px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">📣</span>
+                <h1 class="font-cinzel text-xl sm:text-2xl font-bold text-white tracking-wide">Inbox Broadcast & Rewards
+                </h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="index.html"
+                    class="px-4 py-2 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold hover:bg-amber-500/30 transition-all">
+                    ⚙️ Dashboard
+                </a>
+                <a href="reports.html"
+                    class="px-4 py-2 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold hover:bg-rose-500/30 transition-all">
+                    📋 Reports
+                </a>
+                <a href="logs.html"
+                    class="px-4 py-2 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 text-xs font-bold hover:bg-cyan-500/30 transition-all">
+                    📋 Server Logs
+                </a>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <div class="bg-slate-900/80 border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+                <div>
+                    <h2 class="font-cinzel text-2xl font-bold text-amber-300">Create Broadcast Message</h2>
+                    <p class="text-xs text-white/50 mt-1">Send inbox news announcements or cash reward grants to players
+                        with auto-compressed base64 images.</p>
+                </div>
+
+                <!-- Alert Messages -->
+                <div id="status-banner" class="hidden p-4 rounded-2xl text-xs font-bold transition-all"></div>
+
+                <form id="broadcast-form" class="space-y-6">
+                    <!-- Message Type & Target Selection -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Message Type -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400/90">Message
+                                Category</label>
+                            <select id="msg-type"
+                                class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white text-sm outline-none focus:border-amber-400 transition-all cursor-pointer">
+                                <option value="news" class="bg-slate-900 text-white">📰 News Announcement</option>
+                                <option value="reward" class="bg-slate-900 text-white">🎁 Cash Reward Grant</option>
+                                <option value="announcement" class="bg-slate-900 text-white">📢 System Alert</option>
+                            </select>
+                        </div>
+
+                        <!-- Target Audience -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400/90">Target
+                                Audience</label>
+                            <select id="msg-target"
+                                class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white text-sm outline-none focus:border-amber-400 transition-all cursor-pointer">
+                                <option value="all" class="bg-slate-900 text-white">🌐 All Registered Players</option>
+                                <option value="user" class="bg-slate-900 text-white">👤 Specific Player</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Target User Selector (Hidden by default) -->
+                    <div id="target-user-container" class="hidden space-y-2">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-amber-400/90">Select
+                            Player</label>
+                        <select id="target-user-select"
+                            class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white text-sm outline-none focus:border-amber-400 transition-all cursor-pointer font-mono">
+                            <option value="">Loading players...</option>
+                        </select>
+                    </div>
+
+                    <!-- Cash Reward Amount (Visible when Reward selected) -->
+                    <div id="cash-reward-container"
+                        class="hidden space-y-2 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-300">💵 Cash Reward
+                            Amount ($)</label>
+                        <div class="relative flex items-center">
+                            <span class="absolute left-4 text-emerald-400 font-mono font-bold">$</span>
+                            <input id="msg-cash-amount" type="number" min="1" step="1" placeholder="e.g. 5000"
+                                class="w-full pl-8 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-base outline-none focus:border-emerald-400 transition-all" />
+                        </div>
+                        <p class="text-[11px] text-emerald-200/60">This cash amount will be added directly to the
+                            recipient's in-game balance.</p>
+                    </div>
+
+                    <!-- Title & Body -->
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400/90">Broadcast
+                                Title</label>
+                            <input id="msg-title" type="text" placeholder="e.g. Weekend Tournament Winner Reward 🎉"
+                                required
+                                class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white text-sm font-serif italic placeholder-white/40 outline-none focus:border-amber-400 transition-all" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-amber-400/90">Message
+                                Body</label>
+                            <textarea id="msg-body" rows="4" placeholder="Write your message detail here..." required
+                                class="w-full px-4 py-3 rounded-2xl bg-white/10 border border-white/20 text-white text-sm placeholder-white/40 outline-none focus:border-amber-400 transition-all leading-relaxed"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Auto-Compressed Image Upload Section -->
+                    <div class="space-y-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                        <label
+                            class="block text-xs font-bold uppercase tracking-wider text-cyan-300 flex items-center justify-between">
+                            <span>🖼️ Optional Attached Image (Auto-Compressed Base64)</span>
+                            <span id="img-compression-badge" class="text-[10px] font-mono text-cyan-400 hidden"></span>
+                        </label>
+
+                        <input id="image-file-input" type="file" accept="image/*"
+                            class="w-full text-xs text-white/70 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-cyan-500/20 file:text-cyan-300 hover:file:bg-cyan-500/30 cursor-pointer" />
+
+                        <!-- Image Preview Box -->
+                        <div id="image-preview-container"
+                            class="hidden relative rounded-xl overflow-hidden border border-cyan-500/40 max-h-60 bg-slate-950/80 flex items-center justify-center p-2">
+                            <img id="image-preview-img" src="" alt="Base64 Preview"
+                                class="max-h-52 object-contain rounded-lg" />
+                            <button id="remove-image-btn" type="button"
+                                class="absolute top-2 right-2 px-2.5 py-1 rounded-full bg-rose-600/90 hover:bg-rose-500 text-white text-[10px] font-bold shadow-md cursor-pointer transition-all">
+                                ✕ Remove Image
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button id="send-broadcast-btn" type="submit"
+                        class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-extrabold text-base tracking-wide shadow-xl hover:scale-[1.01] active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2">
+                        <span>🚀 Send Broadcast Notification</span>
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const ADMIN_SESSION_KEY = 'gb_admin_token';
+        const lockScreen = document.getElementById('lock-screen');
+        const dashboard = document.getElementById('broadcast-dashboard');
+        const codeInput = document.getElementById('admin-code-input');
+        const unlockBtn = document.getElementById('admin-unlock-btn');
+        const lockError = document.getElementById('lock-error');
+
+        const broadcastForm = document.getElementById('broadcast-form');
+        const msgType = document.getElementById('msg-type');
+        const msgTarget = document.getElementById('msg-target');
+        const targetUserContainer = document.getElementById('target-user-container');
+        const targetUserSelect = document.getElementById('target-user-select');
+        const cashRewardContainer = document.getElementById('cash-reward-container');
+        const msgCashAmount = document.getElementById('msg-cash-amount');
+        const msgTitle = document.getElementById('msg-title');
+        const msgBody = document.getElementById('msg-body');
+        const imageFileInput = document.getElementById('image-file-input');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreviewImg = document.getElementById('image-preview-img');
+        const removeImageBtn = document.getElementById('remove-image-btn');
+        const imgCompressionBadge = document.getElementById('img-compression-badge');
+        const statusBanner = document.getElementById('status-banner');
+        const sendBtn = document.getElementById('send-broadcast-btn');
+
+        let adminToken = sessionStorage.getItem(ADMIN_SESSION_KEY);
+        let compressedBase64Image = null;
+
+        if (adminToken) showDashboard();
+
+        unlockBtn.addEventListener('click', async () => {
+            const code = codeInput.value.trim();
+            if (!code) return;
+            try {
+                const res = await fetch('/api/admin/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await res.json();
+                if (data.success && data.token) {
+                    adminToken = data.token;
+                    sessionStorage.setItem(ADMIN_SESSION_KEY, adminToken);
+                    showDashboard();
+                } else {
+                    lockError.textContent = data.error || 'Invalid code.';
+                    lockError.classList.remove('hidden');
+                }
+            } catch (e) {
+                lockError.textContent = 'Network error.';
+                lockError.classList.remove('hidden');
+            }
+        });
+        codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') unlockBtn.click(); });
+
+        function showDashboard() {
+            lockScreen.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+            loadUserOptions();
+        }
+
+        // Toggle UI based on Message Type
+        msgType.addEventListener('change', () => {
+            if (msgType.value === 'reward') {
+                cashRewardContainer.classList.remove('hidden');
+            } else {
+                cashRewardContainer.classList.add('hidden');
+                msgCashAmount.value = '';
+            }
+        });
+
+        // Toggle Target User dropdown
+        msgTarget.addEventListener('change', () => {
+            if (msgTarget.value === 'user') {
+                targetUserContainer.classList.remove('hidden');
+            } else {
+                targetUserContainer.classList.add('hidden');
+            }
+        });
+
+        async function loadUserOptions() {
+            try {
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await res.json();
+                if (data.users && data.users.length > 0) {
+                    targetUserSelect.innerHTML = data.users.map(u =>
+                        `<option value="${u._id}" class="bg-slate-900 text-white">${u.username} (Cash: $${(u.cash !== undefined ? u.cash : 10000).toLocaleString()})</option>`
+                    ).join('');
+                }
+            } catch (e) {
+                targetUserSelect.innerHTML = '<option value="">Failed to load users</option>';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        //  Client-Side Auto Compression Canvas Handler
+        // ═══════════════════════════════════════════════════════════════
+        imageFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const originalSizeKB = (file.size / 1024).toFixed(1);
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Maximum dimensions for auto-compression
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
+
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height * MAX_WIDTH) / width);
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width = Math.round((width * MAX_HEIGHT) / height);
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to JPEG Base64
+                    compressedBase64Image = canvas.toDataURL('image/jpeg', 0.75);
+
+                    const compressedSizeKB = (compressedBase64Image.length * 0.75 / 1024).toFixed(1);
+                    const reductionRatio = (100 - (compressedSizeKB / originalSizeKB * 100)).toFixed(0);
+
+                    imagePreviewImg.src = compressedBase64Image;
+                    imagePreviewContainer.classList.remove('hidden');
+
+                    imgCompressionBadge.textContent = `Original: ${originalSizeKB} KB ➔ Base64: ~${compressedSizeKB} KB (${reductionRatio}% smaller)`;
+                    imgCompressionBadge.classList.remove('hidden');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        removeImageBtn.addEventListener('click', () => {
+            compressedBase64Image = null;
+            imageFileInput.value = '';
+            imagePreviewImg.src = '';
+            imagePreviewContainer.classList.add('hidden');
+            imgCompressionBadge.classList.add('hidden');
+        });
+
+        // Submit Form Handler
+        broadcastForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const target = msgTarget.value;
+            const selectedUserId = targetUserSelect.value;
+            const type = msgType.value;
+            const title = msgTitle.value.trim();
+            const body = msgBody.value.trim();
+            const cashReward = Number(msgCashAmount.value) || 0;
+
+            if (target === 'user' && !selectedUserId) {
+                alert('Please select a target player.');
+                return;
+            }
+
+            if (type === 'reward' && cashReward <= 0) {
+                alert('Please specify a positive cash reward amount.');
+                return;
+            }
+
+            const targetLabel = target === 'all' ? 'ALL players' : 'the selected player';
+            const rewardLabel = (type === 'reward' && cashReward > 0) ? ` with a $${cashReward.toLocaleString()} cash reward` : '';
+
+            if (!confirm(`Are you sure you want to send this broadcast to ${targetLabel}${rewardLabel}?`)) {
+                return;
+            }
+
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span>⏳ Sending Broadcast...</span>';
+
+            try {
+                const res = await fetch('/api/admin/broadcast', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        target,
+                        userId: target === 'user' ? selectedUserId : null,
+                        type,
+                        title,
+                        body,
+                        cashReward,
+                        imageUrl: compressedBase64Image
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    statusBanner.className = 'p-4 rounded-2xl text-xs font-bold transition-all bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+                    statusBanner.textContent = `✅ ${data.message} (${data.recipientCount} player(s) notified)`;
+                    statusBanner.classList.remove('hidden');
+
+                    // Reset form
+                    msgTitle.value = '';
+                    msgBody.value = '';
+                    msgCashAmount.value = '';
+                    removeImageBtn.click();
+                } else {
+                    statusBanner.className = 'p-4 rounded-2xl text-xs font-bold transition-all bg-rose-500/20 text-rose-300 border border-rose-500/40';
+                    statusBanner.textContent = `❌ ${data.error || 'Failed to send broadcast.'}`;
+                    statusBanner.classList.remove('hidden');
+                }
+            } catch (err) {
+                statusBanner.className = 'p-4 rounded-2xl text-xs font-bold transition-all bg-rose-500/20 text-rose-300 border border-rose-500/40';
+                statusBanner.textContent = '❌ Network error sending broadcast.';
+                statusBanner.classList.remove('hidden');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<span>🚀 Send Broadcast Notification</span>';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+@import "tailwindcss";
+@import "./style.css";
+
+@theme {
+    --font-heading: "Playfair Display", Georgia, serif;
+    --font-cinzel: Cinzel, serif;
+    --font-body: Inter, system-ui, sans-serif;
+
+    --color-gold-50: #fdf8e8;
+    --color-gold-100: #f9ecc4;
+    --color-gold-200: #f3d98a;
+    --color-gold-300: #ecc44f;
+    --color-gold-400: #e5b325;
+    --color-gold-500: #d4960f;
+    --color-gold-600: #b0730a;
+
+    --animate-fade-in-up: fadeInUp 1s ease-out forwards;
+    --animate-fade-in-down: fadeInDown 0.8s ease-out forwards;
+    --animate-pulse-glow: pulseGlow 2.5s ease-in-out infinite;
+
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(25px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInDown {
+        0% {
+            opacity: 0;
+            transform: translateY(-15px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulseGlow {
+
+        0%,
+        100% {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+        }
+
+        50% {
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.35);
+        }
+    }
+}
+
+/* Custom Sleek Dark Scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(51, 65, 85, 0.8);
+    border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.8);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Twemoji inline image standard styling */
+img.emoji {
+    height: 1.2em;
+    width: 1.2em;
+    margin: 0 0.15em 0 0.15em;
+    vertical-align: -0.2em;
+    display: inline-block;
+}

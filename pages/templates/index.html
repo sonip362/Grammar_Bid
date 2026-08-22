@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grammar Bid — Auction. Correct. Dominate.</title>
+    <meta name="description"
+        content="A fast-paced multiplayer game where correct grammar buys you victory—and bad syntax costs you millions." />
+    <link rel="icon" type="image/webp" href="icon.webp" />
+
+    <!-- Google Fonts — Playfair Display & Cinzel / Serif styles -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <!-- Local Tailwind CSS -->
+    <link rel="stylesheet" href="tailwind.css" />
+
+    <!-- External Custom Styles -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="font-body text-white bg-black antialiased select-none">
+
+    <!-- ═══════════════════════════════════════════
+       FULL-SCREEN HERO  (Background image area)
+       ═══════════════════════════════════════════ -->
+    <section id="hero" class="relative min-h-screen w-full overflow-hidden flex flex-col justify-between">
+
+        <!-- ── Background Image ─────────────────── -->
+        <img id="hero-bg" src="hero.webp" alt="Grammar Bid Background"
+            class="absolute inset-0 w-full h-full object-cover object-center" />
+
+        <!-- ── Vignette Overlay Layer ────────────── -->
+        <div class="vignette-overlay absolute inset-0 z-[1]"></div>
+
+        <!-- ── Film Grain Noise Overlay ──────────── -->
+        <div class="grain-overlay absolute inset-0 z-[2]"></div>
+
+        <!-- ═══════════════════════════════════════
+             NAVBAR HEADER
+             ═══════════════════════════════════════ -->
+        <header
+            class="black-header relative z-10 w-full px-6 py-3.5 flex items-center justify-between animate-fade-in-down">
+
+            <!-- Left: SVG Logo + Brand Title -->
+            <a href="#" id="brand" class="flex items-center gap-3 group">
+                <!-- Exact Gavel / Auction SVG Logo -->
+                <svg class="w-9 h-9 text-white transition-transform duration-300 group-hover:rotate-[-10deg]"
+                    viewBox="0 0 63 63" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M16.6509 39.934V42.1041C16.6509 42.7034 17.1025 43.1891 17.6596 43.1891H29.7639C30.321 43.1891 30.7726 42.7034 30.7726 42.1041V39.934C30.7726 39.3348 30.321 38.849 29.7639 38.849H17.6596C17.1025 38.849 16.6509 39.3348 16.6509 39.934Z"
+                        stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M16.6509 3.58502V5.7551C16.6509 6.35436 17.1025 6.84015 17.6596 6.84015L29.7639 6.84015C30.321 6.84015 30.7726 6.35436 30.7726 5.7551V3.58502C30.7726 2.98576 30.321 2.49997 29.7639 2.49997L17.6596 2.49997C17.1025 2.49997 16.6509 2.98576 16.6509 3.58502Z"
+                        stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M17.9119 36.4076V38.0352C17.9119 38.4847 18.2506 38.849 18.6684 38.849H28.7553C29.1732 38.849 29.5119 38.4847 29.5119 38.0352V36.4076C29.5119 35.9582 29.1732 35.5939 28.7553 35.5939H18.6684C18.2506 35.5939 17.9119 35.9582 17.9119 36.4076Z"
+                        stroke="white" stroke-width="3" />
+                    <path
+                        d="M17.9119 7.65399V9.28155C17.9119 9.73099 18.2506 10.0953 18.6684 10.0953L28.7553 10.0953C29.1732 10.0953 29.5119 9.73099 29.5119 9.28155V7.65399C29.5119 7.20455 29.1732 6.8402 28.7553 6.8402L18.6684 6.8402C18.2506 6.8402 17.9119 7.20455 17.9119 7.65399Z"
+                        stroke="white" stroke-width="3" />
+                    <path
+                        d="M19.1725 11.4516L19.1725 34.2375C19.1725 34.9866 19.737 35.5938 20.4334 35.5938H26.9899C27.6862 35.5938 28.2507 34.9866 28.2507 34.2375V11.4516C28.2507 10.7025 27.6862 10.0953 26.9899 10.0953H20.4334C19.737 10.0953 19.1725 10.7025 19.1725 11.4516Z"
+                        stroke="white" stroke-width="4" />
+                    <path
+                        d="M17.9119 20.4032V25.2859C17.9119 25.8852 18.3635 26.371 18.9206 26.371H28.5032C29.0603 26.371 29.5119 25.8852 29.5119 25.2859V20.4032C29.5119 19.804 29.0603 19.3182 28.5032 19.3182H18.9206C18.3635 19.3182 17.9119 19.804 17.9119 20.4032Z"
+                        stroke="white" stroke-width="3" />
+                    <path d="M28.2509 24.7434H30.7726V20.9458H28.2509V24.7434Z" stroke="white" stroke-width="3" />
+                    <path
+                        d="M30.7725 24.2009L58.2594 23.6584C60.2768 23.6584 60.2768 22.0308 58.2594 22.0308L30.7725 21.4883V24.2009Z"
+                        stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M49.4043 50.7346H13.5956C13.0385 50.7346 12.5869 51.2204 12.5869 51.8197V53.4472C12.5869 54.0465 13.0385 54.5323 13.5956 54.5323H49.4043C49.9614 54.5323 50.413 54.0465 50.413 53.4472V51.8197C50.413 51.2204 49.9614 50.7346 49.4043 50.7346Z"
+                        stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M58.987 54.5323H4.01304C3.17741 54.5323 2.5 55.261 2.5 56.1599V58.8725C2.5 59.7713 3.17741 60.5 4.01304 60.5H58.987C59.8226 60.5 60.5 59.7713 60.5 58.8725V56.1599C60.5 55.261 59.8226 54.5323 58.987 54.5323Z"
+                        stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class="font-heading text-2xl md:text-3xl italic tracking-wide text-white font-normal">
+                    Grammar Bid
+                </span>
+            </a>
+
+            <!-- Desktop Center & Right Controls -->
+            <div class="hidden lg:flex items-center gap-4">
+                <!-- Enter 4 digit room no. input container -->
+                <div
+                    class="relative flex items-center glass-pill px-4 py-1.5 rounded-full border border-cyan-500/30 shadow-lg shadow-cyan-900/20">
+                    <input id="room-input" type="text" maxlength="4" placeholder="Enter 4 digit room no."
+                        class="nav-input bg-transparent w-48 sm:w-56 text-sm italic text-white/90 outline-none placeholder-white/50" />
+
+                    <button id="room-submit"
+                        class="w-6 h-6 rounded-full border border-cyan-400/60 flex items-center justify-center text-cyan-300 hover:bg-cyan-500/20 hover:scale-110 transition-all duration-300 ml-2"
+                        aria-label="Submit room number">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Power Store Pill Button -->
+                <button id="power-store-btn"
+                    class="glass-pill hover-lift flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/20 transition-all cursor-pointer">
+                    <span class="text-base">⚡</span>
+                    <span>Power Store</span>
+                </button>
+
+                <!-- Mini Games Pill Button -->
+                <a href="/Mini_Games/pages/index.html" id="mini-games-btn"
+                    class="glass-pill hover-lift flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/20 transition-all cursor-pointer">
+                    <span class="text-base">🕹️</span>
+                    <span>Mini Games</span>
+                </a>
+
+                <!-- Daily Rewards Pill Button -->
+                <button id="daily-reward-btn"
+                    class="glass-pill hover-lift flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-amber-300 border border-amber-500/40 hover:bg-amber-500/20 transition-all cursor-pointer">
+                    <span class="text-base">🎁</span>
+                    <span>Daily Reward</span>
+                    <span id="daily-reward-badge" class="w-2 h-2 rounded-full bg-amber-400 animate-ping hidden"></span>
+                </button>
+
+                <!-- Leaderboard Pill Button -->
+                <button id="leaderboard-btn"
+                    class="glass-pill hover-lift flex items-center gap-2 px-5 py-1.5 rounded-full text-sm font-serif italic text-white/90 border border-cyan-500/30">
+                    <svg class="w-4 h-4 text-cyan-300/80" fill="none" stroke="currentColor" stroke-width="1.8"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 16l-1-9 5 3 3-5 3 5 5-3-1 9H5z" />
+                    </svg>
+                    Leaderboard
+                </button>
+
+                <!-- Inbox Button -->
+                <button id="inbox-btn"
+                    class="glass-pill relative flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-white/90 border border-cyan-500/30 hover:scale-105 transition-all cursor-pointer">
+                    <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span>Inbox</span>
+                    <span id="inbox-badge"
+                        class="bg-rose-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center hidden shadow-sm">0</span>
+                </button>
+
+                <!-- Help icon (?) -->
+                <button id="help-btn"
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white/80 border border-white/30 hover:border-white/60 hover:scale-110 transition-all duration-300 ml-2"
+                    aria-label="Help">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" />
+                        <path stroke-linecap="round" d="M9.5 9a2.5 2.5 0 015 0c0 1.5-2.5 2-2.5 3.5m0 3h.01" />
+                    </svg>
+                </button>
+
+                <!-- User Profile & Logout Pill -->
+                <div id="user-info"
+                    class="glass-pill flex items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-amber-500/30">
+                    <div id="desktop-profile-btn" class="flex items-center gap-2 cursor-pointer group"
+                        title="Click to edit profile">
+                        <img id="header-avatar-img" src="https://api.dicebear.com/7.x/initials/svg?seed=GB" alt="Avatar"
+                            class="w-7 h-7 rounded-full object-cover border border-amber-400/50 group-hover:scale-105 transition-all" />
+                        <span id="user-display-name"
+                            class="text-xs sm:text-sm font-serif italic text-white/90 group-hover:text-amber-200 transition-all">
+                            Hi, Player
+                        </span>
+                        <span class="text-xs text-amber-400 opacity-70 group-hover:opacity-100 transition-all">✏️</span>
+                    </div>
+                    <!-- Cash Badge -->
+                    <div
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono font-bold text-xs shadow-sm">
+                        <span>💵</span>
+                        <span id="user-cash-display">$10,000</span>
+                    </div>
+                    <button id="index-logout-btn" title="Log Out"
+                        class="ml-1 px-2.5 py-0.5 rounded-full bg-rose-500/20 hover:bg-rose-500 border border-rose-500/40 text-rose-200 hover:text-white text-[11px] font-sans font-semibold transition-all cursor-pointer">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Right Controls (Header Inbox SVG + Hamburger) -->
+            <div class="flex items-center gap-2.5 lg:hidden">
+                <button id="mobile-inbox-btn"
+                    class="relative glass-pill p-2 rounded-full border border-cyan-500/30 text-white hover:bg-white/20 transition-all cursor-pointer flex items-center justify-center"
+                    title="Inbox" aria-label="Inbox">
+                    <svg class="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span id="mobile-inbox-badge"
+                        class="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center hidden shadow-sm">0</span>
+                </button>
+
+                <button id="mobile-menu-btn"
+                    class="p-2 rounded-lg cursor-pointer glass-pill text-white hover:bg-white/20 transition-all duration-300"
+                    aria-label="Open navigation menu">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+
+        </header>
+
+        <!-- Mobile Backdrop Overlay -->
+        <div id="mobile-backdrop"
+            class="fixed inset-0 bg-black/80 backdrop-blur-md z-40 hidden opacity-0 transition-opacity duration-300">
+        </div>
+
+        <!-- Mobile Slide-Up Bottom Drawer Sheet -->
+        <div id="mobile-drawer"
+            class="fixed bottom-0 left-0 right-0 z-50 drawer-hidden transition-all duration-300 ease-out lg:hidden
+                    glass-drawer bg-slate-950/95 backdrop-blur-2xl border-t border-amber-500/40 rounded-t-3xl p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.9)] flex flex-col gap-4 text-white">
+
+            <!-- Bottom Sheet Drag Indicator -->
+            <div class="w-12 h-1.5 bg-amber-500/50 rounded-full mx-auto mb-1"></div>
+
+            <!-- Drawer Header (User info + Close button) -->
+            <div class="flex items-center justify-between border-b border-white/15 pb-4">
+                <!-- Mobile User Badge & Profile Edit Trigger -->
+                <div id="mobile-user-profile-trigger" class="flex items-center gap-2.5 cursor-pointer group"
+                    title="Click to edit profile">
+                    <img id="mobile-drawer-avatar-img" src="https://api.dicebear.com/7.x/initials/svg?seed=GB"
+                        alt="Avatar"
+                        class="w-9 h-9 rounded-full object-cover border border-amber-400 group-hover:border-amber-300 transition-all shadow-md" />
+                    <div class="flex flex-col">
+                        <div class="flex items-center gap-1">
+                            <span id="mobile-user-display-name"
+                                class="text-sm font-serif italic text-white font-medium group-hover:text-amber-300 transition-all">
+                                Hi, Player
+                            </span>
+                            <span class="text-xs text-amber-300">✏️</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span id="mobile-user-cash-display"
+                                class="font-mono text-xs font-bold text-emerald-300 bg-emerald-500/20 border border-emerald-400/40 px-2 py-0.5 rounded-full">💵
+                                $10,000</span>
+                            <button id="mobile-logout-btn"
+                                class="text-[11px] text-rose-400 hover:text-rose-300 underline font-sans text-left">
+                                Log Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Close Button -->
+                <button id="close-menu-btn"
+                    class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer"
+                    aria-label="Close menu">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Room Input Capsule -->
+            <div
+                class="relative flex items-center glass-pill px-4 py-2.5 rounded-full border border-amber-500/30 bg-white/[0.03]">
+                <input type="text" maxlength="4" placeholder="Enter 4 digit room code..."
+                    class="nav-input bg-transparent w-full text-sm italic text-white/90 outline-none placeholder-white/40 tracking-wider font-mono" />
+                <button id="mobile-room-submit"
+                    class="w-8 h-8 rounded-full border border-amber-400/60 flex items-center justify-center text-amber-300 bg-amber-500/20 hover:bg-amber-500/40 ml-2 transition-all cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Menu Navigation Options -->
+            <div class="flex flex-col gap-2.5 mt-1">
+                <!-- Edit Profile Mobile Option -->
+                <button id="mobile-edit-profile-btn"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 transition-all cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">✏️</span>
+                        <span class="font-medium text-amber-200">Edit Profile</span>
+                    </div>
+                    <span
+                        class="text-xs font-sans not-italic text-amber-400/90 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-500/30">Photo
+                        & Name</span>
+                </button>
+                <!-- Quick Mode Option -->
+                <a href="private_room.html?mode=quick"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-transparent hover:from-amber-500/30 transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">⚡</span>
+                        <span class="font-medium text-amber-200">Quick Match</span>
+                    </div>
+                    <span
+                        class="text-xs font-sans not-italic text-amber-400/90 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-500/30">Auto
+                        Join</span>
+                </a>
+
+                <!-- Create Private Room Option -->
+                <a href="private_room.html?mode=private"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white border border-white/20 bg-white/[0.03] hover:bg-white/[0.08] transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🔒</span>
+                        <span>Create Private Room</span>
+                    </div>
+                    <span class="text-xs font-sans not-italic text-white/60">Host</span>
+                </a>
+
+                <!-- Power Store Option -->
+                <button id="mobile-power-store-btn"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">⚡</span>
+                        <span class="font-medium text-cyan-300">Power Store</span>
+                    </div>
+                    <span
+                        class="text-xs font-sans not-italic text-cyan-400/90 bg-cyan-500/20 px-2.5 py-0.5 rounded-full border border-cyan-500/30">Shop</span>
+                </button>
+
+                <!-- Mini Games Mobile Option -->
+                <a href="/Mini_Games/pages/index.html" id="mobile-mini-games-btn"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white border border-cyan-500/40 bg-cyan-500/10 hover:bg-cyan-500/20 transition-all cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🕹️</span>
+                        <span class="font-medium text-cyan-300">Mini Games</span>
+                    </div>
+                    <span
+                        class="text-xs font-sans not-italic text-cyan-400/90 bg-cyan-500/20 px-2.5 py-0.5 rounded-full border border-cyan-500/30">Arcade</span>
+                </a>
+
+                <!-- Daily Rewards Option -->
+                <button id="mobile-daily-reward-btn"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 transition-all cursor-pointer">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">🎁</span>
+                        <span class="font-medium text-amber-300">Daily Rewards</span>
+                    </div>
+                    <span
+                        class="text-xs font-sans not-italic text-amber-400/90 bg-amber-500/20 px-2.5 py-0.5 rounded-full border border-amber-500/30">Free
+                        Rewards</span>
+                </button>
+
+                <!-- Leaderboard Option -->
+                <button id="mobile-leaderboard-btn"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white border border-white/15 bg-white/[0.02] hover:bg-white/[0.06] transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg text-amber-400">👑</span>
+                        <span>Leaderboard</span>
+                    </div>
+                    <span class="text-xs font-sans not-italic text-white/40">Rankings</span>
+                </button>
+
+                <!-- Help & Rules Option -->
+                <button id="mobile-help-btn"
+                    class="glass-pill w-full flex items-center justify-between px-5 py-3 rounded-2xl text-sm font-serif italic text-white/80 border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="text-lg">❓</span>
+                        <span>Help & Rules</span>
+                    </div>
+                    <span class="text-xs font-sans not-italic text-white/40">Guide</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             HERO CENTER CONTENT
+             ═══════════════════════════════════════ -->
+        <main class="relative z-10 flex flex-col items-center justify-center text-center px-4 my-auto">
+
+            <!-- Main Title: Auction. Correct. Dominate. -->
+            <h1 id="hero-heading"
+                class="font-cinzel text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)] animate-fade-in-up">
+                Auction. Correct. Dominate.
+            </h1>
+
+            <!-- Subtitle -->
+            <p id="hero-subtitle"
+                class="mt-3 max-w-3xl text-sm sm:text-base md:text-lg text-white/80 tracking-wide font-normal animate-fade-in-up delay-300">
+                A fast-paced multiplayer game where correct grammar buys you victory—and bad syntax costs you millions.
+            </p>
+
+            <!-- Let's Go Pill Button -->
+            <a href="#" id="cta-btn" class="mt-8 inline-flex items-center justify-center px-10 py-3 rounded-full
+                       glass-cta text-white font-serif italic text-lg font-medium tracking-wide
+                       border border-white/30 shadow-2xl shadow-black/80
+                       hover:scale-105 transition-all duration-300 animate-fade-in-up delay-500">
+                Let's Go
+            </a>
+        </main>
+
+        <!-- Bottom Spacing -->
+        <footer class="relative z-10 py-4"></footer>
+
+        <!-- ═══════════════════════════════════════
+             MODE SELECTION MODAL
+             ═══════════════════════════════════════ -->
+        <div id="mode-modal-backdrop" class="modal-backdrop hidden opacity-0">
+            <div id="mode-modal" class="modal-container">
+
+                <!-- Close Button (X) - Desktop Only -->
+                <button id="close-modal-btn" class="modal-close-btn" aria-label="Close modal">
+                    <svg class="w-6 h-6" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <!-- Mobile Drag Handle Bar -->
+                <div class="modal-drag-bar"></div>
+
+                <!-- Card 1: Quick Mode -->
+                <div class="modal-card">
+                    <h2 class="modal-title whitespace-nowrap">
+                        <span class="text-amber-400">⚡</span>
+                        <span class="whitespace-nowrap">Quick Mode</span>
+                    </h2>
+                    <p class="modal-subtitle">
+                        Jump straight into an active public room.
+                    </p>
+                    <a href="private_room.html?mode=quick"
+                        class="modal-action-btn inline-block text-center text-decoration-none">
+                        Let's Go
+                    </a>
+                </div>
+
+                <!-- Card 2: Private Room -->
+                <div class="modal-card">
+                    <h2 class="modal-title whitespace-nowrap">
+                        <span class="text-amber-400">🔒</span>
+                        <span class="whitespace-nowrap">Private Room</span>
+                    </h2>
+                    <p class="modal-subtitle">
+                        Host a room, set rules, and invite friends.
+                    </p>
+                    <a href="private_room.html?mode=private"
+                        class="modal-action-btn inline-block text-center text-decoration-none">
+                        Let's Go
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             EDIT PROFILE MODAL
+             ═══════════════════════════════════════ -->
+        <div id="profile-modal-backdrop"
+            class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-2 sm:p-4">
+            <div id="profile-modal"
+                class="relative w-full max-w-md max-h-[92vh] overflow-y-auto bg-slate-950/95 border border-amber-500/40 rounded-3xl p-4 sm:p-6 shadow-[0_0_50px_rgba(212,150,15,0.25)] flex flex-col gap-3.5 sm:gap-4 text-white transform scale-95 transition-all duration-300 custom-scrollbar">
+                <!-- Close Button -->
+                <button id="close-profile-modal-btn"
+                    class="absolute top-3 right-3 sm:top-4 sm:right-4 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer">
+                    ✕
+                </button>
+
+                <div class="text-center pt-1 sm:pt-0">
+                    <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-white tracking-wide">Edit Profile</h2>
+                    <p class="text-[11px] sm:text-xs font-serif italic text-white/70 mt-0.5">Customize your username and
+                        profile picture</p>
+                </div>
+
+                <!-- Current Profile Picture Display -->
+                <div class="flex flex-col items-center gap-1.5">
+                    <div id="avatar-picker-trigger" class="relative group cursor-pointer"
+                        title="Click to change profile picture">
+                        <img id="profile-preview-avatar" src="" alt="Profile Picture"
+                            class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-amber-400 shadow-xl group-hover:opacity-80 transition-all aspect-square" />
+                        <div
+                            class="absolute inset-0 rounded-full bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-xs font-sans text-amber-300 transition-all">
+                            <span class="text-base sm:text-lg">🖼️</span>
+                            <span class="text-[9px] sm:text-[10px] font-bold mt-0.5">Change Avatar</span>
+                        </div>
+                    </div>
+                    <span id="profile-preview-avatar-name"
+                        class="text-[11px] sm:text-xs font-sans font-semibold text-amber-300"></span>
+                </div>
+
+                <!-- Player Rank & XP Progression Box -->
+                <div
+                    class="bg-gradient-to-r from-amber-500/20 via-purple-500/10 to-amber-500/20 border border-amber-500/40 rounded-2xl p-3 sm:p-4 flex flex-col gap-2 sm:gap-2.5">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-0">
+                        <div class="flex items-center gap-2 sm:gap-2.5">
+                            <span id="profile-rank-badge" class="text-xl sm:text-2xl drop-shadow">🌱</span>
+                            <div class="flex flex-col">
+                                <span id="profile-rank-title"
+                                    class="font-cinzel text-xs sm:text-sm font-bold text-amber-300 tracking-wide">Grammar
+                                    Novice</span>
+                                <span id="profile-xp-text"
+                                    class="text-[11px] sm:text-xs font-mono font-semibold text-white/80">0 XP</span>
+                            </div>
+                        </div>
+                        <span id="profile-next-rank-tag"
+                            class="text-[10px] sm:text-[11px] font-sans font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border border-amber-500/30">
+                            250 XP to Sentence Scout
+                        </span>
+                    </div>
+
+                    <!-- XP Progress Bar -->
+                    <div
+                        class="w-full bg-black/50 h-2.5 sm:h-3 rounded-full overflow-hidden border border-white/20 p-0.5 relative">
+                        <div id="profile-xp-progress-bar"
+                            class="h-full bg-gradient-to-r from-amber-500 via-amber-300 to-emerald-400 rounded-full transition-all duration-500 w-0">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Username Input -->
+                <div class="flex flex-col gap-1">
+                    <div class="flex items-center justify-between">
+                        <label class="text-[11px] sm:text-xs font-serif italic text-white/80">Username</label>
+                        <span id="username-change-tag"
+                            class="text-[10px] sm:text-[11px] font-sans font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-500/30">Fee:
+                            $300</span>
+                    </div>
+                    <input type="text" id="edit-username-input" minlength="3" maxlength="20"
+                        placeholder="Enter new username..."
+                        class="w-full px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-white/40 text-xs sm:text-sm font-sans outline-none focus:border-amber-400 transition-all" />
+                </div>
+
+                <!-- Guest Account Upgrade Card (Visible for Guest Users) -->
+                <div id="guest-upgrade-card"
+                    class="hidden bg-gradient-to-r from-amber-500/20 via-purple-900/30 to-amber-500/20 border border-amber-400/50 rounded-2xl p-4 flex flex-col gap-3 shadow-[0_0_20px_rgba(251,191,36,0.15)]">
+                    <div class="flex items-center gap-2.5 border-b border-white/10 pb-2">
+                        <span class="text-2xl">✨</span>
+                        <div class="flex flex-col">
+                            <h3 class="font-cinzel text-xs sm:text-sm font-bold text-amber-300 tracking-wide">Create
+                                Permanent Account</h3>
+                            <p class="text-[10px] sm:text-[11px] font-serif italic text-white/80">Convert your guest
+                                session into a full account & keep all cash, XP & stats!</p>
+                        </div>
+                    </div>
+
+                    <form id="convert-guest-form" class="flex flex-col gap-2">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] sm:text-[11px] font-serif italic text-white/80">Desired
+                                Username</label>
+                            <input type="text" id="convert-username-input" required minlength="3" maxlength="20"
+                                placeholder="Choose your custom username..."
+                                class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-xs font-sans outline-none focus:border-amber-400 transition-all" />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] sm:text-[11px] font-serif italic text-white/80">Password</label>
+                            <input type="password" id="convert-password-input" required minlength="6"
+                                placeholder="At least 6 characters..."
+                                class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-xs font-sans outline-none focus:border-amber-400 transition-all" />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-[10px] sm:text-[11px] font-serif italic text-white/80">Confirm
+                                Password</label>
+                            <input type="password" id="convert-confirm-password-input" required minlength="6"
+                                placeholder="Re-enter password..."
+                                class="w-full px-3 py-2 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-xs font-sans outline-none focus:border-amber-400 transition-all" />
+                        </div>
+
+                        <p id="convert-guest-error" class="text-rose-400 text-xs hidden text-center font-sans mt-0.5">
+                        </p>
+
+                        <button type="submit" id="convert-guest-btn"
+                            class="w-full py-2.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold text-xs shadow-lg hover:scale-105 transition-all cursor-pointer mt-1">
+                            Create Account & Save All Data 🚀
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Career Performance Statistics Grid -->
+                <div class="bg-white/[0.04] border border-amber-500/30 rounded-2xl p-3 sm:p-4 flex flex-col gap-2.5">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
+                        <span class="text-[11px] sm:text-xs font-cinzel font-bold text-amber-300 tracking-wider">CAREER
+                            STATISTICS</span>
+                        <span class="text-[10px] sm:text-[11px] font-sans text-amber-400/80">Best Streak: 🔥 <strong
+                                id="val-best-streak" class="text-amber-300">0</strong></span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-center text-xs font-sans">
+                        <div
+                            class="bg-black/40 p-2 sm:p-2.5 rounded-xl border border-white/10 flex flex-col items-center">
+                            <span
+                                class="text-white/60 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Accuracy</span>
+                            <span id="profile-stat-accuracy"
+                                class="text-xs sm:text-sm font-bold text-emerald-400 mt-0.5">0%</span>
+                        </div>
+                        <div
+                            class="bg-black/40 p-2 sm:p-2.5 rounded-xl border border-white/10 flex flex-col items-center">
+                            <span
+                                class="text-white/60 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Auctions
+                                Won</span>
+                            <span id="profile-stat-auctions-won"
+                                class="text-xs sm:text-sm font-bold text-amber-300 mt-0.5">0</span>
+                        </div>
+                        <div
+                            class="bg-black/40 p-2 sm:p-2.5 rounded-xl border border-white/10 flex flex-col items-center">
+                            <span
+                                class="text-white/60 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Correction
+                                Accuracy</span>
+                            <span id="profile-stat-correction-accuracy"
+                                class="text-xs sm:text-sm font-bold text-cyan-400 mt-0.5">0%</span>
+                        </div>
+                        <div
+                            class="bg-black/40 p-2 sm:p-2.5 rounded-xl border border-white/10 flex flex-col items-center">
+                            <span
+                                class="text-white/60 text-[9px] sm:text-[10px] uppercase font-bold tracking-wider">Best
+                                Bid</span>
+                            <span id="profile-stat-best-bid"
+                                class="text-xs sm:text-sm font-bold text-purple-300 mt-0.5">$0</span>
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-1.5 sm:p-2 flex items-center justify-between px-2.5 sm:px-3">
+                        <span class="text-[11px] sm:text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                            <span>🔥</span> Current Win Streak
+                        </span>
+                        <span id="profile-stat-streak" class="text-xs sm:text-sm font-bold text-amber-400">0</span>
+                    </div>
+                </div>
+
+                <!-- Alert Message -->
+                <div id="profile-modal-alert" class="hidden text-xs font-sans text-center p-2 rounded-xl"></div>
+
+                <!-- Modal Actions -->
+                <div class="flex items-center gap-2.5 sm:gap-3 mt-0.5">
+                    <button id="cancel-profile-btn"
+                        class="w-1/2 py-2 sm:py-2.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:bg-white/10 text-xs sm:text-sm font-serif italic transition-all cursor-pointer">
+                        Cancel
+                    </button>
+                    <button id="save-profile-btn"
+                        class="w-1/2 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-300 text-slate-950 font-bold text-xs sm:text-sm shadow-lg hover:scale-105 transition-all cursor-pointer">
+                        Save Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             AVATAR SELECTION MODAL (12 PREBUILT AVATARS IN 3x4 / 4x3 GRID)
+             ═══════════════════════════════════════ -->
+        <div id="avatar-picker-modal-backdrop"
+            class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-2 sm:p-4">
+            <div id="avatar-picker-modal"
+                class="relative w-full max-w-xl max-h-[88vh] overflow-y-auto bg-slate-950/95 border border-amber-500/40 rounded-3xl p-4 sm:p-6 shadow-[0_0_50px_rgba(212,150,15,0.3)] flex flex-col gap-3 sm:gap-4 text-white transform scale-95 transition-all duration-300 custom-scrollbar">
+
+                <!-- Header -->
+                <div class="flex items-center justify-between border-b border-white/15 pb-2.5">
+                    <div>
+                        <h3 class="font-cinzel text-lg sm:text-2xl font-bold text-white tracking-wide">Select Avatar
+                        </h3>
+                        <p class="text-[11px] sm:text-xs font-serif italic text-white/70">Choose one of 12 official
+                            profile icons</p>
+                    </div>
+                    <button id="close-avatar-picker-btn"
+                        class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Grid Layout for 12 Avatars -->
+                <div id="avatar-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-3.5 my-1">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             CONFIRMATION MODAL (LOGOUT, KICK, ETC.)
+             ═══════════════════════════════════════ -->
+        <div id="confirm-modal-backdrop"
+            class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+            <div id="confirm-modal"
+                class="relative w-full max-w-sm bg-slate-950/95 border border-amber-500/40 rounded-3xl p-6 sm:p-7 shadow-[0_0_50px_rgba(212,150,15,0.25)] flex flex-col gap-5 text-white transform scale-95 transition-all duration-300 text-center">
+                <div id="confirm-modal-icon"
+                    class="w-12 h-12 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-2xl flex items-center justify-center mx-auto shadow-md">
+                    ⚠️
+                </div>
+                <div>
+                    <h3 id="confirm-modal-title" class="font-cinzel text-xl font-bold text-white tracking-wide">Confirm
+                        Action</h3>
+                    <p id="confirm-modal-text"
+                        class="text-xs sm:text-sm font-serif italic text-white/80 mt-1.5 leading-relaxed">Are you sure
+                        you want to proceed?</p>
+                </div>
+                <div class="flex items-center gap-3 mt-1">
+                    <button id="confirm-cancel-btn"
+                        class="w-1/2 py-2.5 rounded-full border border-white/20 text-white/80 hover:text-white hover:bg-white/10 text-xs font-serif italic transition-all cursor-pointer">
+                        Cancel
+                    </button>
+                    <button id="confirm-ok-btn"
+                        class="w-1/2 py-2.5 rounded-full bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg hover:scale-105 transition-all cursor-pointer">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════
+             LEADERBOARD MODAL (TOP 10 + YOUR RANK STICKY BOTTOM BAR)
+             ═══════════════════════════════════════ -->
+        <div id="leaderboard-modal-backdrop"
+            class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+            <div id="leaderboard-modal"
+                class="relative w-full max-w-lg max-h-[85vh] bg-slate-950/95 border border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_50px_rgba(212,150,15,0.25)] flex flex-col justify-between overflow-hidden text-white transform scale-95 transition-all duration-300">
+
+                <!-- Close Button -->
+                <button id="close-leaderboard-modal-btn"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer z-10">
+                    ✕
+                </button>
+
+                <!-- Header -->
+                <div class="text-center pb-3 border-b border-white/15 shrink-0">
+                    <h2
+                        class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide flex items-center justify-center gap-2">
+                        <span class="text-amber-400">👑</span> Top 10 Leaderboard
+                    </h2>
+                    <p class="text-xs font-serif italic text-white/70 mt-1">Real-time rankings compared by total cash
+                    </p>
+                </div>
+
+                <!-- Top 10 Scrollable List -->
+                <div id="leaderboard-list-container" class="flex-1 overflow-y-auto my-4 pr-1 flex flex-col gap-2.5">
+                    <div class="text-center text-white/50 text-sm py-8 font-serif italic animate-pulse">
+                        Loading rankings...
+                    </div>
+                </div>
+
+                <!-- STICKY BOTTOM BAR: YOUR RANK & STANDING -->
+                <div id="my-rank-sticky-bar"
+                    class="mt-2 shrink-0 bg-emerald-950/90 border-2 border-emerald-400/80 rounded-2xl p-3 shadow-[0_0_25px_rgba(52,211,153,0.3)] flex items-center justify-between gap-3 text-white transition-all">
+                    <div class="flex items-center gap-3">
+                        <span id="my-rank-badge"
+                            class="font-sans font-extrabold text-lg text-emerald-300 bg-emerald-500/20 border border-emerald-400/50 px-2.5 py-0.5 rounded-xl shadow-sm">
+                            #--
+                        </span>
+                        <img id="my-rank-avatar-img" src="https://api.dicebear.com/7.x/initials/svg?seed=GB" alt="You"
+                            class="w-9 h-9 rounded-full object-cover border border-emerald-400 shadow-md" />
+                        <div class="flex flex-col">
+                            <span id="my-rank-username"
+                                class="font-serif italic text-sm font-bold text-white">Loading...</span>
+                            <span
+                                class="text-[10px] font-sans text-emerald-300/80 uppercase font-semibold tracking-wider">Your
+                                Standing</span>
+                        </div>
+                    </div>
+                    <span id="my-rank-cash" class="font-mono text-base font-bold text-emerald-300">
+                        $10,000
+                    </span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════ INBOX MODAL ═══════════ -->
+        <div id="inbox-modal"
+            class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex-col items-center justify-center p-4">
+            <div
+                class="glass-card max-w-lg w-full max-h-[80vh] flex flex-col rounded-3xl border border-cyan-500/30 shadow-2xl animate-scale-in overflow-hidden">
+                <div class="flex items-center justify-between p-5 border-b border-white/10">
+                    <h2 class="font-cinzel text-lg font-bold text-cyan-300">📬 Inbox</h2>
+                    <div class="flex items-center gap-3">
+                        <button id="inbox-mark-all-btn"
+                            class="text-xs text-cyan-300 hover:text-cyan-200 cursor-pointer font-bold">Mark all
+                            read</button>
+                        <span class="text-white/20">|</span>
+                        <button id="inbox-clear-all-btn"
+                            class="text-xs text-rose-400 hover:text-rose-300 cursor-pointer font-bold flex items-center gap-1">
+                            🗑️ Clear all
+                        </button>
+                        <button id="inbox-close-btn"
+                            class="text-white/40 hover:text-white text-2xl cursor-pointer ml-1">&times;</button>
+                    </div>
+                </div>
+                <div id="inbox-list" class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div class="text-center text-white/40 text-sm py-8 animate-pulse">Loading messages...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ RANK UP CELEBRATION MODAL (GIF-LIKE CSS EMOJI ANIMATION) ═══════════ -->
+        <div id="rankup-modal-backdrop"
+            class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden opacity-0 transition-opacity duration-500 flex items-center justify-center p-4 overflow-hidden">
+
+            <!-- Rotating Sunburst Rays Backdrop -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
+                <div
+                    class="w-[800px] h-[800px] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.5)_0%,rgba(168,85,247,0.3)_40%,transparent_70%)] animate-spin-rays">
+                </div>
+            </div>
+
+            <div id="rankup-modal"
+                class="relative w-full max-w-md bg-gradient-to-b from-slate-950 via-purple-950/60 to-slate-950 border-2 border-amber-400/80 rounded-3xl p-7 text-center shadow-[0_0_100px_rgba(251,191,36,0.5)] flex flex-col items-center gap-5 text-white transform scale-90 transition-all duration-500 z-10 overflow-hidden">
+
+                <div class="relative mt-2">
+                    <div
+                        class="w-28 h-28 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-6xl shadow-[0_0_50px_rgba(251,191,36,0.8)] animate-badge-pulse">
+                        <span id="rankup-modal-badge">🏆</span>
+                    </div>
+                </div>
+
+                <div>
+                    <span
+                        class="text-xs font-sans font-bold text-amber-300 uppercase tracking-widest bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/40 shadow-md">
+                        ✨ NEW RANK UNLOCKED! ✨
+                    </span>
+                    <h2 id="rankup-modal-title"
+                        class="font-cinzel text-3xl font-bold text-amber-200 mt-3 tracking-wide shimmer-text">
+                        Grammar Judge
+                    </h2>
+                    <p id="rankup-modal-subtitle" class="text-xs font-serif italic text-white/90 mt-2 leading-relaxed">
+                        Congratulations! You earned a new rank title!
+                    </p>
+                </div>
+
+                <!-- Progression Detail -->
+                <div
+                    class="w-full bg-white/[0.04] border border-amber-500/30 rounded-2xl p-4 flex flex-col gap-2 shadow-inner">
+                    <div class="flex items-center justify-between text-xs font-sans">
+                        <span id="rankup-old-rank" class="text-white/60">Novice</span>
+                        <span class="text-amber-400 font-bold">➔</span>
+                        <span id="rankup-new-rank" class="text-amber-300 font-bold">Grammar Judge</span>
+                    </div>
+                    <div class="w-full bg-black/60 h-3 rounded-full overflow-hidden border border-white/15">
+                        <div id="rankup-progress-bar"
+                            class="h-full bg-gradient-to-r from-amber-400 via-purple-400 to-emerald-400 rounded-full w-full">
+                        </div>
+                    </div>
+                </div>
+
+                <button id="rankup-close-btn"
+                    class="w-full py-3.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 text-slate-950 font-bold text-sm shadow-2xl hover:scale-105 active:scale-95 transition-all cursor-pointer border border-amber-200">
+                    CONTINUE TO GAME 🏆
+                </button>
+            </div>
+        </div>
+
+        <!-- ═══════════ DAILY REWARDS MODAL ═══════════ -->
+        <div id="daily-reward-modal-backdrop"
+            class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+            <div id="daily-reward-modal"
+                class="relative w-full max-w-2xl max-h-[90vh] bg-slate-950/95 border border-amber-500/40 rounded-3xl p-5 sm:p-7 shadow-[0_0_60px_rgba(251,191,36,0.3)] flex flex-col justify-between overflow-y-auto custom-scrollbar text-white transform scale-95 transition-all duration-300">
+
+                <!-- Close Button -->
+                <button id="close-daily-reward-btn"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer z-10">
+                    ✕
+                </button>
+
+                <!-- Header -->
+                <div class="text-center pb-3 border-b border-white/15">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-sans font-bold mb-1 shadow-sm">
+                        <span>🔥</span> <span id="daily-streak-count">Daily Streak: 0 Days</span>
+                    </div>
+                    <h2
+                        class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide flex items-center justify-center gap-2">
+                        <span class="text-amber-400">🎁</span> DAILY REWARDS
+                    </h2>
+                    <p class="text-xs font-serif italic text-white/70 mt-1">Claim your Gold Tokens, XP & Power Cards
+                        every day!</p>
+                </div>
+
+                <!-- 7-Day Rewards Schedule Grid -->
+                <div id="daily-rewards-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Bottom Action Footer (Claim button / Countdown) -->
+                <div class="pt-3 border-t border-white/15 flex flex-col items-center gap-2 text-center">
+                    <div id="daily-reward-action-area" class="w-full">
+                        <button id="claim-daily-reward-btn"
+                            class="w-full py-3.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 text-slate-950 font-bold text-sm sm:text-base shadow-2xl hover:scale-102 active:scale-98 transition-all cursor-pointer border border-amber-200 flex items-center justify-center gap-2">
+                            <span>🎁</span> CLAIM TODAY'S REWARD
+                        </button>
+                    </div>
+                    <div id="daily-countdown-box"
+                        class="hidden text-xs font-sans text-amber-300/80 bg-amber-500/10 px-4 py-2 rounded-full border border-amber-500/30">
+                        ⏳ Next reward available in: <strong id="daily-countdown-timer"
+                            class="font-mono text-amber-300 font-bold">--:--:--</strong>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ═══════════ DAILY REWARD CELEBRATION MODAL ═══════════ -->
+        <div id="daily-celebration-backdrop"
+            class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+            <div id="daily-celebration-modal"
+                class="relative w-full max-w-sm bg-gradient-to-b from-slate-950 via-amber-950/60 to-slate-950 border-2 border-amber-400/80 rounded-3xl p-6 text-center shadow-[0_0_80px_rgba(251,191,36,0.6)] flex flex-col items-center gap-4 text-white transform scale-90 transition-all duration-300 z-10">
+
+                <div
+                    class="w-24 h-24 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-5xl shadow-[0_0_40px_rgba(251,191,36,0.8)] animate-bounce">
+                    <span id="daily-celebration-icon">💰</span>
+                </div>
+
+                <div>
+                    <span
+                        class="text-[11px] font-sans font-bold text-amber-300 uppercase tracking-widest bg-amber-500/20 px-3 py-0.5 rounded-full border border-amber-400/40">
+                        ✨ DAILY REWARD CLAIMED! ✨
+                    </span>
+                    <h3 id="daily-celebration-title"
+                        class="font-cinzel text-2xl font-bold text-amber-200 mt-2 tracking-wide">
+                        +25,000 Cash
+                    </h3>
+                    <p id="daily-celebration-subtitle" class="text-xs font-serif italic text-white/80 mt-1">
+                        Daily Streak: 1 Day 🔥
+                    </p>
+                </div>
+
+                <button id="daily-celebration-close-btn"
+                    class="w-full py-3 rounded-full bg-gradient-to-r from-amber-500 to-amber-300 text-slate-950 font-bold text-xs sm:text-sm shadow-xl hover:scale-105 transition-all cursor-pointer">
+                    AWESOME! 🎁
+                </button>
+            </div>
+        </div>
+
+        <!-- Auth Gate & Username Display -->
+        <script>
+            // Redirect to login if not authenticated
+            const token = localStorage.getItem('gb_token');
+            if (!token) {
+                window.location.href = 'login.html';
+            } else {
+                const username = localStorage.getItem('gb_username');
+                if (username) {
+                    const displayName = document.getElementById('user-display-name');
+                    if (displayName) displayName.textContent = `Hi, ${username}`;
+                }
+            }
+        </script>
+
+        <!-- Socket.io Online Presence -->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            (() => {
+                const uid = localStorage.getItem('gb_userId');
+                if (uid) {
+                    const s = io({ reconnection: true, reconnectionAttempts: 5, reconnectionDelay: 2000 });
+                    s.on('connect', () => s.emit('auth_online', { userId: uid }));
+                }
+            })();
+        </script>
+
+        <!-- ═══════════ POWER CARDS STORE MODAL ═══════════ -->
+        <div id="power-store-modal-backdrop"
+            class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+            <div id="power-store-modal"
+                class="relative w-full max-w-4xl max-h-[90vh] bg-slate-950/95 border border-cyan-500/40 rounded-3xl p-5 sm:p-7 shadow-[0_0_60px_rgba(6,182,212,0.3)] flex flex-col justify-between overflow-y-auto custom-scrollbar text-white transform scale-95 transition-all duration-300">
+
+                <!-- Close Button -->
+                <button id="close-power-store-btn"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer z-10">
+                    ✕
+                </button>
+
+                <!-- Header -->
+                <div class="text-center pb-3 border-b border-white/15">
+                    <div id="power-store-cash-display"
+                        class="inline-flex items-center gap-3 px-4 py-1.5 rounded-full bg-cyan-950/60 border border-cyan-400/40 text-xs font-sans font-bold mb-1.5 shadow-md">
+                        <!-- Populated via JS -->
+                    </div>
+                    <h2
+                        class="font-cinzel text-2xl sm:text-3xl font-bold text-white tracking-wide flex items-center justify-center gap-2">
+                        <span class="text-cyan-400">⚡</span> POWER STORE & EXCHANGE
+                    </h2>
+                    <p class="text-xs font-serif italic text-white/70 mt-1">Convert Cash into Gold Tokens & buy tactical
+                        power cards!</p>
+                </div>
+
+                <!-- ═══════════ MINIMALIST CASH TO GOLD TOKENS EXCHANGE ═══════════ -->
+                <div id="cash-exchange-card"
+                    class="my-4 bg-slate-900/90 border border-amber-500/30 rounded-2xl p-3.5 sm:p-5 flex flex-col gap-3.5 shadow-xl backdrop-blur-md">
+                    <!-- Top Row: Minimal Header & Dynamic Rank Badge -->
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-3">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div
+                                class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+                                💱
+                            </div>
+                            <div class="min-w-0">
+                                <h3 class="font-sans text-sm sm:text-base font-bold text-white tracking-tight truncate">
+                                    Cash ➔ Gold Tokens Exchange
+                                </h3>
+                                <p class="text-[11px] font-sans text-white/50 truncate">Higher ranks receive lower
+                                    exchange rates!</p>
+                            </div>
+                        </div>
+
+                        <!-- Rank Discount Tag -->
+                        <div id="exchange-rank-rate-tag"
+                            class="px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs font-sans font-semibold text-amber-300 flex items-center gap-1.5 self-start sm:self-auto max-w-full truncate shrink-0">
+                            <span id="exchange-rank-badge" class="shrink-0">🌱</span>
+                            <span id="exchange-rank-text" class="truncate">Grammar Novice ($1,000 / token)</span>
+                        </div>
+                    </div>
+
+                    <!-- Middle Row: Preset Pills + Custom Quantity Input -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <!-- Preset Quick Pills -->
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-xs font-sans text-white/60 mr-0.5 shrink-0">Qty:</span>
+                            <button type="button" onclick="window.powerCardsUI.setExchangeAmount(1)"
+                                class="exchange-pkg-btn px-2.5 py-1 rounded-xl text-xs font-sans font-semibold transition-all cursor-pointer bg-amber-500/20 border border-amber-500/50 text-amber-300"
+                                data-qty="1">+1</button>
+                            <button type="button" onclick="window.powerCardsUI.setExchangeAmount(5)"
+                                class="exchange-pkg-btn px-2.5 py-1 rounded-xl text-xs font-sans font-semibold transition-all cursor-pointer bg-white/5 border border-white/10 text-white/70 hover:bg-amber-500/10 hover:text-amber-300"
+                                data-qty="5">+5</button>
+                            <button type="button" onclick="window.powerCardsUI.setExchangeAmount(10)"
+                                class="exchange-pkg-btn px-2.5 py-1 rounded-xl text-xs font-sans font-semibold transition-all cursor-pointer bg-white/5 border border-white/10 text-white/70 hover:bg-amber-500/10 hover:text-amber-300"
+                                data-qty="10">+10</button>
+                            <button type="button" onclick="window.powerCardsUI.setExchangeAmount(25)"
+                                class="exchange-pkg-btn px-2.5 py-1 rounded-xl text-xs font-sans font-semibold transition-all cursor-pointer bg-white/5 border border-white/10 text-white/70 hover:bg-amber-500/10 hover:text-amber-300"
+                                data-qty="25">+25</button>
+                            <button type="button" onclick="window.powerCardsUI.setExchangeAmount(50)"
+                                class="exchange-pkg-btn px-2.5 py-1 rounded-xl text-xs font-sans font-semibold transition-all cursor-pointer bg-white/5 border border-white/10 text-white/70 hover:bg-amber-500/10 hover:text-amber-300"
+                                data-qty="50">+50</button>
+                            <button type="button" onclick="window.powerCardsUI.setExchangeAmount(100)"
+                                class="exchange-pkg-btn px-2.5 py-1 rounded-xl text-xs font-sans font-semibold transition-all cursor-pointer bg-white/5 border border-white/10 text-white/70 hover:bg-amber-500/10 hover:text-amber-300"
+                                data-qty="100">+100</button>
+                        </div>
+
+                        <!-- Custom Input -->
+                        <div
+                            class="flex items-center gap-1.5 bg-black/50 px-2.5 py-1 rounded-xl border border-white/15 shrink-0 self-stretch sm:self-auto justify-between sm:justify-start">
+                            <span class="text-xs font-sans text-white/60">Custom:</span>
+                            <input type="number" id="exchange-custom-qty" min="1" max="10000" placeholder="Qty"
+                                oninput="window.powerCardsUI.onCustomExchangeInput(this.value)"
+                                class="w-16 bg-transparent text-xs font-mono font-bold text-amber-300 outline-none text-center" />
+                            <span class="text-xs font-sans text-white/60">🪙</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Action Row: Summary + Exchange Button -->
+                    <div
+                        class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-white/10">
+                        <div
+                            class="flex items-center justify-between sm:justify-start gap-4 bg-black/30 sm:bg-transparent px-3 py-2 sm:p-0 rounded-xl">
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-[10px] font-sans font-medium uppercase tracking-wider text-white/40">Tokens
+                                    Receiving</span>
+                                <span id="exchange-tokens-summary"
+                                    class="font-mono text-sm sm:text-base font-bold text-amber-300 flex items-center gap-1">
+                                    🪙 <span id="exchange-tokens-num">1</span>
+                                </span>
+                            </div>
+                            <div class="h-6 w-px bg-white/15"></div>
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-[10px] font-sans font-medium uppercase tracking-wider text-white/40">Total
+                                    Cost</span>
+                                <span id="exchange-total-cost"
+                                    class="font-mono text-sm sm:text-base font-bold text-emerald-400">$1,000</span>
+                            </div>
+                        </div>
+
+                        <button id="execute-exchange-btn" onclick="window.powerCardsUI.executeCashExchange()"
+                            class="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-bold text-xs sm:text-sm shadow-lg hover:shadow-amber-500/20 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0">
+                            <span>💸</span>
+                            <span>Exchange Cash</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Power Cards Store Grid -->
+                <div id="power-cards-store-grid"
+                    class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4 my-3">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Footer Note -->
+                <div class="pt-3 border-t border-white/15 text-center text-xs font-serif italic text-white/60">
+                    ⚡ Power Cards are consumable and can be activated during live auction rounds.
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ POWER CARD INFO POPUP MODAL ═══════════ -->
+        <div id="card-info-modal-backdrop"
+            class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+            <div id="card-info-modal"
+                class="relative w-full max-w-sm bg-slate-950/95 border border-cyan-500/50 rounded-3xl p-5 shadow-[0_0_50px_rgba(6,182,212,0.4)] flex flex-col gap-4 text-white transform scale-95 transition-all duration-300">
+
+                <!-- Close Button -->
+                <button id="close-card-info-btn" onclick="window.powerCardsUI.closeCardInfoModal()"
+                    class="absolute top-3.5 right-3.5 w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white/80 hover:text-white hover:bg-white/20 transition-all cursor-pointer">
+                    ✕
+                </button>
+
+                <div class="flex items-center gap-3.5 border-b border-white/10 pb-3">
+                    <div id="card-info-icon-box"
+                        class="w-13 h-13 rounded-2xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-3xl shadow-inner shrink-0">
+                        💡
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                        <h3 id="card-info-title"
+                            class="font-cinzel text-lg font-bold text-white tracking-wide truncate">
+                            Double Hint
+                        </h3>
+                        <span id="card-info-phase"
+                            class="w-fit mt-0.5 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-sans font-bold uppercase tracking-wider border border-cyan-400/30">
+                            Inspection Phase
+                        </span>
+                    </div>
+                </div>
+
+                <p id="card-info-desc"
+                    class="text-xs sm:text-sm font-serif italic text-white/80 leading-relaxed bg-white/[0.03] p-3 rounded-2xl border border-white/10">
+                    Explains the grammar rule for the lot without revealing the answer directly.
+                </p>
+
+                <div class="flex items-center justify-between pt-1">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] font-sans text-white/50 uppercase tracking-wider">Token Cost</span>
+                        <span id="card-info-cost" class="font-mono text-sm font-bold text-amber-300">🪙 5 Tokens</span>
+                    </div>
+                    <div class="flex flex-col text-right">
+                        <span class="text-[10px] font-sans text-white/50 uppercase tracking-wider">Owned</span>
+                        <span id="card-info-owned" class="font-mono text-sm font-bold text-cyan-300">x0</span>
+                    </div>
+                </div>
+
+                <button id="card-info-buy-btn" onclick=""
+                    class="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-slate-950 font-sans font-extrabold text-xs sm:text-sm shadow-xl transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                    <span>🛒</span> BUY THIS CARD
+                </button>
+            </div>
+        </div>
+
+        <!-- Guest Post-Match Sign Up Gate Modal -->
+        <div id="guest-signup-gate-modal"
+            class="fixed inset-0 z-[99995] bg-black/85 backdrop-blur-2xl flex items-center justify-center p-4 hidden">
+            <div
+                class="relative w-full max-w-md bg-slate-950/95 border border-amber-400/60 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(251,191,36,0.3)] flex flex-col gap-5 text-white">
+                <div class="text-center flex flex-col items-center gap-2">
+                    <span class="text-4xl animate-bounce">🏆</span>
+                    <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-amber-300 tracking-wide">
+                        Want to Play More Matches?
+                    </h2>
+                    <p class="text-xs sm:text-sm font-serif italic text-white/80 leading-relaxed">
+                        You've completed your initial match! Sign up for a free account to save your cash, unlock ranks,
+                        and play unlimited games.
+                    </p>
+                </div>
+
+                <form id="gate-signup-form" class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-serif italic text-white/80">Choose Username</label>
+                        <input type="text" id="gate-username-input" required minlength="3" maxlength="20"
+                            placeholder="Enter custom username..."
+                            class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-xs sm:text-sm font-sans outline-none focus:border-amber-400 transition-all" />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-serif italic text-white/80">Password</label>
+                        <input type="password" id="gate-password-input" required minlength="6"
+                            placeholder="At least 6 characters..."
+                            class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-xs sm:text-sm font-sans outline-none focus:border-amber-400 transition-all" />
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-serif italic text-white/80">Confirm Password</label>
+                        <input type="password" id="gate-confirm-password-input" required minlength="6"
+                            placeholder="Re-enter password..."
+                            class="w-full px-4 py-2.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 text-xs sm:text-sm font-sans outline-none focus:border-amber-400 transition-all" />
+                    </div>
+
+                    <div id="gate-signup-error" class="hidden text-xs text-rose-400 font-sans italic text-center"></div>
+
+                    <button type="submit" id="gate-signup-submit-btn"
+                        class="mt-2 w-full py-3 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-emerald-400 text-slate-950 font-bold text-sm shadow-[0_0_20px_rgba(251,191,36,0.4)] hover:scale-105 transition-all cursor-pointer">
+                        Create Account & Save All Data 🚀
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Mobile Menu & Modal Interactive Script -->
+        <script src="bgMusic.js"></script>
+        <script src="powerCardsUI.js"></script>
+        <script src="tutorialManager.js"></script>
+        <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pattern Sequence — Arcade Mini Game</title>
+    <!-- Local Stylesheets -->
+    <link rel="stylesheet" href="../../pages/styles/tailwind.css">
+    <link rel="stylesheet" href="../../pages/styles/style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="w-screen h-screen flex flex-col justify-between items-center p-4 bg-[#121620] overflow-hidden select-none">
+
+    <!-- Header Navigation -->
+    <header class="w-full max-w-xl flex items-center justify-between gap-3 shrink-0">
+        <a href="index.html"
+            class="px-3.5 py-1.5 rounded-xl bg-[#232936] border border-white/15 text-xs font-medium text-slate-300 hover:text-white hover:bg-[#2c3344] transition-all flex items-center gap-1.5 backdrop-blur-md">
+            ← Back to Deck
+        </a>
+        <div class="flex items-center gap-2.5">
+            <button onclick="openHelpModal()"
+                class="px-3.5 py-1.5 rounded-xl bg-[#232936] border border-white/15 text-slate-300 hover:text-white text-xs font-medium transition-all backdrop-blur-md">
+                How to Play
+            </button>
+            <span
+                class="px-3.5 py-1.5 rounded-xl bg-[#232936] border border-white/15 text-slate-300 text-xs font-mono font-medium backdrop-blur-md">
+                Tries: <span id="tries-display">5/5</span>
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-xl flex-1 min-h-0 flex flex-col items-center justify-between py-2 shrink-0">
+
+        <!-- Clean Title Bar with Reward Meter & Mode -->
+        <div class="w-full flex items-center justify-between gap-4 shrink-0 glass-card rounded-2xl px-4 py-3 relative">
+            <div>
+                <h1 class="text-base font-semibold text-white tracking-tight flex items-center gap-2">
+                    Pattern Sequence
+                    <span id="active-mode-badge"
+                        class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-cyan-950/80 text-cyan-300 border border-cyan-500/40">EASY</span>
+                </h1>
+                <p id="ai-status-text" class="text-xs text-slate-400">Find the missing number in the pattern.</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Reward Meter -->
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-400 block uppercase tracking-wider">Reward</span>
+                    <span id="cash-meter-text" class="text-sm font-bold font-mono text-cyan-300">$6,000</span>
+                </div>
+
+                <!-- Timer -->
+                <div class="text-right font-mono border-l border-white/10 pl-3">
+                    <span class="text-[10px] text-slate-500 block uppercase tracking-wider">Timer</span>
+                    <span id="timer-text" class="text-sm font-semibold text-cyan-400">3:00</span>
+                </div>
+            </div>
+
+            <!-- Penalty Floating Text Container -->
+            <div id="penalty-container" class="absolute top-2 right-28 pointer-events-none"></div>
+        </div>
+
+        <!-- Progress Tracker -->
+        <div class="w-full flex items-center justify-between text-xs font-mono text-slate-400 px-1 py-1 shrink-0">
+            <span>Puzzles Solved: <span id="progress-text" class="text-white font-bold">0/5</span></span>
+            <div class="w-36 h-1.5 rounded-full bg-slate-900 border border-white/10 overflow-hidden">
+                <div id="power-progress" class="h-full w-full rounded-full bg-cyan-400 transition-all duration-100">
+                </div>
+            </div>
+        </div>
+
+        <!-- Puzzle Main Board Card -->
+        <div
+            class="w-full flex-1 min-h-0 flex flex-col items-center justify-center p-4 my-1 glass-card rounded-2xl relative">
+
+            <!-- Sequence Display Grid -->
+            <div id="sequence-container" class="w-full flex flex-wrap items-center justify-center gap-2.5 my-auto py-6">
+                <!-- Sequence Boxes Injected Here -->
+            </div>
+
+            <!-- Choice Options Grid -->
+            <div id="options-container"
+                class="w-full grid grid-cols-2 gap-3 max-w-md mt-auto pt-4 border-t border-white/10">
+                <!-- 4 Option Buttons Injected Here -->
+            </div>
+
+            <!-- Pre-Game Overlay with Difficulty Selection -->
+            <div id="start-overlay"
+                class="absolute inset-0 bg-[#121620]/95 backdrop-blur-md rounded-2xl flex flex-col items-center justify-center p-5 text-center z-20 transition-all">
+                <h2 class="text-xl font-semibold text-white mb-1">Select Difficulty</h2>
+                <p class="text-xs text-slate-400 max-w-xs mb-5 leading-relaxed">
+                    Choose your pattern challenge level to play:
+                </p>
+
+                <!-- Difficulty Choice Buttons -->
+                <div class="w-full max-w-xs space-y-2.5 mb-2">
+                    <button onclick="selectDifficultyAndStart('EASY')"
+                        class="w-full p-3 rounded-xl bg-[#181d28] border border-slate-700 hover:border-cyan-400/60 hover:bg-[#1f2533] transition-all flex items-center justify-between text-left cursor-pointer group">
+                        <div>
+                            <div class="text-xs font-semibold text-white group-hover:text-cyan-300">EASY</div>
+                            <div class="text-[11px] text-slate-400">5 Easy Puzzles</div>
+                        </div>
+                        <span
+                            class="text-xs font-mono font-bold text-cyan-300 group-hover:scale-105 transition-transform">+$6,000
+                            Cash</span>
+                    </button>
+
+                    <button onclick="selectDifficultyAndStart('MEDIUM')"
+                        class="w-full p-3 rounded-xl bg-[#181d28] border border-slate-700 hover:border-cyan-400/60 hover:bg-[#1f2533] transition-all flex items-center justify-between text-left cursor-pointer group">
+                        <div>
+                            <div class="text-xs font-semibold text-slate-200 group-hover:text-cyan-300">MEDIUM</div>
+                            <div class="text-[11px] text-slate-400">2 Easy + 3 Medium Puzzles</div>
+                        </div>
+                        <span
+                            class="text-xs font-mono font-bold text-cyan-300 group-hover:scale-105 transition-transform">+5
+                            Gold Tokens</span>
+                    </button>
+
+                    <button onclick="selectDifficultyAndStart('HARD')"
+                        class="w-full p-3 rounded-xl bg-[#181d28] border border-slate-700 hover:border-cyan-400/60 hover:bg-[#1f2533] transition-all flex items-center justify-between text-left cursor-pointer group">
+                        <div>
+                            <div class="text-xs font-semibold text-slate-100 group-hover:text-cyan-300">HARD</div>
+                            <div class="text-[11px] text-slate-400">1 Easy + 1 Mid + 3 Hard Puzzles</div>
+                        </div>
+                        <span
+                            class="text-xs font-mono font-bold text-cyan-300 group-hover:scale-105 transition-transform">+10
+                            Gold Tokens</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="w-full flex items-center justify-between gap-3 shrink-0">
+            <button id="restart-btn" onclick="showStartOverlay()"
+                class="w-full py-2.5 rounded-xl bg-slate-900/80 border border-white/10 text-slate-300 hover:text-white text-xs font-medium transition-all cursor-pointer backdrop-blur-md">
+                Change Difficulty / Session
+            </button>
+        </div>
+
+        <!-- Warning Space -->
+        <div class="h-3 flex items-center justify-center shrink-0">
+            <p id="limit-warning" class="hidden text-[11px] text-rose-400 font-medium text-center">Daily limit of 5
+                tries reached.</p>
+        </div>
+    </main>
+
+    <!-- How to Play Modal -->
+    <div id="help-modal"
+        class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center p-4 z-40">
+        <div class="w-full max-w-sm glass-card rounded-2xl p-5 flex flex-col items-center gap-3">
+            <h2 class="text-base font-semibold text-white">How to Play</h2>
+
+            <div class="text-left text-xs text-slate-300 space-y-2.5 my-2">
+                <p>1. Select difficulty: <strong>Easy</strong> ($6,000 Cash), <strong>Medium</strong> (5 Gold Tokens),
+                    or <strong>Hard</strong> (10 Gold Tokens).</p>
+                <p>2. Figure out the pattern rule and tap the correct missing number.</p>
+                <p>3. In Easy Mode, time slowly decays cash (-$10/s) and wrong answers deduct <strong
+                        class="text-rose-400">-$400</strong>!</p>
+                <p>4. Solve all 5 rounds within 3 minutes to claim your rewards!</p>
+            </div>
+
+            <button onclick="closeHelpModal()"
+                class="w-full py-2.5 rounded-xl bg-slate-800 border border-white/10 hover:bg-slate-700 text-white font-medium text-xs transition-all cursor-pointer">
+                Got It
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Over / Victory Modal -->
+    <div id="result-modal"
+        class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center p-4 z-30 overflow-y-auto">
+        <div class="w-full max-w-md glass-card rounded-2xl p-5 my-auto flex flex-col items-center gap-3">
+            <h2 id="result-title" class="text-xl font-semibold text-white tracking-tight text-center">Sequence Solved
+            </h2>
+            <p id="result-subtitle" class="text-xs text-slate-400 text-center">All 5 pattern sequences completed
+                successfully.</p>
+
+            <!-- Reward Summary Card -->
+            <div class="w-full glass-card rounded-xl p-3 flex justify-between items-center text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-400">Status:</span>
+                    <span id="result-outcome-text" class="font-mono font-semibold text-slate-200">SUCCESS</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-slate-400">Reward:</span>
+                    <span id="result-cash-text" class="font-mono font-bold text-base text-cyan-300">+$6,000</span>
+                </div>
+            </div>
+
+            <!-- Round Solutions & Rules Breakdown Container -->
+            <div class="w-full text-left mt-2">
+                <h3
+                    class="text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2 flex items-center justify-between">
+                    <span>Round Solutions & Rules</span>
+                    <span id="modal-tries-left" class="text-[11px] font-mono text-slate-400 font-normal">Tries:
+                        4/5</span>
+                </h3>
+                <div id="solutions-breakdown-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <!-- 5 Round Breakdown Cards Injected Here -->
+                </div>
+            </div>
+
+            <div class="flex gap-2.5 w-full mt-2">
+                <button id="modal-play-again-btn" onclick="closeModalAndReset()"
+                    class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-white text-slate-950 font-semibold text-xs transition-all cursor-pointer">
+                    Play Again
+                </button>
+                <a href="index.html"
+                    class="flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-medium text-xs border border-white/10 transition-all flex items-center justify-center">
+                    Exit Deck
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-md text-center text-[11px] text-slate-600 shrink-0">
+        Pattern Sequence • Grammar Bid Arcade
+    </footer>
+
+    <!-- Game Engine Script -->
+    <script src="../javascript/arcadeMusic.js"></script>
+    <script src="../javascript/games.js"></script>
+    <script src="../javascript/pattern_sequence.js"></script>
+</body>
+
+</html>

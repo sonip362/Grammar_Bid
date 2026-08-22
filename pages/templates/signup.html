@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Bid — Sign Up</title>
+    <link rel="icon" type="image/webp" href="icon.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="tailwind.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="min-h-screen bg-slate-950 text-white relative overflow-x-hidden flex items-center justify-center"
+    style="background-image: url('hero.webp'); background-size: cover; background-position: center; background-attachment: fixed;">
+
+    <!-- Overlays -->
+    <div class="vignette-overlay fixed inset-0 z-0 pointer-events-none"></div>
+    <div class="grain-overlay fixed inset-0 z-0 pointer-events-none"></div>
+
+    <!-- Auth Card -->
+    <div class="relative z-10 w-full max-w-md mx-4">
+
+        <!-- Glass Container -->
+        <div
+            class="bg-slate-900/60 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 sm:p-10 shadow-2xl ring-1 ring-inset ring-white/10">
+
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="font-cinzel text-3xl sm:text-4xl font-bold text-white tracking-widest drop-shadow-md">
+                    Grammar Bid
+                </h1>
+                <p class="font-serif italic text-white/60 mt-2 text-lg tracking-wide">
+                    Create your account
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form id="signup-form" class="flex flex-col gap-5">
+
+                <!-- Username -->
+                <div class="flex flex-col gap-2">
+                    <label for="username"
+                        class="text-sm font-body text-white/70 font-medium tracking-wide">Username</label>
+                    <input type="text" id="username" name="username" required minlength="3" maxlength="20"
+                        placeholder="Enter a unique username"
+                        class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 font-body text-base focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-300 backdrop-blur-md" />
+                </div>
+
+                <!-- Password -->
+                <div class="flex flex-col gap-2">
+                    <label for="password"
+                        class="text-sm font-body text-white/70 font-medium tracking-wide">Password</label>
+                    <input type="password" id="password" name="password" required minlength="6"
+                        placeholder="At least 6 characters"
+                        class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 font-body text-base focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-300 backdrop-blur-md" />
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="flex flex-col gap-2">
+                    <label for="confirm-password"
+                        class="text-sm font-body text-white/70 font-medium tracking-wide">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required minlength="6"
+                        placeholder="Re-enter your password"
+                        class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 font-body text-base focus:outline-none focus:border-white/50 focus:bg-white/15 transition-all duration-300 backdrop-blur-md" />
+                </div>
+
+                <!-- Error Message -->
+                <p id="error-msg" class="text-rose-400 text-sm font-body hidden text-center"></p>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                    class="modal-action-btn !mt-2 w-full inline-flex items-center justify-center h-14 text-lg tracking-wide">
+                    Create Account
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative my-6 flex items-center justify-center">
+                <div class="border-t border-white/20 w-full"></div>
+                <span
+                    class="bg-slate-900/90 px-3 text-xs text-white/50 uppercase tracking-widest font-body absolute rounded-full border border-white/10">or</span>
+            </div>
+
+            <!-- Guest Button -->
+            <button id="guest-btn" type="button"
+                class="w-full py-3.5 px-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 text-white font-body text-base font-medium tracking-wide transition-all duration-300 flex items-center justify-center gap-2 backdrop-blur-md shadow-lg hover:scale-[1.02] active:scale-[0.98] cursor-pointer">
+                <span>👤</span> Continue as Guest
+            </button>
+
+            <!-- Login Link -->
+            <p class="text-center text-white/50 font-body text-sm mt-6">
+                Already have an account?
+                <a href="login.html"
+                    class="text-white/90 hover:text-white underline underline-offset-4 font-medium transition-colors">
+                    Log In
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <script src="bgMusic.js"></script>
+    <script>
+        // Redirect if already logged in
+        if (localStorage.getItem('gb_token')) {
+            window.location.href = 'index.html';
+        }
+
+        const form = document.getElementById('signup-form');
+        const errorMsg = document.getElementById('error-msg');
+        const guestBtn = document.getElementById('guest-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.classList.add('hidden');
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                errorMsg.textContent = 'Passwords do not match.';
+                errorMsg.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorMsg.textContent = data.error || 'Signup failed.';
+                    errorMsg.classList.remove('hidden');
+                    return;
+                }
+
+                localStorage.setItem('gb_token', data.token);
+                localStorage.setItem('gb_userId', data.userId);
+                localStorage.setItem('gb_username', data.user.username);
+                localStorage.setItem('gb_avatar', data.user.avatar || '');
+                localStorage.setItem('gb_cash', data.user.cash !== undefined ? data.user.cash : 10000);
+                if (data.user.isGuest) {
+                    localStorage.setItem('gb_isGuest', 'true');
+                } else {
+                    localStorage.removeItem('gb_isGuest');
+                }
+                window.location.href = 'index.html';
+            } catch (err) {
+                errorMsg.textContent = 'Network error. Please try again.';
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+        guestBtn.addEventListener('click', async () => {
+            errorMsg.classList.add('hidden');
+            guestBtn.disabled = true;
+            guestBtn.innerHTML = '<span>⏳</span> Entering as Guest...';
+
+            try {
+                const res = await fetch('/api/auth/guest', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorMsg.textContent = data.error || 'Guest signup failed.';
+                    errorMsg.classList.remove('hidden');
+                    guestBtn.disabled = false;
+                    guestBtn.innerHTML = '<span>👤</span> Continue as Guest';
+                    return;
+                }
+
+                localStorage.setItem('gb_token', data.token);
+                localStorage.setItem('gb_userId', data.userId);
+                localStorage.setItem('gb_username', data.user.username);
+                localStorage.setItem('gb_avatar', data.user.avatar || '');
+                localStorage.setItem('gb_cash', data.user.cash !== undefined ? data.user.cash : 10000);
+                localStorage.setItem('gb_isGuest', 'true');
+                window.location.href = 'index.html';
+            } catch (err) {
+                errorMsg.textContent = 'Network error. Please try again.';
+                errorMsg.classList.remove('hidden');
+                guestBtn.disabled = false;
+                guestBtn.innerHTML = '<span>👤</span> Continue as Guest';
+            }
+        });
+    </script>
+</body>
+
+</html>

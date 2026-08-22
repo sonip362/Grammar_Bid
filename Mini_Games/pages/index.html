@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Games — Arcade Deck</title>
+    <!-- Local Stylesheets -->
+    <link rel="stylesheet" href="../../pages/styles/tailwind.css">
+    <link rel="stylesheet" href="../../pages/styles/style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body
+    class="min-h-screen flex flex-col justify-between p-3 sm:p-8 bg-[#121620] text-slate-100 selection:bg-cyan-500 selection:text-black">
+
+    <!-- Header Section -->
+    <header class="max-w-4xl mx-auto w-full flex flex-col items-center text-center my-3 sm:my-6">
+        <div class="w-full flex items-center justify-between mb-4">
+            <a href="/"
+                class="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-2xl bg-[#232936] hover:bg-[#2c3344] border border-white/20 text-xs font-bold text-white transition-all flex items-center gap-2 shadow-lg group">
+                <span class="group-hover:-translate-x-0.5 transition-transform">🏠</span> <span
+                    class="hidden sm:inline">Back to</span> Home
+            </a>
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1c2230] border border-cyan-500/40 text-cyan-300 text-xs font-mono font-medium">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> ARCADE DECK
+            </div>
+        </div>
+
+        <h1 class="font-space text-2xl sm:text-5xl font-black text-white tracking-tight">
+            MINI GAMES
+        </h1>
+        <p class="text-xs sm:text-sm text-slate-400 mt-1">Play minimalist arcade challenges to earn Cash & Gold Tokens.
+        </p>
+    </header>
+
+    <!-- 4 Game Cards: Clean 2x2 Grid on Mobile & Desktop -->
+    <main class="max-w-4xl mx-auto w-full my-auto py-2 sm:py-4">
+        <div class="grid grid-cols-2 gap-3 sm:gap-6">
+
+            <!-- Card 1: Flappy Bird -->
+            <a href="flappy_bird.html"
+                class="light-grey-card rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 flex flex-col justify-between gap-3 sm:gap-5 shadow-xl hover:border-cyan-400/60 hover:scale-[1.02] transition-all duration-300 group cursor-pointer block">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                        <div
+                            class="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-[#181d28] border border-slate-600/60 flex items-center justify-center text-xl sm:text-3xl shrink-0 group-hover:border-cyan-400/60 transition-colors">
+                            🐤
+                        </div>
+                        <div class="min-w-0">
+                            <h2
+                                class="font-space text-sm sm:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors truncate">
+                                Flappy Bird
+                            </h2>
+                            <span class="hidden sm:block text-xs text-slate-400">Arcade Precision Runner</span>
+                        </div>
+                    </div>
+                    <span
+                        class="hidden sm:inline-flex px-3 py-1 rounded-full bg-[#181d28] border border-cyan-400/40 text-cyan-300 text-xs font-bold font-mono shrink-0">
+                        🪙 Gold Tokens
+                    </span>
+                </div>
+
+                <p class="hidden sm:block text-sm text-slate-300 leading-relaxed">
+                    Navigate pipe gaps with precise tap timing. Earn 1 Gold Token for every pipe obstacle passed.
+                </p>
+
+                <div
+                    class="pt-2.5 sm:pt-4 border-t border-slate-700/60 flex items-center justify-between text-[11px] sm:text-xs">
+                    <span class="text-slate-400 hidden sm:inline">Reward:</span>
+                    <strong class="text-cyan-300 font-mono font-bold w-full sm:w-auto text-center sm:text-left">+1 Token
+                        / Pipe 🪙</strong>
+                    <span class="hidden sm:inline text-slate-500 font-mono">GAME 01</span>
+                </div>
+            </a>
+
+            <!-- Card 2: Tic Tac Toe -->
+            <a href="tic_tac_toe.html"
+                class="light-grey-card rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 flex flex-col justify-between gap-3 sm:gap-5 shadow-xl hover:border-cyan-400/60 hover:scale-[1.02] transition-all duration-300 group cursor-pointer block">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                        <div
+                            class="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-[#181d28] border border-slate-600/60 flex items-center justify-center text-xl sm:text-3xl shrink-0 group-hover:border-cyan-400/60 transition-colors">
+                            ❌
+                        </div>
+                        <div class="min-w-0">
+                            <h2
+                                class="font-space text-sm sm:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors truncate">
+                                Tic Tac Toe
+                            </h2>
+                            <span class="hidden sm:block text-xs text-slate-400">3x3 Grid Strategy</span>
+                        </div>
+                    </div>
+                    <span
+                        class="hidden sm:inline-flex px-3 py-1 rounded-full bg-[#181d28] border border-cyan-400/40 text-cyan-300 text-xs font-bold font-mono shrink-0">
+                        🪙 Gold Tokens
+                    </span>
+                </div>
+
+                <p class="hidden sm:block text-sm text-slate-300 leading-relaxed">
+                    Outsmart the AI bot in a classic 3x3 grid battle. Win for 2 Gold Tokens or claim 1 Token for a draw.
+                </p>
+
+                <div
+                    class="pt-2.5 sm:pt-4 border-t border-slate-700/60 flex items-center justify-between text-[11px] sm:text-xs">
+                    <span class="text-slate-400 hidden sm:inline">Reward:</span>
+                    <strong class="text-cyan-300 font-mono font-bold w-full sm:w-auto text-center sm:text-left">Win 2🪙
+                        • Draw 1🪙</strong>
+                    <span class="hidden sm:inline text-slate-500 font-mono">GAME 02</span>
+                </div>
+            </a>
+
+            <!-- Card 3: Help the AI -->
+            <a href="help_ai.html"
+                class="light-grey-card rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 flex flex-col justify-between gap-3 sm:gap-5 shadow-xl hover:border-cyan-400/60 hover:scale-[1.02] transition-all duration-300 group cursor-pointer block">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                        <div
+                            class="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-[#181d28] border border-slate-600/60 flex items-center justify-center text-xl sm:text-3xl shrink-0 group-hover:border-cyan-400/60 transition-colors">
+                            🤖
+                        </div>
+                        <div class="min-w-0">
+                            <h2
+                                class="font-space text-sm sm:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors truncate">
+                                Help the AI
+                            </h2>
+                            <span class="hidden sm:block text-xs text-slate-400">Power Circuit Flow</span>
+                        </div>
+                    </div>
+                    <span
+                        class="hidden sm:inline-flex px-3 py-1 rounded-full bg-[#181d28] border border-cyan-400/40 text-cyan-300 text-xs font-bold font-mono shrink-0">
+                        🪙 Gold Tokens
+                    </span>
+                </div>
+
+                <p class="hidden sm:block text-sm text-slate-300 leading-relaxed">
+                    Connect color nodes across the circuit board without crossing lines within 20 seconds to earn
+                    tokens.
+                </p>
+
+                <div
+                    class="pt-2.5 sm:pt-4 border-t border-slate-700/60 flex items-center justify-between text-[11px] sm:text-xs">
+                    <span class="text-slate-400 hidden sm:inline">Reward:</span>
+                    <strong class="text-cyan-300 font-mono font-bold w-full sm:w-auto text-center sm:text-left">+3
+                        Tokens / Solve 🪙</strong>
+                    <span class="hidden sm:inline text-slate-500 font-mono">GAME 03</span>
+                </div>
+            </a>
+
+            <!-- Card 4: Pattern Sequence -->
+            <a href="pattern_sequence.html"
+                class="light-grey-card rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 flex flex-col justify-between gap-3 sm:gap-5 shadow-xl hover:border-cyan-400/60 hover:scale-[1.02] transition-all duration-300 group cursor-pointer block">
+                <div class="flex items-start justify-between gap-2">
+                    <div class="flex items-center gap-2.5 sm:gap-4 min-w-0">
+                        <div
+                            class="w-10 h-10 sm:w-13 sm:h-13 rounded-xl sm:rounded-2xl bg-[#181d28] border border-slate-600/60 flex items-center justify-center text-xl sm:text-3xl shrink-0 group-hover:border-cyan-400/60 transition-colors">
+                            🔢
+                        </div>
+                        <div class="min-w-0">
+                            <h2
+                                class="font-space text-sm sm:text-xl font-bold text-white group-hover:text-cyan-300 transition-colors truncate">
+                                Pattern Sequence
+                            </h2>
+                            <span class="hidden sm:block text-xs text-slate-400">Tiered Math Sequence</span>
+                        </div>
+                    </div>
+                    <span
+                        class="hidden sm:inline-flex px-3 py-1 rounded-full bg-[#181d28] border border-cyan-400/40 text-cyan-300 text-xs font-bold font-mono shrink-0">
+                        🪙 Gold Tokens
+                    </span>
+                </div>
+
+                <p class="hidden sm:block text-sm text-slate-300 leading-relaxed">
+                    Choose Easy, Medium, or Hard tier. Solve math sequences (Fibonacci, Primes, Koch, Catalan) for
+                    rewards.
+                </p>
+
+                <div
+                    class="pt-2.5 sm:pt-4 border-t border-slate-700/60 flex items-center justify-between text-[11px] sm:text-xs">
+                    <span class="text-slate-400 hidden sm:inline">Reward:</span>
+                    <strong class="text-cyan-300 font-mono font-bold w-full sm:w-auto text-center sm:text-left">$6K /
+                        5🪙 / 10🪙</strong>
+                    <span class="hidden sm:inline text-slate-500 font-mono">GAME 04</span>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-4xl mx-auto w-full text-center my-4 text-xs text-slate-500 font-mono">
+        Mini Games Arcade • Grammar Bid Economy
+    </footer>
+
+    <script src="../javascript/arcadeMusic.js"></script>
+    <script src="../javascript/games.js"></script>
+</body>
+
+</html>
