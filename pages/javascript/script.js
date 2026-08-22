@@ -213,6 +213,7 @@ const PREBUILT_AVATARS = [
     "Novice Quill.webp",
     "Typo Inspector.webp",
     "Owl.gif",
+    "proofreader.gif",
     "Diagram Draftsman.webp",
     "Golden Nib.webp",
     "Inkwell Scholar.webp",
@@ -229,6 +230,7 @@ const AVATAR_PRICES = {
     "Novice Quill.webp": 0,
     "Typo Inspector.webp": 0,
     "Owl.gif": 0,
+    "proofreader.gif": 0,
     "Diagram Draftsman.webp": 10000,
     "Golden Nib.webp": 15000,
     "Inkwell Scholar.webp": 25000,
@@ -247,6 +249,7 @@ function getAvatarDisplayName(url) {
         const decodedUrl = decodeURIComponent(url);
         const fileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
         if (fileName === 'Owl.gif') return '🦉 Wise Owl (GIF)';
+        if (fileName === 'proofreader.gif') return '📜 Proofreader (GIF)';
         return fileName.replace(/\.(webp|gif)$/i, '');
     } catch {
         return 'Profile Avatar';
@@ -265,6 +268,16 @@ function promptBuyAvatar(url, price, displayName) {
         showConfirmModal({
             title: `Exclusive Day 7 Reward 🎁`,
             message: `The Wise Owl animated GIF avatar cannot be purchased with cash! It is exclusive to the Daily Rewards system—complete your 7-day login streak to unlock it for free!`,
+            confirmText: 'Got It',
+            onConfirm: () => { }
+        });
+        return;
+    }
+
+    if (url.includes('proofreader.gif')) {
+        showConfirmModal({
+            title: `Exclusive Day 14 Reward 🎁`,
+            message: `The Proofreader animated GIF avatar cannot be purchased with cash! It is exclusive to the Daily Rewards system—complete your 14-day login streak to unlock it for free!`,
             confirmText: 'Got It',
             onConfirm: () => { }
         });
@@ -319,7 +332,7 @@ function promptBuyAvatar(url, price, displayName) {
     });
 }
 
-// Prebuilt 12 Avatar Selector Grid Logic (4x3 1:1 ratio items)
+// Prebuilt 14 Avatar Selector Grid Logic
 function renderAvatarGrid() {
     const grid = document.getElementById('avatar-grid');
     if (!grid) return;
@@ -345,9 +358,10 @@ function renderAvatarGrid() {
         const displayName = getAvatarDisplayName(url);
         const price = AVATAR_PRICES[fileName] !== undefined ? AVATAR_PRICES[fileName] : 25000;
         const isOwl = fileName === 'Owl.gif';
+        const isProofreader = fileName === 'proofreader.gif';
 
-        const isUnlocked = isOwl
-            ? unlockedList.some(u => u.includes('Owl.gif'))
+        const isUnlocked = (isOwl || isProofreader)
+            ? unlockedList.some(u => u.includes(fileName))
             : (price === 0 || unlockedList.some(u => u.includes(encodeURIComponent(fileName)) || u.includes(fileName)));
         const isSelected = selectedAvatarUrl === url || selectedAvatarUrl.includes(encodeURIComponent(fileName)) || selectedAvatarUrl.includes(fileName);
 
@@ -375,7 +389,7 @@ function renderAvatarGrid() {
                         <span class="absolute inset-0 flex items-center justify-center text-xl drop-shadow-md">🔒</span>
                     </div>
                     <span class="text-[10px] sm:text-[11px] font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-1.5 py-0.5 rounded-full text-center leading-tight">
-                        ${isOwl ? '🎁 Day 7' : `$${price.toLocaleString()}`}
+                        ${isOwl ? '🎁 Day 7' : (isProofreader ? '🎁 Day 14' : `$${price.toLocaleString()}`)}
                     </span>
                 </div>
             `;
@@ -1320,6 +1334,8 @@ fetchHomepageUnreadCount();
 
 // ─── DAILY REWARDS SYSTEM CLIENT LOGIC ─────────────────────────
 let dailyCountdownInterval = null;
+let currentDailySchedule = [];
+let currentDailyPage = 1;
 
 const dailyRewardBtn = document.getElementById('daily-reward-btn');
 const mobileDailyRewardBtn = document.getElementById('mobile-daily-reward-btn');
@@ -1332,6 +1348,9 @@ const dailyActionArea = document.getElementById('daily-reward-action-area');
 const dailyCountdownBox = document.getElementById('daily-countdown-box');
 const dailyCountdownTimer = document.getElementById('daily-countdown-timer');
 const dailyBadge = document.getElementById('daily-reward-badge');
+
+const dailyTabPage1 = document.getElementById('daily-tab-page1');
+const dailyTabPage2 = document.getElementById('daily-tab-page2');
 
 const celebrationBackdrop = document.getElementById('daily-celebration-backdrop');
 const celebrationTitle = document.getElementById('daily-celebration-title');
@@ -1363,12 +1382,30 @@ function updateDailyRewardBadge(status) {
     }
 }
 
-function renderDailyRewardsSchedule(schedule, currentDay, canClaim) {
-    if (!dailyRewardsGrid) return;
+function setDailyRewardPage(page) {
+    currentDailyPage = page;
+    if (dailyTabPage1 && dailyTabPage2) {
+        if (page === 1) {
+            dailyTabPage1.className = 'px-4 py-1.5 rounded-full text-xs font-sans font-bold transition-all cursor-pointer bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-md';
+            dailyTabPage2.className = 'px-4 py-1.5 rounded-full text-xs font-sans font-bold transition-all cursor-pointer bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white';
+        } else {
+            dailyTabPage2.className = 'px-4 py-1.5 rounded-full text-xs font-sans font-bold transition-all cursor-pointer bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-md';
+            dailyTabPage1.className = 'px-4 py-1.5 rounded-full text-xs font-sans font-bold transition-all cursor-pointer bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:text-white';
+        }
+    }
+    renderDailyRewardsSchedule();
+}
+
+function renderDailyRewardsSchedule() {
+    if (!dailyRewardsGrid || !currentDailySchedule || currentDailySchedule.length === 0) return;
     dailyRewardsGrid.innerHTML = '';
 
-    schedule.forEach(item => {
-        const isDay7 = item.day === 7;
+    const startDay = currentDailyPage === 1 ? 1 : 8;
+    const endDay = currentDailyPage === 1 ? 7 : 14;
+    const pageItems = currentDailySchedule.filter(item => item.day >= startDay && item.day <= endDay);
+
+    pageItems.forEach(item => {
+        const isGrandDay = item.day === 7 || item.day === 14;
         const card = document.createElement('div');
 
         let cardBg = 'bg-white/[0.03] border-white/10 text-white/50';
@@ -1378,15 +1415,15 @@ function renderDailyRewardsSchedule(schedule, currentDay, canClaim) {
             cardBg = 'bg-emerald-950/30 border-emerald-500/40 text-emerald-300';
             statusBadge = `<span class="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 flex items-center gap-1">✓ Claimed</span>`;
         } else if (item.state === 'available') {
-            cardBg = isDay7
+            cardBg = isGrandDay
                 ? 'bg-gradient-to-b from-amber-900/60 to-purple-900/60 border-2 border-amber-400 text-white shadow-[0_0_30px_rgba(251,191,36,0.5)] animate-pulse'
                 : 'bg-gradient-to-b from-amber-950/40 to-slate-900 border-2 border-amber-400/80 text-amber-200 shadow-[0_0_20px_rgba(251,191,36,0.3)] animate-pulse';
             statusBadge = `<span class="text-[10px] font-sans font-bold px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 shadow-md">READY 🎁</span>`;
-        } else if (isDay7) {
+        } else if (isGrandDay) {
             cardBg = 'bg-gradient-to-b from-purple-950/40 to-slate-900 border border-purple-500/30 text-purple-200';
         }
 
-        const colSpan = isDay7 ? 'col-span-2 sm:col-span-2' : 'col-span-1';
+        const colSpan = isGrandDay ? 'col-span-2 sm:col-span-2' : 'col-span-1';
 
         card.className = `${colSpan} ${cardBg} relative rounded-2xl p-3 flex flex-col items-center justify-between text-center transition-all duration-300 hover:scale-102`;
 
@@ -1400,7 +1437,7 @@ function renderDailyRewardsSchedule(schedule, currentDay, canClaim) {
                 ${item.icon || '🎁'}
             </div>
 
-            <div class="font-sans font-bold text-xs sm:text-sm tracking-wide ${isDay7 ? 'text-amber-300' : ''}">
+            <div class="font-sans font-bold text-xs sm:text-sm tracking-wide ${isGrandDay ? 'text-amber-300' : ''}">
                 ${item.label}
             </div>
             ${item.note ? `<div class="text-[10px] font-serif italic text-white/50 mt-0.5">${item.note}</div>` : ''}
@@ -1451,7 +1488,14 @@ async function openDailyRewardModal() {
         dailyStreakCount.textContent = `Daily Streak: ${status.dailyStreak} Day${status.dailyStreak === 1 ? '' : 's'}`;
     }
 
-    renderDailyRewardsSchedule(status.schedule, status.currentDay, status.canClaim);
+    currentDailySchedule = status.schedule || [];
+
+    // Default active page: if currentDay is 8..14, select Page 2; else Page 1
+    if (status.currentDay > 7) {
+        setDailyRewardPage(2);
+    } else {
+        setDailyRewardPage(1);
+    }
 
     if (status.canClaim) {
         if (dailyActionArea) dailyActionArea.classList.remove('hidden');
@@ -1562,6 +1606,9 @@ if (mobileDailyRewardBtn) {
 if (closeDailyModalBtn) closeDailyModalBtn.addEventListener('click', closeDailyRewardModal);
 if (claimDailyBtn) claimDailyBtn.addEventListener('click', handleClaimDailyReward);
 if (celebrationCloseBtn) celebrationCloseBtn.addEventListener('click', closeCelebrationModal);
+
+if (dailyTabPage1) dailyTabPage1.addEventListener('click', () => setDailyRewardPage(1));
+if (dailyTabPage2) dailyTabPage2.addEventListener('click', () => setDailyRewardPage(2));
 
 if (dailyModalBackdrop) {
     dailyModalBackdrop.addEventListener('click', (e) => {

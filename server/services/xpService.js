@@ -100,19 +100,16 @@ async function awardXP({ userId, amount, type, matchId = null, roundId = null, d
         console.log(`⭐ [XP AWARD] [Reason: ${reasonText}] ${user.username} (${user._id}): +${xpAmount} XP (${xpBefore} ➔ ${xpAfter} XP) | Old Rank: "${oldRankObj.name}" | New Rank: "${newRankObj.name}" | Ranked Up: ${rankedUp}`);
 
         // Broadcast XP gain event for floating UI text animation (+25 XP)
-        if (io) {
+        if (io && roomCode) {
             const xpPayload = {
+                roomCode,
                 userId: user._id.toString(),
                 username: user.username,
                 amount: xpAmount,
                 type,
                 totalXP: xpAfter
             };
-            if (roomCode) {
-                io.to(roomCode).emit('xp_gained', xpPayload);
-            } else {
-                io.emit('xp_gained', xpPayload);
-            }
+            io.to(roomCode).emit('xp_gained', xpPayload);
         }
 
         if (rankedUp) {

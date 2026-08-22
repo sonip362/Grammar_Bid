@@ -301,6 +301,39 @@ if (sfxToggleBtn) {
     });
 }
 
+// ── Custom Glassmorphism Leave Match Modal ─────────────────────
+const leaveMatchBtn = document.getElementById('leave-match-btn');
+const leaveModal = document.getElementById('leave-modal');
+const leaveCard = document.getElementById('leave-card');
+const leaveModalCancelBtn = document.getElementById('leave-modal-cancel-btn');
+const leaveModalConfirmBtn = document.getElementById('leave-modal-confirm-btn');
+
+if (leaveMatchBtn && leaveModal && leaveCard) {
+    leaveMatchBtn.addEventListener('click', () => {
+        showOverlay(leaveModal, leaveCard);
+    });
+
+    if (leaveModalCancelBtn) {
+        leaveModalCancelBtn.addEventListener('click', () => {
+            hideOverlay(leaveModal, leaveCard);
+        });
+    }
+
+    if (leaveModalConfirmBtn) {
+        leaveModalConfirmBtn.addEventListener('click', () => {
+            socket.emit('leave_room', { roomCode, userId });
+            window.location.href = 'index.html';
+        });
+    }
+
+    // Close on backdrop click
+    leaveModal.addEventListener('click', (e) => {
+        if (e.target === leaveModal) {
+            hideOverlay(leaveModal, leaveCard);
+        }
+    });
+}
+
 // ── Game State ─────────────────────────────────────────────────
 let currentPhase = 'waiting';
 let myCash = parseInt(localStorage.getItem('gb_cash') || '10000');
@@ -448,6 +481,13 @@ function renderRankings(playerList) {
     }).join('');
 }
 
+// Auto-refresh Live Rankings UI every 5 seconds
+setInterval(() => {
+    if (players && players.length > 0) {
+        renderRankings(players);
+    }
+}, 5000);
+
 function updateMyPlayerCash(playerList) {
     const me = playerList.find(p => p.userId === userId);
     if (me) {
@@ -530,6 +570,22 @@ socket.on('join_success', ({ room }) => {
 socket.on('join_error', ({ message }) => {
     showToast(message, '⚠️', 4000);
     setTimeout(() => { window.location.href = 'index.html'; }, 3000);
+});
+
+socket.on('player_left', ({ username }) => {
+    if (username) {
+        showToast(`${username} left the match`, '🚪', 3000);
+        players = players.filter(p => p.username !== username);
+        renderRankings(players);
+    }
+});
+
+socket.on('lobby_updated', ({ room }) => {
+    if (room && room.players) {
+        players = room.players;
+        renderRankings(players);
+        updateMyPlayerCash(players);
+    }
 });
 
 // ── Full Game State Sync (Handles Latency, Slow Page Load & Reconnects) ──
@@ -717,6 +773,21 @@ socket.on('timer_tick', ({ timer, phase }) => {
 
 // ── Bid Update ─────────────────────────────────────────────────
 socket.on('bid_update', (data) => {
+    // Reject bid updates intended for other rooms
+    if (data.roomCode && data.roomCode !== roomCode) {
+        console.warn(`[Security] Ignored cross-room bid update from room ${data.roomCode}`);
+        return;
+    }
+
+    // Validate bidder is a member of current room's player list
+    if (data.topBidder && data.topBidder.userId) {
+        const isMember = players.some(p => p.userId === data.topBidder.userId);
+        if (!isMember) {
+            console.warn(`[Security] Suppressed bid notification from unlisted player: ${data.topBidder.username}`);
+            return;
+        }
+    }
+
     currentHighestBid = data.highestBid;
     currentTopBidder = data.topBidder;
 
@@ -1277,7 +1348,10 @@ socket.on('display_reaction', ({ username, emote, socketId }) => {
 });
 
 // ── Floating XP Gain Animation (+25 XP / +50 XP) ───────────────
-socket.on('xp_gained', ({ userId: targetUserId, username, amount }) => {
+socket.on('xp_gained', ({ roomCode: eventRoomCode, userId: targetUserId, username, amount }) => {
+    if (eventRoomCode && eventRoomCode !== roomCode) return;
+    const isPlayerInRoom = players.some(p => p.userId === targetUserId);
+    if (!isPlayerInRoom) return;
     showFloatingXP(targetUserId, username, amount);
 });
 

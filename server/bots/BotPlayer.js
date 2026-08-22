@@ -77,6 +77,13 @@ class BotPlayer {
         return id;
     }
 
+    stopBidding() {
+        for (const timerId of this.activeTimers) {
+            clearTimeout(timerId);
+        }
+        this.activeTimers.clear();
+    }
+
     _randomDelay() {
         const [min, max] = this.profile.delayRange;
         return min + Math.random() * (max - min);
@@ -205,6 +212,9 @@ Rules:
     startBidding(room) {
         if (this.destroyed || room.status !== 'bidding') return;
 
+        // Clear any prior active bidding timers to prevent duplicate parallel loops
+        this.stopBidding();
+
         this.hasAttemptedAllInThisRound = false;
         const maxBid = Math.floor(this.playerData.cash * this.profile.maxBidPercent);
         botLog(`💰 [Bidding Start] ${this.profile.username} starting bidding loop (Cash: $${this.playerData.cash}, MaxBid: $${maxBid})`);
@@ -214,8 +224,18 @@ Rules:
         const tryBid = () => {
             if (this.destroyed || room.status !== 'bidding') return;
 
-            const currentHighest = room.highestBid || 0;
-            const isTopBidder = room.topBidder && room.topBidder.socketId === this.profile.botId;
+            // Verify live room and player membership before executing bid
+            const liveRoom = this.rooms ? this.rooms.get(this.roomCode) : null;
+            if (!liveRoom || liveRoom.status !== 'bidding') return;
+
+            const isBotInRoom = liveRoom.players.some(p => p.userId === this.profile.botId);
+            if (!isBotInRoom) {
+                this.destroy(); // Auto clean up ghost bot if not in room.players
+                return;
+            }
+
+            const currentHighest = liveRoom.highestBid || 0;
+            const isTopBidder = liveRoom.topBidder && liveRoom.topBidder.socketId === this.profile.botId;
 
             if (isTopBidder) {
                 this._setTimeout(tryBid, this._randomDelay());
@@ -243,9 +263,9 @@ Rules:
                 }
 
                 if (bidAmount > currentHighest && bidAmount > 0) {
-                    const previousTopBidder = room.topBidder;
-                    room.highestBid = bidAmount;
-                    room.topBidder = {
+                    const previousTopBidder = liveRoom.topBidder;
+                    liveRoom.highestBid = bidAmount;
+                    liveRoom.topBidder = {
                         socketId: this.profile.botId,
                         userId: this.profile.botId,
                         username: this.profile.username
@@ -253,21 +273,22 @@ Rules:
 
                     botLog(`🔨 [Bid Placed] 🤖 ${this.profile.username} bid $${bidAmount.toLocaleString()} in room ${this.roomCode}`);
 
-                    if (room.timer <= 3) {
+                    if (liveRoom.timer <= 3) {
                         const MAX_ANTI_SNIPE_TOTAL = 10;
-                        const currentExt = room.antiSnipeExtended || 0;
+                        const currentExt = liveRoom.antiSnipeExtended || 0;
                         if (currentExt < MAX_ANTI_SNIPE_TOTAL) {
                             const add = Math.min(2, MAX_ANTI_SNIPE_TOTAL - currentExt);
-                            room.timer += add;
-                            room.antiSnipeExtended = currentExt + add;
-                            botLog(`⏰ [Anti-Snipe] Extended timer by +${add}s (Total anti-snipe used: ${room.antiSnipeExtended}/${MAX_ANTI_SNIPE_TOTAL}s) in room ${this.roomCode}`);
+                            liveRoom.timer += add;
+                            liveRoom.antiSnipeExtended = currentExt + add;
+                            botLog(`⏰ [Anti-Snipe] Extended timer by +${add}s (Total anti-snipe used: ${liveRoom.antiSnipeExtended}/${MAX_ANTI_SNIPE_TOTAL}s) in room ${this.roomCode}`);
                         }
                     }
 
                     this.io.to(this.roomCode).emit('bid_update', {
-                        highestBid: room.highestBid,
-                        topBidder: room.topBidder,
-                        timer: room.timer
+                        roomCode: this.roomCode,
+                        highestBid: liveRoom.highestBid,
+                        topBidder: liveRoom.topBidder,
+                        timer: liveRoom.timer
                     });
 
                     if (isRareAllIn) {

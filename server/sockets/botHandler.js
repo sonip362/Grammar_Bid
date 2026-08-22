@@ -111,7 +111,10 @@ function registerBotHandlers(io, socket, rooms, socketRoomMap) {
 function onBiddingStart(room) {
     const bots = roomBots.get(room.code) || [];
     bots.forEach(bot => {
-        if (!bot.destroyed) bot.startBidding(room);
+        if (!bot.destroyed) {
+            bot.stopBidding();
+            bot.startBidding(room);
+        }
     });
 }
 
@@ -125,7 +128,10 @@ function onPlayerBid(room, bidder, amount) {
 function onRoundStart(room) {
     const bots = roomBots.get(room.code) || [];
     bots.forEach(bot => {
-        if (!bot.destroyed) bot.onRoundStart();
+        if (!bot.destroyed) {
+            bot.stopBidding();
+            bot.onRoundStart();
+        }
     });
 }
 
@@ -156,7 +162,10 @@ function onGameOver(room) {
         bot.onGameOver(isWinner);
 
         // Destroy after a brief delay to let final emotes/chat fire
-        setTimeout(() => bot.destroy(), 5000);
+        setTimeout(() => {
+            bot.stopBidding();
+            bot.destroy();
+        }, 5000);
     });
 
     // Cleanup map entry after delay
@@ -165,8 +174,14 @@ function onGameOver(room) {
 
 function destroyRoomBots(roomCode) {
     const bots = roomBots.get(roomCode) || [];
-    bots.forEach(bot => bot.destroy());
+    bots.forEach(bot => {
+        try {
+            bot.stopBidding();
+            bot.destroy();
+        } catch (e) { }
+    });
     roomBots.delete(roomCode);
+    console.log(`🧹 [Bot Cleanup] Destroyed all bot instances for room ${roomCode}`);
 }
 
 // ─── Helper: sanitize room including bot flag ─────────────────

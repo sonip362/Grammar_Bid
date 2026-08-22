@@ -462,6 +462,38 @@ app.delete('/api/inbox', authMiddleware, async (req, res) => {
     }
 });
 
+// ─── Player: Save Tutorial Completion ─────────────────────────
+app.post('/api/user/complete-tutorial', async (req, res) => {
+    try {
+        let userId = req.body.userId;
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const decoded = verifyToken(authHeader.split(' ')[1]);
+            if (decoded && decoded.userId) userId = decoded.userId;
+        }
+
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID required.' });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $set: { tutorialCompleted: true } },
+            { returnDocument: 'after' }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        console.log(`🎓 Tutorial marked complete in DB for user: ${updatedUser.username} (${updatedUser._id})`);
+        res.json({ success: true, message: 'Tutorial marked complete.' });
+    } catch (err) {
+        console.error('Save tutorial completion error:', err);
+        res.status(500).json({ error: 'Failed to save tutorial status.' });
+    }
+});
+
 // ─── Daily Rewards System Routes ──────────────────────────────
 app.get('/api/daily-reward/status', authMiddleware, async (req, res) => {
     try {
@@ -1583,8 +1615,8 @@ app.post('/api/auth/buy-avatar', authMiddleware, async (req, res) => {
         const decodedUrl = decodeURIComponent(avatarUrl);
         const fileName = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
 
-        if (fileName === 'Owl.gif') {
-            return res.status(403).json({ error: 'The Wise Owl animated avatar is exclusive and can only be unlocked via Day 7 Daily Rewards!' });
+        if (fileName === 'Owl.gif' || fileName === 'proofreader.gif') {
+            return res.status(403).json({ error: 'This animated GIF avatar is exclusive and can only be unlocked via Daily Rewards!' });
         }
 
         const price = AVATAR_PRICES[fileName] !== undefined ? AVATAR_PRICES[fileName] : 25000;
@@ -1758,6 +1790,7 @@ function scheduleRoomTimeout(roomCode) {
                 message: 'Room automatically cancelled after 10 minutes of inactivity.'
             });
             room.players.forEach(p => socketRoomMap.delete(p.socketId));
+            destroyRoomBots(roomCode);
             rooms.delete(roomCode);
         }
     }, ROOM_TIMEOUT_MS);
@@ -2049,7 +2082,8 @@ function resolveRound(roomCode) {
                         matchId,
                         roundId,
                         description: `Correctly evaluated auction lot ${room.currentRound}`,
-                        io
+                        io,
+                        roomCode: room.code
                     });
                     await awardXP({
                         userId: player.userId,
@@ -2058,7 +2092,8 @@ function resolveRound(roomCode) {
                         matchId,
                         roundId,
                         description: `Won auction lot ${room.currentRound}`,
-                        io
+                        io,
+                        roomCode: room.code
                     });
                 }
             } else {
@@ -2070,7 +2105,8 @@ function resolveRound(roomCode) {
                         matchId,
                         roundId,
                         description: `Correctly identified incorrect sentence lot ${room.currentRound}`,
-                        io
+                        io,
+                        roomCode: room.code
                     });
                 }
             }
@@ -2260,7 +2296,8 @@ async function nextRoundOrEnd(roomCode) {
                     type: 'MATCH_COMPLETE',
                     matchId,
                     description: `Completed match in room ${roomCode}`,
-                    io
+                    io,
+                    roomCode
                 });
 
                 // Check win streak milestone bonuses
@@ -2273,7 +2310,8 @@ async function nextRoundOrEnd(roomCode) {
                             type: 'STREAK_BONUS',
                             matchId,
                             description: '3-win streak milestone bonus!',
-                            io
+                            io,
+                            roomCode
                         });
                     } else if (u.stats.currentStreak === 5) {
                         await awardXP({
@@ -2282,7 +2320,8 @@ async function nextRoundOrEnd(roomCode) {
                             type: 'STREAK_BONUS',
                             matchId,
                             description: '5-win streak milestone bonus!',
-                            io
+                            io,
+                            roomCode
                         });
                     }
                 }
@@ -2337,6 +2376,7 @@ async function nextRoundOrEnd(roomCode) {
             const r = rooms.get(roomCode);
             if (r && r.status === 'game_over') {
                 r.players.forEach(p => socketRoomMap.delete(p.socketId));
+                destroyRoomBots(roomCode);
                 rooms.delete(roomCode);
                 console.log(`🗑️ Room ${roomCode} cleaned up after game over`);
             }
@@ -2363,6 +2403,19 @@ io.on('connection', (socket) => {
         if (userId) {
             socketUserMap.set(socket.id, userId);
             onlineUserIds.add(userId);
+        }
+    });
+
+    // Save tutorial completion status via socket
+    socket.on('tutorial_completed', async ({ userId }) => {
+        const targetUserId = userId || socketUserMap.get(socket.id);
+        if (targetUserId) {
+            try {
+                await User.findByIdAndUpdate(targetUserId, { $set: { tutorialCompleted: true } });
+                console.log(`🎓 Tutorial marked complete via socket for user: ${targetUserId}`);
+            } catch (e) {
+                console.error('Socket tutorial_completed error:', e);
+            }
         }
     });
 
@@ -2917,7 +2970,8 @@ io.on('connection', (socket) => {
                         matchId,
                         roundId,
                         description: xpDesc,
-                        io
+                        io,
+                        roomCode: cleanCode
                     });
                 }
             }).catch(err => console.error('Correction stat & XP update error:', err));
@@ -3060,6 +3114,62 @@ io.on('connection', (socket) => {
         }
     });
 
+    // ── LEAVE ROOM (EXPLICIT MATCH EXIT) ──────────────────────
+    socket.on('leave_room', ({ roomCode, userId }) => {
+        try {
+            const cleanCode = String(roomCode || '').replace(/[^0-9]/g, '').trim();
+            const room = rooms.get(cleanCode);
+            if (!room) return;
+
+            const player = room.players.find(p => p.socketId === socket.id || p.userId === userId);
+            if (!player) return;
+
+            // Cancel any disconnect grace timer for this user
+            const existingGrace = disconnectGraceTimers.get(player.userId);
+            if (existingGrace) {
+                clearTimeout(existingGrace.timeout);
+                disconnectGraceTimers.delete(player.userId);
+            }
+
+            // Remove player from room
+            room.players = room.players.filter(p => p.userId !== player.userId);
+            socketRoomMap.delete(socket.id);
+            socket.leave(cleanCode);
+
+            console.log(`🚪 ${player.username} explicitly left room ${cleanCode}`);
+
+            const remainingHumans = room.players.filter(p => !p.isBot && !p.disconnected);
+            if (remainingHumans.length === 0) {
+                const emptyTimer = roomTimeouts.get(cleanCode);
+                if (emptyTimer) {
+                    clearTimeout(emptyTimer);
+                    roomTimeouts.delete(cleanCode);
+                }
+                destroyRoomBots(cleanCode);
+                rooms.delete(cleanCode);
+                console.log(`🗑️ Room ${cleanCode} deleted (no human players remaining after ${player.username} left)`);
+            } else {
+                let newHostUsername = null;
+                const hasHost = room.players.some(p => p.isHost && !p.disconnected);
+                if (!hasHost && room.players.length > 0) {
+                    const nextHost = room.players.find(p => !p.disconnected) || room.players[0];
+                    if (nextHost) {
+                        nextHost.isHost = true;
+                        newHostUsername = nextHost.username;
+                    }
+                }
+                io.to(cleanCode).emit('player_left', {
+                    username: player.username,
+                    wasHost: player.isHost,
+                    newHostUsername
+                });
+                io.to(cleanCode).emit('lobby_updated', { room: sanitizeRoom(room) });
+            }
+        } catch (err) {
+            console.error('leave_room error:', err);
+        }
+    });
+
     // ── DISCONNECT ───────────────────────────────────────────
     socket.on('disconnect', () => {
         // Remove from online tracking
@@ -3111,7 +3221,8 @@ io.on('connection', (socket) => {
                 currentRoom.players = currentRoom.players.filter(p => p.userId !== leavingPlayer.userId);
                 console.log(`🚪 ${leavingUsername} grace period expired — removed from room ${roomCode} (${currentRoom.players.length} remaining)`);
 
-                if (currentRoom.players.length === 0) {
+                const remainingHumans = currentRoom.players.filter(p => !p.isBot && !p.disconnected);
+                if (remainingHumans.length === 0) {
                     const emptyTimer = roomTimeouts.get(roomCode);
                     if (emptyTimer) {
                         clearTimeout(emptyTimer);
@@ -3119,10 +3230,10 @@ io.on('connection', (socket) => {
                     }
                     destroyRoomBots(roomCode);
                     rooms.delete(roomCode);
-                    console.log(`🗑️  Room ${roomCode} deleted (empty after grace)`);
+                    console.log(`🗑️  Room ${roomCode} deleted (no human players remaining after grace)`);
                 } else {
                     let newHostUsername = null;
-                    const hasHost = currentRoom.players.some(p => p.isHost);
+                    const hasHost = currentRoom.players.some(p => p.isHost && !p.disconnected);
                     if (!hasHost && currentRoom.players.length > 0) {
                         currentRoom.players[0].isHost = true;
                         newHostUsername = currentRoom.players[0].username;
@@ -3149,7 +3260,8 @@ io.on('connection', (socket) => {
 
         console.log(`🚪 ${leavingUsername} left room ${roomCode} (${room.players.length} remaining)`);
 
-        if (room.players.length === 0) {
+        const remainingHumans = room.players.filter(p => !p.isBot && !p.disconnected);
+        if (remainingHumans.length === 0) {
             const emptyTimer = roomTimeouts.get(roomCode);
             if (emptyTimer) {
                 clearTimeout(emptyTimer);
@@ -3157,11 +3269,11 @@ io.on('connection', (socket) => {
             }
             destroyRoomBots(roomCode);
             rooms.delete(roomCode);
-            console.log(`🗑️  Room ${roomCode} deleted (empty)`);
+            console.log(`🗑️  Room ${roomCode} deleted (no human players remaining)`);
         } else {
             let newHostUsername = null;
             // Promote next player to host if the host left
-            const hasHost = room.players.some(p => p.isHost);
+            const hasHost = room.players.some(p => p.isHost && !p.disconnected);
             if (!hasHost && room.players.length > 0) {
                 room.players[0].isHost = true;
                 newHostUsername = room.players[0].username;

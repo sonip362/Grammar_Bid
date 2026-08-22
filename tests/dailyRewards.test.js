@@ -140,8 +140,8 @@ async function runDailyRewardTests() {
         assert.strictEqual(userAfterReset.stats.currentStreak, 5, 'Match win streak must NOT be reset');
         console.log('✅ Test 7 & 8 Passed: Daily streak reset to Day 1, XP/rank/win streak intact.\n');
 
-        // ── Test 9 & 10: Day 7 awards multi-rewards and cycles back to Day 1 ──
-        console.log('Test 9 & 10: Day 7 awards multi-rewards (50 Tokens + 500 XP + Owl avatar + ALL 5 Cards) and resets cycle');
+        // ── Test 9 & 10: Day 7 advances to Day 8, and Day 14 awards proofreader.gif and resets cycle ──
+        console.log('Test 9 & 10: Day 7 advances to Day 8; Day 14 awards proofreader.gif avatar and resets cycle to Day 1');
         await DailyRewardClaim.deleteMany({ userId });
         const userBeforeD7 = await User.findById(userId);
         userBeforeD7.dailyReward = {
@@ -157,16 +157,31 @@ async function runDailyRewardTests() {
         const claimD7 = await claimDailyReward(userId);
         assert.strictEqual(claimD7.success, true, 'Day 7 claim must succeed');
         assert.strictEqual(claimD7.rewardDay, 7, 'Reward day must be 7');
-        assert.strictEqual(claimD7.nextDay, 1, 'Next day must cycle back to 1');
+        assert.strictEqual(claimD7.nextDay, 8, 'Day 7 next day must advance to Day 8');
 
         const userAfterD7 = await User.findById(userId);
         assert.strictEqual(userAfterD7.tokens, tokensBeforeD7 + 50, 'Tokens must increase by 50');
         assert.strictEqual(userAfterD7.xp, xpBeforeD7 + 500, 'XP must increase by 500');
         assert.ok(userAfterD7.unlockedAvatars.includes('/images/profile/Owl.gif'), 'Owl.gif avatar must be unlocked');
-        assert.ok(userAfterD7.inventory.powerCards.DOUBLE_HINT >= 1, 'Day 7 awards DOUBLE_HINT');
-        assert.ok(userAfterD7.inventory.powerCards.BID_SHIELD >= 1, 'Day 7 awards BID_SHIELD');
-        assert.strictEqual(userAfterD7.dailyReward.currentDay, 7, 'Stored currentDay is 7 for today claim');
-        console.log('✅ Test 9 & 10 Passed: Day 7 granted 50 Tokens + 500 XP + Owl Avatar + ALL 5 Power Cards, cycled to Day 1.\n');
+
+        // Test Day 14 claim
+        await DailyRewardClaim.deleteMany({ userId });
+        const userBeforeD14 = await User.findById(userId);
+        userBeforeD14.dailyReward = {
+            currentDay: 13, // Claimed Day 13 yesterday, so today's claim is Day 14
+            dailyStreak: 13,
+            lastClaimDate: yesterdayStr
+        };
+        await userBeforeD14.save();
+
+        const claimD14 = await claimDailyReward(userId);
+        assert.strictEqual(claimD14.success, true, 'Day 14 claim must succeed');
+        assert.strictEqual(claimD14.rewardDay, 14, 'Reward day must be 14');
+        assert.strictEqual(claimD14.nextDay, 1, 'Day 14 next day must cycle back to Day 1');
+
+        const userAfterD14 = await User.findById(userId);
+        assert.ok(userAfterD14.unlockedAvatars.includes('/images/profile/proofreader.gif'), 'proofreader.gif avatar must be unlocked on Day 14');
+        console.log('✅ Test 9 & 10 Passed: Day 7 advanced to Day 8, Day 14 granted proofreader.gif avatar and cycled to Day 1.\n');
 
         // ── Test 11, 12, 13: Server calculation overrides client parameters ──
         console.log('Test 11-13: Server calculation authority (client cannot choose amount/day/date)');

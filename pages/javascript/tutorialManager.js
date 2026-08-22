@@ -212,7 +212,10 @@ const TutorialManager = (function () {
         tooltipCard.innerHTML = `
             <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span class="font-cinzel text-xs font-bold text-amber-300 tracking-wider">STEP ${step.id + 1} OF 6</span>
-                <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-sans font-bold uppercase tracking-wider">Guided Tour</span>
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-sans font-bold uppercase tracking-wider">Guided Tour</span>
+                    <button id="tutorial-skip-btn" class="px-2 py-0.5 rounded-md bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 text-[11px] font-sans font-bold transition-all cursor-pointer hover:scale-105 active:scale-95" title="Skip Tutorial">Skip ✕</button>
+                </div>
             </div>
             <h4 class="font-cinzel text-sm sm:text-base font-bold text-white tracking-wide">${step.title}</h4>
             <p class="font-serif italic text-xs sm:text-sm text-white/90 leading-relaxed">${step.body}</p>
@@ -223,6 +226,8 @@ const TutorialManager = (function () {
                 </button>
             ` : `<p class="text-[11px] font-sans font-semibold text-amber-300/90 text-center animate-pulse mt-0.5">Click the highlighted button to proceed ➔</p>`}
         `;
+
+        attachSkipListener();
 
         if (step.btnText) {
             const nextBtn = document.getElementById('tutorial-next-step-btn');
@@ -268,6 +273,7 @@ const TutorialManager = (function () {
         tooltipCard.innerHTML = `
             <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
                 <span class="font-cinzel text-xs font-bold text-amber-300 tracking-wider">STEP ${step.id + 1} OF 6</span>
+                <button id="tutorial-skip-btn" class="px-2 py-0.5 rounded-md bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 text-[11px] font-sans font-bold transition-all cursor-pointer hover:scale-105 active:scale-95" title="Skip Tutorial">Skip ✕</button>
             </div>
             <h4 class="font-cinzel text-sm font-bold text-white">${step.title}</h4>
             <p class="font-serif italic text-xs text-white/90 leading-relaxed">${step.body}</p>
@@ -277,6 +283,7 @@ const TutorialManager = (function () {
             </button>
         `;
 
+        attachSkipListener();
         document.getElementById('tutorial-fallback-btn').addEventListener('click', nextStep);
     }
 
@@ -340,7 +347,10 @@ const TutorialManager = (function () {
             tooltipCard.innerHTML = `
                 <div class="flex items-center justify-between border-b border-white/10 pb-2">
                     <span class="font-cinzel text-xs font-bold text-amber-300 tracking-wider">ARENA TUTORIAL (${idx + 1}/3)</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold">Game Rules</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 font-bold">Game Rules</span>
+                        <button id="tutorial-skip-btn" class="px-2 py-0.5 rounded-md bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 text-[11px] font-sans font-bold transition-all cursor-pointer hover:scale-105 active:scale-95" title="Skip Tutorial">Skip ✕</button>
+                    </div>
                 </div>
                 <h4 class="font-cinzel text-sm sm:text-base font-bold text-white mt-1">${sub.title}</h4>
                 <p class="font-serif italic text-xs sm:text-sm text-white/90 leading-relaxed">${sub.body}</p>
@@ -349,6 +359,8 @@ const TutorialManager = (function () {
                     ${sub.btnText}
                 </button>
             `;
+
+            attachSkipListener();
 
             document.getElementById('arena-substep-btn').addEventListener('click', () => {
                 if (idx < arenaSubSteps.length - 1) {
@@ -360,6 +372,16 @@ const TutorialManager = (function () {
         }
 
         showSubStep(0);
+    }
+
+    function attachSkipListener() {
+        const skipBtn = document.getElementById('tutorial-skip-btn');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                complete();
+            });
+        }
     }
 
     function nextStep() {
@@ -381,6 +403,32 @@ const TutorialManager = (function () {
 
         if (spotlightOverlay) spotlightOverlay.classList.add('hidden');
         if (tooltipCard) tooltipCard.classList.add('hidden');
+
+        saveTutorialCompletedToAccount();
+    }
+
+    function saveTutorialCompletedToAccount() {
+        try {
+            const userId = localStorage.getItem('gb_userId') || localStorage.getItem('userId');
+            const token = localStorage.getItem('gb_token') || localStorage.getItem('token');
+
+            if (userId || token) {
+                fetch('/api/user/complete-tutorial', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ userId })
+                }).catch(err => console.warn('Sync tutorial completed API error:', err));
+            }
+
+            if (window.socket && window.socket.connected) {
+                window.socket.emit('tutorial_completed', { userId });
+            }
+        } catch (e) {
+            console.warn('Sync tutorial completed state error:', e);
+        }
     }
 
     return {

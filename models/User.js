@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    tutorialCompleted: {
+        type: Boolean,
+        default: false
+    },
     avatar: {
         type: String,
         default: 'https://api.dicebear.com/7.x/initials/svg?seed=GB'

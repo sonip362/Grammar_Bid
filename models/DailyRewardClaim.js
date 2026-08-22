@@ -20,7 +20,7 @@ const dailyRewardClaimSchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 1,
-        max: 7
+        max: 14
     },
     rewardDate: {
         type: String,

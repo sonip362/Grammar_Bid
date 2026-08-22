@@ -926,6 +926,11 @@ Ensure "englishVariety" and "validationReasoning" are provided.`;
             return parsed;
 
         } catch (err) {
+            const isRateLimit = err.status === 429 || (err.message && (err.message.includes('429') || err.message.includes('rate_limit')));
+            if (isRateLimit) {
+                console.warn('⚠️ Groq Rate Limit (429) hit. Using pre-validated fallback questions.');
+                return chooseFallbackQuestion(shouldBeCorrect, disabledIds, disabledSentences, options);
+            }
             console.error(`⚠️ Generation attempt ${attempt}/${maxRetries} failed:`, err.message);
         }
     }

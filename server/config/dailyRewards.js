@@ -90,12 +90,90 @@ const DAILY_REWARDS = [
             { type: 'powerCard', cardId: 'CASHBACK', quantity: 1 },
             { type: 'powerCard', cardId: 'BID_SHIELD', quantity: 1 }
         ],
-        label: '50 Tokens + 500 XP + 🦉 Avatar + ALL 5 Cards!',
+        label: '50 Tokens + 500 XP + 🦉 Owl Avatar + ALL 5 Cards!',
         icon: '🎁'
+    },
+    {
+        day: 8,
+        type: 'multi',
+        rewards: [
+            { type: 'tokens', amount: 60 },
+            { type: 'xp', amount: 600 }
+        ],
+        label: '60 Gold Tokens + 600 XP',
+        icon: '✨'
+    },
+    {
+        day: 9,
+        type: 'multi',
+        rewards: [
+            { type: 'tokens', amount: 70 },
+            { type: 'powerCard', cardId: 'DOUBLE_HINT', quantity: 2 }
+        ],
+        label: '70 Tokens + 💡 Double Hint x2',
+        icon: '💡'
+    },
+    {
+        day: 10,
+        type: 'multi',
+        rewards: [
+            { type: 'tokens', amount: 80 },
+            { type: 'xp', amount: 750 },
+            { type: 'powerCard', cardId: 'BID_BOOST', quantity: 2 }
+        ],
+        label: '80 Tokens + 750 XP + ⚡ Bid Boost x2',
+        icon: '⚡'
+    },
+    {
+        day: 11,
+        type: 'multi',
+        rewards: [
+            { type: 'tokens', amount: 90 },
+            { type: 'powerCard', cardId: 'SECOND_CHANCE', quantity: 2 }
+        ],
+        label: '90 Tokens + 🔄 Second Chance x2',
+        icon: '🔄'
+    },
+    {
+        day: 12,
+        type: 'multi',
+        rewards: [
+            { type: 'tokens', amount: 100 },
+            { type: 'powerCard', cardId: 'CASHBACK', quantity: 2 },
+            { type: 'powerCard', cardId: 'BID_SHIELD', quantity: 2 }
+        ],
+        label: '100 Tokens + 💰 Cashback x2 + 🛡️ Shield x2',
+        icon: '🛡️'
+    },
+    {
+        day: 13,
+        type: 'multi',
+        rewards: [
+            { type: 'tokens', amount: 120 },
+            { type: 'xp', amount: 1000 }
+        ],
+        label: '120 Gold Tokens + 1000 XP',
+        icon: '👑'
+    },
+    {
+        day: 14,
+        type: 'multi',
+        rewards: [
+            { type: 'tokens', amount: 150 },
+            { type: 'xp', amount: 2000 },
+            { type: 'avatar', avatarUrl: '/images/profile/proofreader.gif' },
+            { type: 'powerCard', cardId: 'DOUBLE_HINT', quantity: 2 },
+            { type: 'powerCard', cardId: 'BID_BOOST', quantity: 2 },
+            { type: 'powerCard', cardId: 'SECOND_CHANCE', quantity: 2 },
+            { type: 'powerCard', cardId: 'CASHBACK', quantity: 2 },
+            { type: 'powerCard', cardId: 'BID_SHIELD', quantity: 2 }
+        ],
+        label: '150 Tokens + 2000 XP + 📜 Proofreader Avatar + ALL Cards x2!',
+        icon: '📜'
     }
 ];
 
-const TOTAL_DAYS = DAILY_REWARDS.length; // 7
+const TOTAL_DAYS = DAILY_REWARDS.length; // 14
 
 /**
  * Get today's UTC date string (YYYY-MM-DD).
