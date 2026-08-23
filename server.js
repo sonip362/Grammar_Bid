@@ -36,6 +36,7 @@ const { getDailyRewardStatus, claimDailyReward } = require('./server/services/da
 const { POWER_CARDS, getUserPowerCards, purchasePowerCard, exchangeCashForTokens, consumeAndApplyCard, clearRoundActiveCardEffects } = require('./server/services/powerCardService');
 const { generateSentence } = require('./data/generateSentence');
 const { registerBotHandlers, onBiddingStart, onPlayerBid, onRoundStart, onRoundResult, onCorrectionStart, onGameOver, destroyRoomBots } = require('./server/sockets/botHandler');
+const { VAPID_PUBLIC_KEY, saveSubscription, removeSubscription, sendPushToUser, sendPushToAll } = require('./server/services/pushService');
 
 // ─── App & Server Setup ──────────────────────────────────────
 const app = express();
@@ -70,6 +71,7 @@ app.use('/SFX', express.static(path.join(__dirname, 'assests/SFX')));
 app.use('/Mini_Games', express.static(path.join(__dirname, 'Mini_Games/pages')));
 app.use('/Mini_Games/pages', express.static(path.join(__dirname, 'Mini_Games/pages')));
 app.use('/Mini_Games/javascript', express.static(path.join(__dirname, 'Mini_Games/javascript')));
+app.use('/assets/icons', express.static(path.join(__dirname, 'assets/icons')));
 app.use(express.static(__dirname));
 
 // Route for root '/'
@@ -262,6 +264,13 @@ app.post('/api/admin/broadcast', adminMiddleware, async (req, res) => {
                 }
             });
 
+            // Push notification for targeted user
+            sendPushToUser(user._id.toString(), {
+                title: `📬 ${title.trim()}`,
+                body: body.trim(),
+                url: '/'
+            }).catch(() => { });
+
             return res.json({ success: true, recipientCount: 1, message: `Message sent to ${user.username}` });
         } else {
             // Target: all users
@@ -304,6 +313,13 @@ app.post('/api/admin/broadcast', adminMiddleware, async (req, res) => {
                 await InboxMessage.insertMany(inboxDocs);
             }
 
+            // Push notification broadcast to all users
+            sendPushToAll({
+                title: `📢 ${title.trim()}`,
+                body: body.trim(),
+                url: '/'
+            }).catch(() => { });
+
             return res.json({
                 success: true,
                 recipientCount: users.length,
@@ -313,6 +329,39 @@ app.post('/api/admin/broadcast', adminMiddleware, async (req, res) => {
     } catch (err) {
         console.error('Admin broadcast error:', err);
         res.status(500).json({ error: 'Failed to send broadcast.' });
+    }
+});
+
+// ─── Push Notification API Routes ─────────────────────────────
+app.get('/api/notifications/vapid-key', (req, res) => {
+    res.json({ publicKey: VAPID_PUBLIC_KEY || null });
+});
+
+app.post('/api/notifications/subscribe', authMiddleware, async (req, res) => {
+    try {
+        const { subscription } = req.body;
+        if (!subscription || !subscription.endpoint || !subscription.keys) {
+            return res.status(400).json({ error: 'Invalid subscription object.' });
+        }
+        const result = await saveSubscription(req.user._id.toString(), subscription);
+        if (!result.success) return res.status(500).json({ error: result.error });
+        res.json({ success: true, message: 'Push subscription saved.' });
+    } catch (err) {
+        console.error('Push subscribe error:', err);
+        res.status(500).json({ error: 'Failed to subscribe.' });
+    }
+});
+
+app.post('/api/notifications/unsubscribe', authMiddleware, async (req, res) => {
+    try {
+        const { endpoint } = req.body;
+        if (!endpoint) return res.status(400).json({ error: 'Endpoint required.' });
+        const result = await removeSubscription(req.user._id.toString(), endpoint);
+        if (!result.success) return res.status(500).json({ error: result.error });
+        res.json({ success: true, message: 'Push subscription removed.' });
+    } catch (err) {
+        console.error('Push unsubscribe error:', err);
+        res.status(500).json({ error: 'Failed to unsubscribe.' });
     }
 });
 

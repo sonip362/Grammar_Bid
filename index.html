@@ -9,24 +9,33 @@
     <link rel="manifest" href="/manifest.json" />
     <meta name="theme-color" content="#0f172a" />
 
+    <!-- Google Fonts — Playfair Display, Cinzel & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet" />
+
     <!-- Local Stylesheets -->
     <link rel="stylesheet" href="./pages/styles/tailwind.css" />
     <link rel="stylesheet" href="./pages/styles/style.css" />
 </head>
 
-<body>
+<body
+    class="bg-slate-950 font-body text-white min-h-screen flex items-center justify-center relative overflow-hidden select-none">
 
     <!-- Background hero image -->
     <img src="./hero.webp" alt="Background" class="bg-layer" onerror="this.style.display='none'" />
     <div class="vignette-overlay"></div>
     <div class="grain-overlay"></div>
 
-    <!-- Main Glass Container -->
+    <!-- Main Loading Screen Card -->
     <div class="launcher-glass-card">
 
         <!-- Logo Icon -->
         <div class="icon-box">
-            <svg class="w-9 h-9 text-amber-500" viewBox="0 0 63 63" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-10 h-10 text-amber-500 animate-pulse" viewBox="0 0 63 63" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M16.6509 39.934V42.1041C16.6509 42.7034 17.1025 43.1891 17.6596 43.1891H29.7639C30.321 43.1891 30.7726 42.7034 30.7726 42.1041V39.934C30.7726 39.3348 30.321 38.849 29.7639 38.849H17.6596C17.1025 38.849 16.6509 39.3348 16.6509 39.934Z"
                     stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
@@ -59,7 +68,7 @@
         </div>
 
         <!-- Title & Status -->
-        <div class="flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1 items-center">
             <h1 class="brand-title">Grammar Bid</h1>
             <p id="status-text" class="status-text">Waking up server...</p>
         </div>
@@ -69,18 +78,11 @@
             <div class="spinner"></div>
         </div>
 
-        <!-- Let's Play Button -->
-        <button id="play-btn" disabled class="play-btn lets-play-btn">
-            Connecting...
-        </button>
     </div>
 
     <script>
         const RENDER_URL = 'https://grammer-bid.onrender.com';
-        const spinnerBox = document.getElementById('spinner-box');
         const statusText = document.getElementById('status-text');
-        const playBtn = document.getElementById('play-btn');
-
         let isReady = false;
 
         async function ping() {
@@ -106,26 +108,22 @@
             if (isReady) return;
             isReady = true;
 
-            spinnerBox.style.display = 'none';
-            statusText.innerText = 'Server Ready!';
+            statusText.innerText = 'Connected! Entering game...';
             statusText.style.color = '#34d399';
             statusText.style.animation = 'none';
             statusText.style.fontWeight = '700';
 
-            playBtn.disabled = false;
-            playBtn.classList.add('active');
-            playBtn.innerText = "Let's Play";
-
-            playBtn.onclick = () => {
+            // Auto navigate into the application
+            setTimeout(() => {
                 window.location.href = RENDER_URL;
-            };
+            }, 300);
         }
 
         ping();
         const interval = setInterval(() => {
             if (isReady) clearInterval(interval);
             else ping();
-        }, 3000);
+        }, 2500);
     </script>
 </body>
 

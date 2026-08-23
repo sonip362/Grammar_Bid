@@ -26,8 +26,10 @@
     "groq-sdk": "^1.5.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.9.0",
+    "ngrok": "^5.0.0-beta.2",
     "socket.io": "^4.8.3",
     "tailwindcss": "^4.3.3",
+    "web-push": "^3.6.7",
     "write-good": "^1.0.8"
   },
   "devDependencies": {

@@ -672,10 +672,13 @@ canvas#circuit-canvas {
 }
 
 .brand-title {
-  font-size: 26px;
+  font-family: 'Playfair Display', 'Cinzel', Georgia, serif;
+  font-style: italic;
+  font-size: 28px;
   font-weight: 700;
   letter-spacing: 0.03em;
   color: #ffffff;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 255, 255, 0.2);
 }
 
 .status-text {
