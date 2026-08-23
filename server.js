@@ -174,7 +174,7 @@ app.post('/api/admin/verify', (req, res) => {
 
 app.get('/api/admin/users', adminMiddleware, async (req, res) => {
     try {
-        const users = await User.find({}, 'username avatar cash gamesPlayed gamesWon createdAt').sort({ createdAt: -1 }).lean();
+        const users = await User.find({}).select('-password').sort({ createdAt: -1 }).lean();
         res.json({ users, onlineUserIds: Array.from(onlineUserIds) });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch users.' });

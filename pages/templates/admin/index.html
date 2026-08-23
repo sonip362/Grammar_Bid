@@ -108,6 +108,45 @@
         </main>
     </div>
 
+    <!-- ═══════════ USER DETAILS FULL PROFILE MODAL ═══════════ -->
+    <div id="user-modal-backdrop"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div id="user-modal"
+            class="w-full max-w-2xl max-h-[90vh] bg-slate-900 border border-amber-500/40 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(212,150,15,0.3)] overflow-y-auto flex flex-col gap-6 text-white scale-95 transition-transform duration-300 relative">
+
+            <!-- Close Button -->
+            <button id="close-user-modal-btn"
+                class="absolute top-5 right-5 text-white/50 hover:text-white bg-white/5 hover:bg-white/15 p-2 rounded-full transition-all cursor-pointer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Modal Header -->
+            <div id="modal-user-header"
+                class="flex flex-col sm:flex-row items-center sm:items-start gap-4 border-b border-white/10 pb-5">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Modal Body Sections -->
+            <div id="modal-user-body" class="space-y-6">
+                <!-- Populated via JS -->
+            </div>
+
+            <!-- Modal Actions Footer -->
+            <div class="pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+                <button id="modal-delete-user-btn"
+                    class="px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 text-xs font-bold transition-all cursor-pointer flex items-center gap-2">
+                    <span>🗑️</span> Delete User Account
+                </button>
+                <button id="modal-close-footer-btn"
+                    class="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all cursor-pointer">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const ADMIN_SESSION_KEY = 'gb_admin_token';
         const lockScreen = document.getElementById('lock-screen');
@@ -120,7 +159,19 @@
         const totalCount = document.getElementById('total-count');
         const refreshBtn = document.getElementById('admin-refresh-btn');
 
+        // Modal Elements
+        const userModalBackdrop = document.getElementById('user-modal-backdrop');
+        const userModal = document.getElementById('user-modal');
+        const closeUserModalBtn = document.getElementById('close-user-modal-btn');
+        const modalCloseFooterBtn = document.getElementById('modal-close-footer-btn');
+        const modalDeleteUserBtn = document.getElementById('modal-delete-user-btn');
+        const modalUserHeader = document.getElementById('modal-user-header');
+        const modalUserBody = document.getElementById('modal-user-body');
+
         let adminToken = sessionStorage.getItem(ADMIN_SESSION_KEY);
+        let currentUsersMap = new Map();
+        let currentOnlineSet = new Set();
+        let activeModalUserId = null;
 
         if (adminToken) {
             showDashboard();
@@ -184,37 +235,42 @@
         }
 
         function formatCash(n) {
-            return '$' + Number(n).toLocaleString('en-US');
+            return '$' + Number(n || 0).toLocaleString('en-US');
         }
 
         function renderUsers(users, onlineIds) {
-            const online = new Set(onlineIds || []);
+            currentOnlineSet = new Set(onlineIds || []);
+            currentUsersMap.clear();
             let onlineN = 0;
 
             usersGrid.innerHTML = users.map(u => {
-                const isOn = online.has(u._id);
+                currentUsersMap.set(u._id, u);
+                const isOn = currentOnlineSet.has(u._id);
                 if (isOn) onlineN++;
 
                 const cleanUsername = String(u.username || '').replace(/'/g, "\\'");
 
                 return `
-                    <div class="flex items-center gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-white/25 transition-all">
+                    <div onclick="openUserModal('${u._id}')"
+                        class="flex items-center gap-3 p-4 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-amber-400/60 hover:bg-white/[0.07] transition-all cursor-pointer group">
                         <div class="relative shrink-0">
                             <img src="${u.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.username)}`}"
-                                class="w-12 h-12 rounded-full object-cover border-2 ${isOn ? 'border-emerald-400' : 'border-slate-600'}" />
+                                class="w-12 h-12 rounded-full object-cover border-2 ${isOn ? 'border-emerald-400' : 'border-slate-600'} group-hover:scale-105 transition-transform" />
                             <span class="absolute bottom-0 right-0 ${isOn ? 'dot-online' : 'dot-offline'} border-2 border-slate-950"></span>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p class="text-sm font-bold text-white truncate">${u.username}</p>
-                            <p class="text-[11px] text-white/50 mb-1">Games: ${u.gamesPlayed || 0} · Won: ${u.gamesWon || 0}</p>
-                            <button onclick="deleteUser('${u._id}', '${cleanUsername}')"
-                                class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1">
+                            <p class="text-sm font-bold text-white group-hover:text-amber-300 truncate transition-colors">${u.username}</p>
+                            <p class="text-[11px] text-white/50 mb-1">Rank: ${u.rank || 'Novice'} · Games: ${u.gamesPlayed || 0}</p>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] text-amber-300 font-mono">🔍 Click for full details</span>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                            <p class="font-mono text-sm font-bold ${(u.cash || 10000) >= 10000 ? 'text-emerald-300' : 'text-rose-400'}">${formatCash(u.cash !== undefined ? u.cash : 10000)}</p>
+                            <button onclick="event.stopPropagation(); deleteUser('${u._id}', '${cleanUsername}')"
+                                class="px-2 py-0.5 rounded bg-rose-500/20 hover:bg-rose-500/40 border border-rose-500/40 text-rose-300 text-[10px] font-bold transition-all cursor-pointer">
                                 🗑️ Delete
                             </button>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <p class="font-mono text-sm font-bold ${(u.cash || 10000) >= 10000 ? 'text-emerald-300' : 'text-rose-400'}">${formatCash(u.cash !== undefined ? u.cash : 10000)}</p>
-                            <p class="text-[10px] ${isOn ? 'text-emerald-400' : 'text-white/30'} font-bold uppercase">${isOn ? '● Online' : '○ Offline'}</p>
                         </div>
                     </div>
                 `;
@@ -223,6 +279,253 @@
             onlineCount.textContent = onlineN;
             totalCount.textContent = users.length;
         }
+
+        function openUserModal(userId) {
+            const u = currentUsersMap.get(userId);
+            if (!u) return;
+
+            activeModalUserId = userId;
+            const isOn = currentOnlineSet.has(u._id);
+
+            // Render Header
+            modalUserHeader.innerHTML = `
+                <div class="relative shrink-0">
+                    <img src="${u.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(u.username)}`}"
+                        class="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-amber-400 shadow-lg" />
+                    <span class="absolute bottom-1 right-1 ${isOn ? 'dot-online w-4 h-4' : 'dot-offline w-4 h-4'} border-2 border-slate-950"></span>
+                </div>
+                <div class="flex-1 text-center sm:text-left space-y-1.5">
+                    <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                        <h2 class="font-cinzel text-2xl font-bold text-amber-300">${u.username}</h2>
+                        ${isOn
+                    ? '<span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">● ONLINE</span>'
+                    : '<span class="px-2.5 py-0.5 rounded-full bg-slate-800 border border-white/10 text-white/40 text-[10px] font-bold">○ OFFLINE</span>'
+                }
+                    </div>
+                    <p class="font-mono text-[11px] text-white/40">ID: ${u._id}</p>
+                    <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap text-xs pt-1">
+                        <span class="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 font-bold">🏆 ${u.rank || 'Grammar Novice'}</span>
+                        <span class="px-2.5 py-0.5 rounded-full ${u.isGuest ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300'} font-bold">
+                            ${u.isGuest ? '👤 Guest Account' : '👑 Registered Member'}
+                        </span>
+                        <span class="px-2.5 py-0.5 rounded-full ${u.tutorialCompleted ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-rose-500/20 border-rose-500/40 text-rose-300'} font-bold">
+                            ${u.tutorialCompleted ? '✓ Tutorial Complete' : '⏳ Tutorial Pending'}
+                        </span>
+                    </div>
+                </div>
+            `;
+
+            // Calculate Stats & Accuracies
+            const stats = u.stats || {};
+            const totalCorr = stats.totalCorrectionsSubmitted || 0;
+            const correctCorr = stats.correctCorrectionsSubmitted || 0;
+            const corrAccPct = totalCorr > 0 ? ((correctCorr / totalCorr) * 100).toFixed(1) + '%' : 'N/A';
+
+            const gamesPlayed = u.gamesPlayed || 0;
+            const gamesWon = u.gamesWon || 0;
+            const winPct = gamesPlayed > 0 ? ((gamesWon / gamesPlayed) * 100).toFixed(1) + '%' : '0%';
+
+            const daily = u.dailyReward || {};
+            const inv = u.inventory || {};
+            const powerCards = inv.powerCards || {};
+
+            const miniGames = u.miniGames || {};
+            const unlockedAvatars = u.unlockedAvatars || [];
+
+            // Render Sections
+            modalUserBody.innerHTML = `
+                <!-- 1. Financials & Level Stats -->
+                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3">
+                    <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>💵</span> Financial & Level Status
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Cash Balance</span>
+                            <span class="font-mono text-sm font-bold text-emerald-300">${formatCash(u.cash)}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Total Cash Earned</span>
+                            <span class="font-mono text-sm font-bold text-amber-300">${formatCash(u.totalCashEarned)}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Gold Tokens</span>
+                            <span class="font-mono text-sm font-bold text-yellow-400">${u.tokens || 0} 🪙</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Total XP</span>
+                            <span class="font-mono text-sm font-bold text-purple-300">${u.xp || 0} XP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Gameplay & Career Statistics -->
+                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3">
+                    <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>📊</span> Gameplay & Career Performance
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Matches Played / Won</span>
+                            <span class="font-mono text-sm font-bold text-white">${gamesPlayed} / <span class="text-emerald-400">${gamesWon}</span></span>
+                            <span class="text-[10px] text-emerald-400/80 font-mono block">Win Rate: ${winPct}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Total Rounds Played</span>
+                            <span class="font-mono text-sm font-bold text-cyan-300">${stats.totalRoundsPlayed || 0}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Auctions Won</span>
+                            <span class="font-mono text-sm font-bold text-amber-300">${stats.auctionsWon || 0}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Highest Single Bid</span>
+                            <span class="font-mono text-sm font-bold text-emerald-300">${formatCash(stats.bestBid)}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Current / Best Streak</span>
+                            <span class="font-mono text-sm font-bold text-rose-400">${stats.currentStreak || 0} 🔥 <span class="text-white/40 font-normal">/ ${stats.bestStreak || 0} 🏆</span></span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Correction Accuracy</span>
+                            <span class="font-mono text-sm font-bold text-blue-300">${correctCorr} / ${totalCorr}</span>
+                            <span class="text-[10px] text-blue-400/80 font-mono block">Accuracy: ${corrAccPct}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Daily Reward & Streak Tracker -->
+                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3">
+                    <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>🎁</span> Daily Rewards Progress
+                    </h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Current Cycle Day</span>
+                            <span class="font-mono text-sm font-bold text-amber-300">Day ${daily.currentDay || 1}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Daily Streak</span>
+                            <span class="font-mono text-sm font-bold text-emerald-300">${daily.dailyStreak || 0} Days 🔥</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[10px] text-white/40 block">Last Claim Date</span>
+                            <span class="font-mono text-xs font-bold text-white/80">${daily.lastClaimDate || 'Never'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Power Cards & Inventory -->
+                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3">
+                    <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>⚡</span> Tactical Power Cards Inventory
+                    </h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        <div class="bg-slate-950/60 p-2 rounded-xl border border-white/5 text-center">
+                            <span class="text-lg block">💡</span>
+                            <span class="text-[10px] text-white/50 block">Double Hint</span>
+                            <span class="font-mono text-xs font-bold text-amber-300">${powerCards.DOUBLE_HINT || 0}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2 rounded-xl border border-white/5 text-center">
+                            <span class="text-lg block">⚡</span>
+                            <span class="text-[10px] text-white/50 block">Bid Boost</span>
+                            <span class="font-mono text-xs font-bold text-yellow-300">${powerCards.BID_BOOST || 0}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2 rounded-xl border border-white/5 text-center">
+                            <span class="text-lg block">🔄</span>
+                            <span class="text-[10px] text-white/50 block">Second Chance</span>
+                            <span class="font-mono text-xs font-bold text-purple-300">${powerCards.SECOND_CHANCE || 0}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2 rounded-xl border border-white/5 text-center">
+                            <span class="text-lg block">💰</span>
+                            <span class="text-[10px] text-white/50 block">Cashback</span>
+                            <span class="font-mono text-xs font-bold text-emerald-300">${powerCards.CASHBACK || 0}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2 rounded-xl border border-white/5 text-center">
+                            <span class="text-lg block">🛡️</span>
+                            <span class="text-[10px] text-white/50 block">Bid Shield</span>
+                            <span class="font-mono text-xs font-bold text-cyan-300">${powerCards.BID_SHIELD || 0}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Mini-Games Daily Activity -->
+                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3">
+                    <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>🎮</span> Arcade Mini-Games Activity
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[11px] font-bold text-cyan-300 block">Flappy Grammar</span>
+                            <span class="text-[10px] text-white/60 block">Today Attempts: ${miniGames.flappy?.attemptsToday || 0}</span>
+                            <span class="text-[10px] text-white/40 block">Last Played: ${miniGames.flappy?.lastPlayDate || 'Never'}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[11px] font-bold text-emerald-300 block">Tic-Tac-Toe</span>
+                            <span class="text-[10px] text-white/60 block">Today Attempts: ${miniGames.ticTacToe?.attemptsToday || 0}</span>
+                            <span class="text-[10px] text-white/40 block">Last Played: ${miniGames.ticTacToe?.lastPlayDate || 'Never'}</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-white/5">
+                            <span class="text-[11px] font-bold text-purple-300 block">Help AI</span>
+                            <span class="text-[10px] text-white/60 block">Today Attempts: ${miniGames.helpAi?.attemptsToday || 0}</span>
+                            <span class="text-[10px] text-white/40 block">Last Played: ${miniGames.helpAi?.lastPlayDate || 'Never'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. Unlocked Avatars -->
+                <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-4 space-y-3">
+                    <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <span>🖼️</span> Unlocked Profile Avatars (${unlockedAvatars.length})
+                    </h3>
+                    <div class="flex items-center gap-2 overflow-x-auto pb-2">
+                        ${unlockedAvatars.length === 0
+                    ? '<span class="text-xs text-white/40 italic">No custom avatars unlocked.</span>'
+                    : unlockedAvatars.map(avUrl => `
+                                <div class="relative shrink-0 group">
+                                    <img src="${avUrl}" class="w-10 h-10 rounded-full object-cover border border-white/20 bg-slate-900" title="${avUrl}" />
+                                </div>
+                            `).join('')
+                }
+                    </div>
+                </div>
+
+                <!-- 7. Metadata -->
+                <div class="text-[11px] font-mono text-white/40 border-t border-white/10 pt-3 flex flex-wrap justify-between gap-2">
+                    <span>Joined: ${u.createdAt ? new Date(u.createdAt).toLocaleString() : 'Unknown'}</span>
+                    <span>Account ID: ${u._id}</span>
+                </div>
+            `;
+
+            // Show Modal
+            userModalBackdrop.classList.remove('hidden');
+            setTimeout(() => {
+                userModalBackdrop.classList.remove('opacity-0');
+                userModal.classList.remove('scale-95');
+                userModal.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeUserModal() {
+            userModalBackdrop.classList.add('opacity-0');
+            userModal.classList.remove('scale-100');
+            userModal.classList.add('scale-95');
+            setTimeout(() => userModalBackdrop.classList.add('hidden'), 300);
+        }
+
+        closeUserModalBtn.addEventListener('click', closeUserModal);
+        modalCloseFooterBtn.addEventListener('click', closeUserModal);
+        userModalBackdrop.addEventListener('click', (e) => {
+            if (e.target === userModalBackdrop) closeUserModal();
+        });
+
+        modalDeleteUserBtn.addEventListener('click', () => {
+            if (!activeModalUserId) return;
+            const u = currentUsersMap.get(activeModalUserId);
+            if (!u) return;
+            closeUserModal();
+            deleteUser(u._id, u.username);
+        });
 
         async function deleteUser(userId, username) {
             if (!confirm(`Are you sure you want to permanently delete user "${username}"?`)) return;
