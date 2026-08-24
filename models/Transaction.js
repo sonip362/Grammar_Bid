@@ -18,7 +18,7 @@ const transactionSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['QUESTION_COMPENSATION', 'ADMIN_ADJUSTMENT', 'GAME_RESULT', 'ADMIN_GRANT', 'admin_grant', 'DAILY_REWARD', 'POWER_CARD_PURCHASE', 'CASH_EXCHANGE', 'MINI_GAME_REWARD'],
+        enum: ['QUESTION_COMPENSATION', 'ADMIN_ADJUSTMENT', 'GAME_RESULT', 'ADMIN_GRANT', 'admin_grant', 'DAILY_REWARD', 'POWER_CARD_PURCHASE', 'CASH_EXCHANGE', 'MINI_GAME_REWARD', 'MINI_GAME_PENALTY'],
         required: true
     },
     amount: {

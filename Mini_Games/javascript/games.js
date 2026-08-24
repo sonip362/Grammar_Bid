@@ -213,101 +213,201 @@ const ArcadeManager = {
     PatternSequence: {
         EASY_PATTERNS: [
             {
+                id: 'arithmetic_add',
                 ruleName: 'Arithmetic Addition (+Step)',
                 generate: () => {
-                    const step = Math.floor(Math.random() * 5) + 3;
-                    const start = Math.floor(Math.random() * 10) + 2;
+                    const step = Math.floor(Math.random() * 12) + 3;
+                    const start = Math.floor(Math.random() * 45) + 5;
                     const full = [0, 1, 2, 3, 4, 5].map(i => start + i * step);
                     return { full, ruleName: `Arithmetic Addition (+${step})` };
                 }
             },
             {
-                ruleName: 'Doubling Powers (2ⁿ)',
+                id: 'arithmetic_sub',
+                ruleName: 'Arithmetic Subtraction (-Step)',
                 generate: () => {
-                    const startPower = Math.floor(Math.random() * 2) + 1;
-                    const full = [0, 1, 2, 3, 4, 5].map(i => Math.pow(2, startPower + i));
-                    return { full };
+                    const step = Math.floor(Math.random() * 10) + 4;
+                    const start = Math.floor(Math.random() * 100) + 120;
+                    const full = [0, 1, 2, 3, 4, 5].map(i => start - i * step);
+                    return { full, ruleName: `Arithmetic Subtraction (-${step})` };
                 }
             },
             {
+                id: 'geometric_mult',
+                ruleName: 'Geometric Multiplication (×Multiplier)',
+                generate: () => {
+                    const mult = Math.floor(Math.random() * 2) + 2;
+                    const start = Math.floor(Math.random() * 6) + 2;
+                    const full = [0, 1, 2, 3, 4, 5].map(i => start * Math.pow(mult, i));
+                    return { full, ruleName: `Geometric Progression (×${mult})` };
+                }
+            },
+            {
+                id: 'square_numbers',
                 ruleName: 'Square Numbers (n²)',
                 generate: () => {
-                    const start = Math.floor(Math.random() * 3) + 1;
+                    const start = Math.floor(Math.random() * 7) + 2;
                     const full = [start, start + 1, start + 2, start + 3, start + 4, start + 5].map(n => n * n);
-                    return { full };
+                    return { full, ruleName: `Square Numbers (${start}² to ${start + 5}²)` };
+                }
+            },
+            {
+                id: 'alternating_step',
+                ruleName: 'Alternating Add & Subtract (+A, -B)',
+                generate: () => {
+                    const add = Math.floor(Math.random() * 8) + 5;
+                    const sub = Math.floor(Math.random() * 3) + 2;
+                    let curr = Math.floor(Math.random() * 20) + 10;
+                    const full = [curr];
+                    for (let i = 1; i < 6; i++) {
+                        curr += (i % 2 !== 0 ? add : -sub);
+                        full.push(curr);
+                    }
+                    return { full, ruleName: `Alternating Step (+${add}, -${sub})` };
                 }
             }
         ],
 
         MEDIUM_PATTERNS: [
             {
-                ruleName: 'Fibonacci Addition (n = n1 + n2)',
+                id: 'fibonacci',
+                ruleName: 'Fibonacci Sequence (n = n1 + n2)',
                 generate: () => {
-                    const a = Math.floor(Math.random() * 3) + 1;
-                    const b = a + 1;
+                    const a = Math.floor(Math.random() * 5) + 1;
+                    const b = a + Math.floor(Math.random() * 3) + 1;
                     const full = [a, b];
                     for (let i = 2; i < 6; i++) {
                         full.push(full[i - 1] + full[i - 2]);
                     }
-                    return { full };
+                    return { full, ruleName: `Fibonacci Addition (start: ${a}, ${b})` };
                 }
             },
             {
+                id: 'cube_numbers',
                 ruleName: 'Cube Numbers (n³)',
                 generate: () => {
-                    const full = [1, 2, 3, 4, 5, 6].map(n => n * n * n);
-                    return { full };
+                    const start = Math.floor(Math.random() * 4) + 1;
+                    const full = [0, 1, 2, 3, 4, 5].map(i => Math.pow(start + i, 3));
+                    return { full, ruleName: `Cube Sequence (${start}³ to ${start + 5}³)` };
                 }
             },
             {
+                id: 'triangular_numbers',
                 ruleName: 'Triangular Numbers [n(n+1)/2]',
                 generate: () => {
-                    const offset = Math.floor(Math.random() * 3) + 1;
+                    const offset = Math.floor(Math.random() * 5) + 1;
                     const full = [0, 1, 2, 3, 4, 5].map(i => {
                         const n = offset + i;
                         return (n * (n + 1)) / 2;
                     });
-                    return { full };
+                    return { full, ruleName: `Triangular Formula [T(n)]` };
                 }
             },
             {
+                id: 'prime_sequence',
                 ruleName: 'Prime Numbers Sequence',
                 generate: () => {
-                    const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31];
-                    const startIdx = Math.floor(Math.random() * 4);
+                    const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53];
+                    const startIdx = Math.floor(Math.random() * (primes.length - 6));
                     const full = primes.slice(startIdx, startIdx + 6);
-                    return { full };
+                    return { full, ruleName: `Sequential Primes (${full[0]} to ${full[5]})` };
+                }
+            },
+            {
+                id: 'increasing_difference',
+                ruleName: 'Accelerating Difference (+1, +2, +3...)',
+                generate: () => {
+                    const baseStep = Math.floor(Math.random() * 3) + 1;
+                    let curr = Math.floor(Math.random() * 15) + 5;
+                    const full = [curr];
+                    for (let i = 1; i < 6; i++) {
+                        curr += (baseStep + i - 1);
+                        full.push(curr);
+                    }
+                    return { full, ruleName: `Accelerating Delta (+${baseStep}, +${baseStep + 1}...)` };
                 }
             }
         ],
 
         HARD_PATTERNS: [
             {
+                id: 'koch_snowflake',
                 ruleName: 'Koch Snowflake Segments (3 × 4ⁿ)',
                 generate: () => {
                     const full = [0, 1, 2, 3, 4, 5].map(n => 3 * Math.pow(4, n));
-                    return { full };
+                    return { full, ruleName: 'Koch Snowflake Fractal Segments (3 × 4ⁿ)' };
                 }
             },
             {
+                id: 'pentagonal_numbers',
                 ruleName: 'Pentagonal Numbers [(3n² - n)/2]',
                 generate: () => {
-                    const full = [1, 2, 3, 4, 5, 6].map(n => (3 * n * n - n) / 2);
-                    return { full };
+                    const offset = Math.floor(Math.random() * 3) + 1;
+                    const full = [0, 1, 2, 3, 4, 5].map(i => {
+                        const n = offset + i;
+                        return (3 * n * n - n) / 2;
+                    });
+                    return { full, ruleName: 'Pentagonal Figurate Series [(3n² - n)/2]' };
                 }
             },
             {
+                id: 'catalan_numbers',
                 ruleName: 'Catalan Combinatorics [C(n)]',
                 generate: () => {
-                    const full = [1, 2, 5, 14, 42, 132];
-                    return { full };
+                    const catalan = [1, 2, 5, 14, 42, 132, 429, 1430];
+                    const startIdx = Math.floor(Math.random() * 3);
+                    const full = catalan.slice(startIdx, startIdx + 6);
+                    return { full, ruleName: 'Catalan Sequence C(n)' };
                 }
             },
             {
-                ruleName: 'Collatz Conjecture Step (3n + 1 / 2)',
+                id: 'collatz_conjecture',
+                ruleName: 'Collatz Conjecture Orbits',
                 generate: () => {
-                    const full = [7, 22, 11, 34, 17, 52];
-                    return { full };
+                    const starts = [7, 11, 13, 15, 17, 19, 21, 23];
+                    const start = starts[Math.floor(Math.random() * starts.length)];
+                    let curr = start;
+                    const full = [curr];
+                    for (let i = 1; i < 6; i++) {
+                        curr = (curr % 2 === 0) ? (curr / 2) : (3 * curr + 1);
+                        full.push(curr);
+                    }
+                    return { full, ruleName: `Collatz Orbit (Start: ${start})` };
+                }
+            },
+            {
+                id: 'square_plus_n',
+                ruleName: 'Polynomial Quad Series (n² + n)',
+                generate: () => {
+                    const offset = Math.floor(Math.random() * 4) + 1;
+                    const full = [0, 1, 2, 3, 4, 5].map(i => {
+                        const n = offset + i;
+                        return n * n + n;
+                    });
+                    return { full, ruleName: 'Polynomial Quad Series (n² + n)' };
+                }
+            },
+            {
+                id: 'kaprekar_routine',
+                ruleName: 'Kaprekar Routine (Desc - Asc)',
+                generate: () => {
+                    const validSeeds = [3524, 5291, 8314, 7129, 9412, 4218, 6312, 1982, 4832, 7351];
+                    const seed = validSeeds[Math.floor(Math.random() * validSeeds.length)];
+
+                    const stepKaprekar = (num) => {
+                        let str = num.toString().padStart(4, '0');
+                        let desc = parseInt(str.split('').sort((a, b) => b - a).join(''), 10);
+                        let asc = parseInt(str.split('').sort((a, b) => a - b).join(''), 10);
+                        return desc - asc;
+                    };
+
+                    let curr = seed;
+                    const full = [curr];
+                    for (let i = 1; i < 6; i++) {
+                        curr = stepKaprekar(curr);
+                        full.push(curr);
+                    }
+                    return { full, ruleName: `Kaprekar Routine (Start: ${seed})` };
                 }
             }
         ],
@@ -317,25 +417,46 @@ const ArcadeManager = {
         },
 
         buildDeckForDifficulty(diff) {
+            const allPatterns = [
+                ...this.EASY_PATTERNS,
+                ...this.MEDIUM_PATTERNS,
+                ...this.HARD_PATTERNS
+            ];
+
+            let pool = [];
             if (diff === 'EASY') {
-                return Array(5).fill(null).map(() => this.getRandomItem(this.EASY_PATTERNS));
+                pool = [...this.EASY_PATTERNS, ...this.MEDIUM_PATTERNS];
             } else if (diff === 'MEDIUM') {
-                return [
-                    this.getRandomItem(this.EASY_PATTERNS),
-                    this.getRandomItem(this.EASY_PATTERNS),
-                    this.getRandomItem(this.MEDIUM_PATTERNS),
-                    this.getRandomItem(this.MEDIUM_PATTERNS),
-                    this.getRandomItem(this.MEDIUM_PATTERNS)
-                ];
+                pool = [...this.EASY_PATTERNS, ...this.MEDIUM_PATTERNS, ...this.HARD_PATTERNS.slice(0, 2)];
             } else {
-                return [
-                    this.getRandomItem(this.EASY_PATTERNS),
-                    this.getRandomItem(this.MEDIUM_PATTERNS),
-                    this.getRandomItem(this.HARD_PATTERNS),
-                    this.getRandomItem(this.HARD_PATTERNS),
-                    this.getRandomItem(this.HARD_PATTERNS)
-                ];
+                pool = [...this.MEDIUM_PATTERNS, ...this.HARD_PATTERNS];
             }
+
+            // Shuffle pool and select 5 strictly unique pattern instances/rules
+            const shuffled = [...pool].sort(() => Math.random() - 0.5);
+            const deck = [];
+            const usedNames = new Set();
+
+            for (const item of shuffled) {
+                const name = item.id || item.ruleName;
+                if (!usedNames.has(name)) {
+                    usedNames.add(name);
+                    deck.push(item);
+                }
+                if (deck.length === 5) break;
+            }
+
+            // Fallback safety if pool had fewer items
+            while (deck.length < 5) {
+                const randomItem = allPatterns[Math.floor(Math.random() * allPatterns.length)];
+                const name = randomItem.id || randomItem.ruleName;
+                if (!usedNames.has(name)) {
+                    usedNames.add(name);
+                    deck.push(randomItem);
+                }
+            }
+
+            return deck;
         }
     }
 };

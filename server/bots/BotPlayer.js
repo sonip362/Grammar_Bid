@@ -146,7 +146,7 @@ class BotPlayer {
 
         // Try Groq LLM
         if (process.env.GROQ_API_KEY) {
-            const modelName = process.env.GROQ_BOT_MODEL || 'openai/gpt-oss-20b';
+            const modelName = process.env.GROQ_BOT_MODEL || 'groq/compound-mini';
             try {
                 const prompt = `You are ${this.profile.username}, a ${this.profile.personality} playing an online multiplayer English grammar auction game called Grammar Bid.
 Game Situation: ${scenario}. Context: ${context}.
@@ -196,6 +196,20 @@ Rules:
 
         // Update timestamp upon broadcast
         this.lastChatTime = Date.now();
+
+        // Store chat message in room state for catchup/reconnect sync
+        const room = this.rooms ? this.rooms.get(this.roomCode) : null;
+        if (room) {
+            if (!room.chatHistory) room.chatHistory = [];
+            room.chatHistory.push({
+                username: this.profile.username,
+                avatar: this.profile.avatar,
+                message,
+                isBot: true,
+                timestamp: Date.now()
+            });
+            if (room.chatHistory.length > 6) room.chatHistory.shift();
+        }
 
         // Emit chat message to room
         this.io.to(this.roomCode).emit('chat_message', {

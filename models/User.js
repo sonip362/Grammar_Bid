@@ -101,6 +101,18 @@ const userSchema = new mongoose.Schema({
         helpAi: {
             lastPlayDate: { type: String, default: null },
             attemptsToday: { type: Number, default: 0 }
+        },
+        patternSequence: {
+            lastPlayDate: { type: String, default: null },
+            attemptsToday: { type: Number, default: 0 }
+        },
+        mathSequence: {
+            lastPlayDate: { type: String, default: null },
+            attemptsToday: { type: Number, default: 0 }
+        },
+        foodMemory: {
+            lastPlayDate: { type: String, default: null },
+            attemptsToday: { type: Number, default: 0 }
         }
     },
     pushSubscriptions: [{

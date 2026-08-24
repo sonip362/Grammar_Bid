@@ -9,17 +9,20 @@ const maxAttempts = 5;
 
 let isPlaying = false;
 let backendStartTime = null;
-let timeLeft = 180.0;
+let timeLeft = 160.0;
 let timerInterval = null;
 
 let selectedDifficulty = 'EASY'; // EASY, MEDIUM, HARD
 let questionDeck = [];
 
 let cashMeter = 6000;
+let tokenMeter = 5;
 const INITIAL_CASH_METER = 6000;
 const MIN_CASH_METER = 500;
 const WRONG_ANSWER_PENALTY = 400;
 let totalPenalties = 0;
+let wrongAnswersCount = 0;
+let tokensLostCount = 0;
 
 let currentStreak = 0;
 const TARGET_STREAK = 5;
@@ -27,6 +30,12 @@ const TARGET_STREAK = 5;
 let currentSequenceObj = null;
 let missingValue = null;
 let roundHistory = [];
+
+function getMaxTimeForDifficulty(diff) {
+    if (diff === 'EASY') return 160.0; // 2 minutes 40 seconds
+    if (diff === 'MEDIUM') return 120.0; // 2 minutes
+    return 60.0; // HARD: 1 minute
+}
 
 async function fetchGameStatus() {
     const status = await ArcadeManager.fetchStatus('pattern-sequence', 'gb_pattern_date', 'gb_pattern_attempts');
@@ -46,21 +55,15 @@ async function submitGameResult(gameSuccess, timeRem, finalReward) {
         gameSuccess,
         timeRemaining: Math.round(timeRem),
         difficulty: selectedDifficulty,
-        cashEarned: selectedDifficulty === 'EASY' ? Math.round(finalReward) : 0
+        cashEarned: selectedDifficulty === 'EASY' ? Math.round(finalReward) : 0,
+        tokensDeducted: tokensLostCount
     }, 'gb_pattern_date', 'gb_pattern_attempts');
 
     if (res.success || res.guestFallback) {
         attemptsRemaining = res.remainingAttempts;
         attemptsToday = res.attemptsToday;
-        if (res.guestFallback && gameSuccess) {
-            if (selectedDifficulty === 'EASY') {
-                const currentCash = parseInt(localStorage.getItem('gb_cash') || '10000', 10);
-                ArcadeManager.syncBalances((currentCash + Math.round(finalReward)).toString(), null);
-            } else {
-                const tokAdd = selectedDifficulty === 'MEDIUM' ? 5 : 10;
-                const currentTokens = parseInt(localStorage.getItem('gb_tokens') || '50', 10);
-                ArcadeManager.syncBalances(null, (currentTokens + tokAdd).toString());
-            }
+        if (res.newCashBalance !== undefined || res.newTokensBalance !== undefined) {
+            ArcadeManager.syncBalances(res.newCashBalance, res.newTokensBalance);
         }
         updateAttemptsUI();
     }
@@ -72,24 +75,23 @@ function updateCashMeterDisplay() {
     if (selectedDifficulty === 'EASY') {
         cashMeter = Math.max(MIN_CASH_METER, cashMeter);
         meterEl.textContent = `$${Math.round(cashMeter).toLocaleString()}`;
-    } else if (selectedDifficulty === 'MEDIUM') {
-        meterEl.textContent = '5 Tokens';
     } else {
-        meterEl.textContent = '10 Tokens';
+        tokenMeter = Math.max(0, tokenMeter);
+        meterEl.textContent = `${tokenMeter} Tokens`;
     }
 }
 
-function triggerPenaltyAnimation(amount) {
+function triggerPenaltyAnimation(label) {
     const container = document.getElementById('penalty-container');
     if (!container) return;
     const el = document.createElement('div');
     el.className = 'penalty-anim text-xs font-mono font-bold text-rose-400 bg-rose-950/80 border border-rose-500/30 px-2 py-0.5 rounded-md';
-    el.textContent = selectedDifficulty === 'EASY' ? `-${amount}` : 'WRONG';
+    el.textContent = typeof label === 'number' ? `-$${label}` : label;
     container.appendChild(el);
 
     setTimeout(() => {
         el.remove();
-    }, 850);
+    }, 950);
 }
 
 function renderNextQuestion() {
@@ -157,10 +159,10 @@ function checkAnswer(selectedVal, btnEl) {
     if (window.ArcadeAudio) ArcadeAudio.playClick();
 
     const allBtns = document.querySelectorAll('.option-btn');
+    allBtns.forEach(b => b.disabled = true);
 
     if (selectedVal === missingValue) {
         if (window.ArcadeAudio) ArcadeAudio.playScore();
-        allBtns.forEach(b => b.disabled = true);
         btnEl.classList.remove('option-btn');
         btnEl.classList.add('bg-emerald-600', 'text-white', 'border-emerald-400');
 
@@ -188,21 +190,64 @@ function checkAnswer(selectedVal, btnEl) {
         }
     } else {
         if (window.ArcadeAudio) ArcadeAudio.playError();
-        btnEl.disabled = true;
         btnEl.classList.remove('option-btn');
         btnEl.classList.add('bg-rose-600/80', 'text-white', 'border-rose-500', 'opacity-50');
 
-        if (selectedDifficulty === 'EASY') {
+        const blankBoxes = document.querySelectorAll('.num-box.blank');
+        blankBoxes.forEach(b => {
+            b.classList.add('border-rose-500', 'text-rose-300');
+            b.textContent = missingValue.toString();
+        });
+
+        currentSequenceObj.isSolved = false;
+        currentSequenceObj.userAnswer = selectedVal;
+        roundHistory.push(currentSequenceObj);
+
+        wrongAnswersCount++;
+
+        if (selectedDifficulty === 'HARD') {
+            tokensLostCount += 1;
+            tokenMeter = Math.max(0, tokenMeter - 1);
+            const currentTokens = parseInt(localStorage.getItem('gb_tokens') || '50', 10);
+            const updatedTokens = Math.max(0, currentTokens - 1);
+            ArcadeManager.syncBalances(null, updatedTokens.toString());
+            updateCashMeterDisplay();
+            triggerPenaltyAnimation('-1 TOKEN');
+        } else if (selectedDifficulty === 'MEDIUM') {
+            if (wrongAnswersCount % 2 === 0) {
+                tokensLostCount += 1;
+                tokenMeter = Math.max(0, tokenMeter - 1);
+                const currentTokens = parseInt(localStorage.getItem('gb_tokens') || '50', 10);
+                const updatedTokens = Math.max(0, currentTokens - 1);
+                ArcadeManager.syncBalances(null, updatedTokens.toString());
+                updateCashMeterDisplay();
+                triggerPenaltyAnimation('-1 TOKEN');
+            } else {
+                triggerPenaltyAnimation('WRONG (1/2)');
+            }
+        } else {
             totalPenalties += WRONG_ANSWER_PENALTY;
+            updateCashMeterDisplay();
+            triggerPenaltyAnimation(WRONG_ANSWER_PENALTY);
         }
-        triggerPenaltyAnimation(WRONG_ANSWER_PENALTY);
 
         const statusEl = document.getElementById('ai-status-text');
         if (statusEl) {
-            statusEl.textContent = selectedDifficulty === 'EASY' ? `Incorrect option (-$400). Try again!` : 'Incorrect option. Try again!';
+            statusEl.textContent = `Incorrect choice! Dismissing question...`;
+        }
+
+        currentStreak++;
+        const progressEl = document.getElementById('progress-text');
+        if (progressEl) progressEl.textContent = `${currentStreak}/${TARGET_STREAK}`;
+
+        if (currentStreak >= TARGET_STREAK) {
             setTimeout(() => {
-                statusEl.textContent = `Find the missing number in the pattern.`;
-            }, 1200);
+                handleVictory();
+            }, 750);
+        } else {
+            setTimeout(() => {
+                renderNextQuestion();
+            }, 750);
         }
     }
 }
@@ -214,13 +259,13 @@ function selectDifficultyAndStart(diff) {
     const badge = document.getElementById('active-mode-badge');
     if (badge) {
         if (diff === 'EASY') {
-            badge.textContent = 'EASY';
+            badge.textContent = 'EASY (2:40)';
             badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
         } else if (diff === 'MEDIUM') {
-            badge.textContent = 'MEDIUM';
+            badge.textContent = 'MEDIUM (2:00)';
             badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30';
         } else {
-            badge.textContent = 'HARD';
+            badge.textContent = 'HARD (1:00)';
             badge.className = 'text-[10px] font-mono px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/30';
         }
     }
@@ -234,7 +279,10 @@ async function startPuzzle() {
     document.getElementById('start-overlay').classList.add('hidden');
     currentStreak = 0;
     totalPenalties = 0;
+    wrongAnswersCount = 0;
+    tokensLostCount = 0;
     cashMeter = INITIAL_CASH_METER;
+    tokenMeter = selectedDifficulty === 'MEDIUM' ? 5 : (selectedDifficulty === 'HARD' ? 10 : 0);
     roundHistory = [];
 
     questionDeck = ArcadeManager.PatternSequence.buildDeckForDifficulty(selectedDifficulty);
@@ -242,14 +290,19 @@ async function startPuzzle() {
     renderNextQuestion();
 
     isPlaying = true;
-    timeLeft = 180.0;
+    const maxTime = getMaxTimeForDifficulty(selectedDifficulty);
+    timeLeft = maxTime;
 
     const authToken = ArcadeManager.getAuthToken();
     if (authToken) {
         try {
             const res = await fetch('/api/mini-games/pattern-sequence/start-attempt', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${authToken}` }
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`
+                },
+                body: JSON.stringify({ difficulty: selectedDifficulty })
             });
             const data = await res.json();
             if (data.success) {
@@ -265,7 +318,7 @@ async function startPuzzle() {
 
     timerInterval = setInterval(() => {
         const elapsedSec = (Date.now() - backendStartTime) / 1000;
-        timeLeft = Math.max(0, 180.0 - elapsedSec);
+        timeLeft = Math.max(0, maxTime - elapsedSec);
 
         if (selectedDifficulty === 'EASY') {
             cashMeter = Math.max(MIN_CASH_METER, INITIAL_CASH_METER - (elapsedSec * 10) - totalPenalties);
@@ -288,7 +341,8 @@ function updateTimerDisplay() {
     const timerText = document.getElementById('timer-text');
     if (timerText) timerText.textContent = formattedTime;
 
-    const pct = Math.max(0, (timeLeft / 180.0) * 100);
+    const maxTime = getMaxTimeForDifficulty(selectedDifficulty);
+    const pct = Math.max(0, (timeLeft / maxTime) * 100);
     const progressEl = document.getElementById('power-progress');
     if (progressEl) progressEl.style.width = `${pct}%`;
 }
@@ -345,9 +399,9 @@ function handleVictory() {
     if (selectedDifficulty === 'EASY') {
         setText('result-cash-text', `+$${finalReward.toLocaleString()} Cash`);
     } else if (selectedDifficulty === 'MEDIUM') {
-        setText('result-cash-text', `+5 Gold Tokens`);
+        setText('result-cash-text', `+${tokenMeter} Gold Tokens`);
     } else {
-        setText('result-cash-text', `+10 Gold Tokens`);
+        setText('result-cash-text', `+${tokenMeter} Gold Tokens`);
     }
 
     populateSolutionsModal();
@@ -366,8 +420,9 @@ function handleGameOver(isWin) {
         if (window.ArcadeAudio) ArcadeAudio.playError();
         submitGameResult(false, 0, 0);
 
+        const timeLabel = selectedDifficulty === 'EASY' ? '2m 40s' : (selectedDifficulty === 'MEDIUM' ? '2m' : '1m');
         setText('result-title', 'Time Expired');
-        setText('result-subtitle', 'Could not complete 5 sequence puzzles in 3 minutes.');
+        setText('result-subtitle', `Could not complete 5 sequence puzzles within ${timeLabel}.`);
         setText('result-outcome-text', 'FAILED', 'font-mono font-semibold text-rose-400');
         setText('result-cash-text', '+0 Rewards');
 
@@ -381,6 +436,7 @@ function handleGameOver(isWin) {
 }
 
 function showStartOverlay() {
+    if (isPlaying) return;
     isPlaying = false;
     if (timerInterval) clearInterval(timerInterval);
     document.getElementById('start-overlay').classList.remove('hidden');

@@ -928,8 +928,8 @@ app.post('/api/mini-games/help-ai/submit-reward', authMiddleware, async (req, re
     }
 });
 
-// ─── Pattern Sequence Mini Game Endpoints ──────────────────
-app.get('/api/mini-games/pattern-sequence/status', authMiddleware, async (req, res) => {
+// ─── Pattern / Math Sequence Mini Game Endpoints ───────────────
+app.get(['/api/mini-games/pattern-sequence/status', '/api/mini-games/math-sequence/status'], authMiddleware, async (req, res) => {
     try {
         const user = req.user;
         const todayStr = new Date().toISOString().split('T')[0];
@@ -955,7 +955,7 @@ app.get('/api/mini-games/pattern-sequence/status', authMiddleware, async (req, r
     }
 });
 
-app.post('/api/mini-games/pattern-sequence/start-attempt', authMiddleware, async (req, res) => {
+app.post(['/api/mini-games/pattern-sequence/start-attempt', '/api/mini-games/math-sequence/start-attempt'], authMiddleware, async (req, res) => {
     try {
         const user = req.user;
         const todayStr = new Date().toISOString().split('T')[0];
@@ -993,10 +993,10 @@ app.post('/api/mini-games/pattern-sequence/start-attempt', authMiddleware, async
     }
 });
 
-app.post('/api/mini-games/pattern-sequence/submit-reward', authMiddleware, async (req, res) => {
+app.post(['/api/mini-games/pattern-sequence/submit-reward', '/api/mini-games/math-sequence/submit-reward'], authMiddleware, async (req, res) => {
     try {
         const user = req.user;
-        let { gameSuccess, timeRemaining, difficulty, cashEarned: requestedCash } = req.body;
+        let { gameSuccess, timeRemaining, difficulty, cashEarned: requestedCash, tokensDeducted } = req.body;
         const todayStr = new Date().toISOString().split('T')[0];
 
         if (!user.miniGames) user.miniGames = {};
@@ -1017,23 +1017,51 @@ app.post('/api/mini-games/pattern-sequence/submit-reward', authMiddleware, async
             });
         }
 
-        // STRICT BACKEND TIMER VALIDATION (180 seconds limit + 4s network latency tolerance)
+        const mode = (difficulty || 'EASY').toUpperCase();
+
+        // STRICT BACKEND TIMER VALIDATION PER DIFFICULTY:
+        // Easy: 160s (+4s buffer = 164s)
+        // Medium: 120s (+4s buffer = 124s)
+        // Hard: 60s (+4s buffer = 64s)
+        let maxBackendAllowedSec = 164;
+        if (mode === 'MEDIUM') maxBackendAllowedSec = 124;
+        if (mode === 'HARD') maxBackendAllowedSec = 64;
+
         const sessionStartTime = user.miniGames.patternSequence.sessionStartTime;
         if (sessionStartTime) {
             const elapsedSeconds = (Date.now() - sessionStartTime) / 1000;
-            if (elapsedSeconds > 184) {
-                console.log(`[Pattern Sequence] Attempt rejected: Backend time limit exceeded (${elapsedSeconds.toFixed(1)}s > 180s)`);
+            if (elapsedSeconds > maxBackendAllowedSec) {
+                console.log(`[Pattern Sequence] Attempt rejected: Backend time limit exceeded (${elapsedSeconds.toFixed(1)}s > ${maxBackendAllowedSec - 4}s)`);
                 gameSuccess = false;
             }
         }
         user.miniGames.patternSequence.sessionStartTime = null;
+
+        // Apply live token deductions incurred during wrong choices
+        const numDeducted = (!isNaN(parseInt(tokensDeducted, 10)) && parseInt(tokensDeducted, 10) > 0) ? parseInt(tokensDeducted, 10) : 0;
+
+        if (numDeducted > 0) {
+            const balanceBefore = user.tokens || 0;
+            user.tokens = Math.max(0, (user.tokens || 0) - numDeducted);
+
+            const txId = `TX_PENALTY_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+            await Transaction.create({
+                transactionId: txId,
+                userId: user._id.toString(),
+                username: user.username || user.name || 'Guest Player',
+                type: 'MINI_GAME_PENALTY',
+                amount: -numDeducted,
+                balanceBefore,
+                balanceAfter: user.tokens,
+                reason: `Pattern Sequence [${mode}] wrong attempt penalties (-${numDeducted} Gold Tokens)`
+            });
+        }
 
         // Consume 1 attempt
         user.miniGames.patternSequence.attemptsToday = currentAttempts + 1;
         user.miniGames.patternSequence.lastPlayDate = todayStr;
 
         const isWin = Boolean(gameSuccess);
-        const mode = (difficulty || 'EASY').toUpperCase();
         let cashEarned = 0;
         let tokensEarned = 0;
 
@@ -1042,9 +1070,9 @@ app.post('/api/mini-games/pattern-sequence/submit-reward', authMiddleware, async
                 const parsedCash = parseInt(requestedCash, 10);
                 cashEarned = (!isNaN(parsedCash) && parsedCash >= 200 && parsedCash <= 6000) ? parsedCash : 6000;
             } else if (mode === 'MEDIUM') {
-                tokensEarned = 5;
+                tokensEarned = Math.max(0, 5 - numDeducted);
             } else if (mode === 'HARD') {
-                tokensEarned = 10;
+                tokensEarned = Math.max(0, 10 - numDeducted);
             }
         }
 
@@ -1102,6 +1130,151 @@ app.post('/api/mini-games/pattern-sequence/submit-reward', authMiddleware, async
     } catch (err) {
         console.error('Pattern Sequence submit reward error:', err);
         res.status(500).json({ error: 'Failed to process Pattern Sequence reward.' });
+    }
+});
+
+// ─── Food Memory Mini Game Endpoints ───────────────────────────────
+app.get('/api/mini-games/food-memory/status', authMiddleware, async (req, res) => {
+    try {
+        const user = req.user;
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (!user.miniGames) user.miniGames = {};
+        if (!user.miniGames.foodMemory) {
+            user.miniGames.foodMemory = { lastPlayDate: todayStr, attemptsToday: 0 };
+        }
+        if (user.miniGames.foodMemory.lastPlayDate !== todayStr) {
+            user.miniGames.foodMemory.lastPlayDate = todayStr;
+            user.miniGames.foodMemory.attemptsToday = 0;
+            user.markModified('miniGames');
+            await user.save();
+        }
+        const currentAttempts = user.miniGames.foodMemory.attemptsToday || 0;
+        res.json({
+            success: true,
+            attemptsToday: currentAttempts,
+            remainingAttempts: Math.max(0, 5 - currentAttempts)
+        });
+    } catch (err) {
+        console.error('Food Memory status check error:', err);
+        res.status(500).json({ error: 'Failed to check Food Memory status.' });
+    }
+});
+
+app.post('/api/mini-games/food-memory/start-attempt', authMiddleware, async (req, res) => {
+    try {
+        const user = req.user;
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (!user.miniGames) user.miniGames = {};
+        if (!user.miniGames.foodMemory) {
+            user.miniGames.foodMemory = { lastPlayDate: todayStr, attemptsToday: 0 };
+        }
+        if (user.miniGames.foodMemory.lastPlayDate !== todayStr) {
+            user.miniGames.foodMemory.lastPlayDate = todayStr;
+            user.miniGames.foodMemory.attemptsToday = 0;
+        }
+
+        const currentAttempts = user.miniGames.foodMemory.attemptsToday || 0;
+        if (currentAttempts >= 5) {
+            return res.status(400).json({
+                success: false,
+                error: 'Daily limit of 5 tries reached! Come back tomorrow.'
+            });
+        }
+
+        const startTime = Date.now();
+        user.miniGames.foodMemory.sessionStartTime = startTime;
+        user.markModified('miniGames');
+        await user.save();
+
+        res.json({
+            success: true,
+            startTime,
+            memorizeTimeSeconds: 15,
+            placementTimeSeconds: 120,
+            remainingAttempts: Math.max(0, 5 - currentAttempts)
+        });
+    } catch (err) {
+        console.error('Food Memory start attempt error:', err);
+        res.status(500).json({ error: 'Failed to start Food Memory attempt.' });
+    }
+});
+
+app.post('/api/mini-games/food-memory/submit-reward', authMiddleware, async (req, res) => {
+    try {
+        const user = req.user;
+        const { correctCount, wrongCount } = req.body;
+        const todayStr = new Date().toISOString().split('T')[0];
+
+        if (!user.miniGames) user.miniGames = {};
+        if (!user.miniGames.foodMemory) {
+            user.miniGames.foodMemory = { lastPlayDate: todayStr, attemptsToday: 0 };
+        }
+
+        if (user.miniGames.foodMemory.lastPlayDate !== todayStr) {
+            user.miniGames.foodMemory.lastPlayDate = todayStr;
+            user.miniGames.foodMemory.attemptsToday = 0;
+        }
+
+        const currentAttempts = user.miniGames.foodMemory.attemptsToday || 0;
+        if (currentAttempts >= 5) {
+            return res.status(400).json({
+                success: false,
+                error: 'Daily limit of 5 tries reached! Come back tomorrow.'
+            });
+        }
+
+        // Validate backend time limit (15s memorize + 120s placement + 4s buffer = 139s max)
+        const sessionStartTime = user.miniGames.foodMemory.sessionStartTime;
+        if (sessionStartTime) {
+            const elapsedSeconds = (Date.now() - sessionStartTime) / 1000;
+            if (elapsedSeconds > 139) {
+                console.log(`[Food Memory] Attempt rejected: Time limit exceeded (${elapsedSeconds.toFixed(1)}s > 135s)`);
+            }
+        }
+        user.miniGames.foodMemory.sessionStartTime = null;
+
+        const validCorrect = (!isNaN(parseInt(correctCount, 10)) && parseInt(correctCount, 10) >= 0) ? Math.min(9, parseInt(correctCount, 10)) : 0;
+        const validWrong = (!isNaN(parseInt(wrongCount, 10)) && parseInt(wrongCount, 10) >= 0) ? parseInt(wrongCount, 10) : (9 - validCorrect);
+
+        // Consume 1 attempt
+        user.miniGames.foodMemory.attemptsToday = currentAttempts + 1;
+        user.miniGames.foodMemory.lastPlayDate = todayStr;
+
+        // Base reward: 9 tokens. Net tokens = Math.max(0, 9 - wrongCount)
+        const netTokens = Math.max(0, 9 - validWrong);
+
+        if (netTokens > 0) {
+            const balanceBefore = user.tokens || 0;
+            user.tokens = (user.tokens || 0) + netTokens;
+
+            const txId = `TX_FOOD_MEM_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+            await Transaction.create({
+                transactionId: txId,
+                userId: user._id.toString(),
+                username: user.username || user.name || 'Guest Player',
+                type: 'MINI_GAME_REWARD',
+                amount: netTokens,
+                balanceBefore,
+                balanceAfter: user.tokens,
+                reason: `Food Memory completed (${validCorrect}/9 correct, -${validWrong} wrong) ➔ +${netTokens} Gold Tokens`
+            });
+        }
+
+        user.markModified('miniGames');
+        await user.save();
+
+        res.json({
+            success: true,
+            tokensEarned: netTokens,
+            correctCount: validCorrect,
+            wrongCount: validWrong,
+            newTokensBalance: user.tokens,
+            attemptsToday: user.miniGames.foodMemory.attemptsToday,
+            remainingAttempts: Math.max(0, 5 - user.miniGames.foodMemory.attemptsToday)
+        });
+    } catch (err) {
+        console.error('Food Memory submit reward error:', err);
+        res.status(500).json({ error: 'Failed to submit Food Memory reward.' });
     }
 });
 
@@ -1918,6 +2091,7 @@ async function startRound(roomCode) {
     console.log(`📝 Round ${room.currentRound}/${room.totalRounds} — Generating ${forcedIsCorrect ? 'CORRECT' : 'INCORRECT'} sentence for room ${roomCode}...`);
     room.usedDomains = Array.isArray(room.usedDomains) ? room.usedDomains : [];
     room.usedCategories = Array.isArray(room.usedCategories) ? room.usedCategories : [];
+    room.usedSentences = Array.isArray(room.usedSentences) ? room.usedSentences : [];
 
     const lot = await generateSentence(forcedIsCorrect, {
         excludeDomains: room.usedDomains,
@@ -1925,6 +2099,9 @@ async function startRound(roomCode) {
     });
     room.currentLot = lot;
 
+    if (lot.sentence && !room.usedSentences.includes(lot.sentence)) {
+        room.usedSentences.push(lot.sentence);
+    }
     if (lot.domain && !room.usedDomains.includes(lot.domain)) {
         room.usedDomains.push(lot.domain);
     }
@@ -2163,6 +2340,8 @@ function resolveRound(roomCode) {
     }
 
     const roundResult = {
+        roundNumber: room.currentRound,
+        lotNumber: `Lot ${room.currentRound}`,
         isCorrect: lot.isCorrect,
         sentence: lot.sentence,
         correction: lot.isCorrect ? lot.correction : null,
@@ -2649,6 +2828,8 @@ io.on('connection', (socket) => {
             flawedPhrase: (room.status === 'correction' && lot) ? lot.flawedPhrase : null,
             correctPhrase: (room.status === 'correction' && lot) ? lot.correctPhrase : null,
             correctAnswer: (room.status === 'resolution' || room.status === 'game_over') && lot ? lot.correction : null,
+            chatHistory: room.chatHistory || [],
+            roundHistory: room.roundHistory || [],
             players: room.players.map(p => ({
                 socketId: p.socketId,
                 userId: p.userId,
@@ -2793,8 +2974,10 @@ io.on('connection', (socket) => {
         room.gamePlan = generateGamePlan();
         room.currentLot = null;
         room.roundHistory = [];
+        room.chatHistory = [];
         room.usedDomains = [];
         room.usedCategories = [];
+        room.usedSentences = [];
         room.players.forEach(p => {
             p.points = 0;
             p.boughtHint = false;

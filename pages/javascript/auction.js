@@ -38,6 +38,23 @@ const explanationReasoning = document.getElementById('explanation-reasoning');
 const hintArea = document.getElementById('hint-area');
 const hintText = document.getElementById('hint-text');
 const rankingsList = document.getElementById('rankings-list');
+const mobileRankingsToggle = document.getElementById('mobile-rankings-toggle');
+const mobileRankingsDropdown = document.getElementById('mobile-rankings-dropdown');
+const mobileRankingsArrow = document.getElementById('mobile-rankings-arrow');
+const mobileRankingsLeader = document.getElementById('mobile-rankings-leader');
+const mobileRankingsList = document.getElementById('mobile-rankings-list');
+
+// Desktop & Mobile Bot Chat Stack References
+const desktopChatStack = document.getElementById('desktop-chat-stack');
+const desktopChatEmpty = document.getElementById('desktop-chat-empty');
+const mobileChatStack = document.getElementById('mobile-chat-stack');
+
+// Desktop Room Round History References
+const desktopRoundHistoryList = document.getElementById('desktop-round-history-list');
+const desktopHistoryCount = document.getElementById('desktop-history-count');
+const desktopHistoryEmpty = document.getElementById('desktop-history-empty');
+let roomRoundHistoryLog = [];
+
 const consoleHighestBid = document.getElementById('console-highest-bid');
 const consoleTopBidder = document.getElementById('console-top-bidder');
 const biddingControls = document.getElementById('bidding-controls');
@@ -442,15 +459,35 @@ function hideOverlay(overlay, card) {
     setTimeout(() => overlay.classList.add('hidden'), 300);
 }
 
+// Mobile Rankings Dropdown Toggle Handler
+if (mobileRankingsToggle && mobileRankingsDropdown) {
+    mobileRankingsToggle.addEventListener('click', () => {
+        const isCollapsed = mobileRankingsDropdown.classList.contains('max-h-0');
+        if (isCollapsed) {
+            mobileRankingsDropdown.classList.remove('max-h-0');
+            mobileRankingsDropdown.classList.add('max-h-96');
+            if (mobileRankingsArrow) mobileRankingsArrow.classList.add('rotate-180');
+        } else {
+            mobileRankingsDropdown.classList.remove('max-h-96');
+            mobileRankingsDropdown.classList.add('max-h-0');
+            if (mobileRankingsArrow) mobileRankingsArrow.classList.remove('rotate-180');
+        }
+    });
+}
+
 function renderRankings(playerList) {
-    if (!playerList || !rankingsList) return;
+    if (!playerList) return;
     players = playerList;
 
     // Sort by cash descending
     const sorted = [...playerList].sort((a, b) => b.cash - a.cash);
     const medals = ['🥇', '🥈', '🥉', '🎖️'];
 
-    rankingsList.innerHTML = sorted.map((p, i) => {
+    if (sorted.length > 0 && mobileRankingsLeader) {
+        mobileRankingsLeader.textContent = `${sorted[0].username} (${formatCash(sorted[0].cash)})`;
+    }
+
+    const rankingsHTML = sorted.map((p, i) => {
         const isMe = p.userId === userId;
         const isTopBidder = currentTopBidder && p.socketId === currentTopBidder.socketId;
         const borderClass = isMe
@@ -479,6 +516,9 @@ function renderRankings(playerList) {
             </div>
         `;
     }).join('');
+
+    if (rankingsList) rankingsList.innerHTML = rankingsHTML;
+    if (mobileRankingsList) mobileRankingsList.innerHTML = rankingsHTML;
 }
 
 // Auto-refresh Live Rankings UI every 5 seconds
@@ -630,6 +670,24 @@ socket.on('sync_game_state', (data) => {
     if (data.players) {
         renderRankings(data.players);
         updateMyPlayerCash(data.players);
+    }
+
+    // Restore chat history on sync/reconnect (Desktop: up to 6, Mobile: 1 latest)
+    if (Array.isArray(data.chatHistory) && data.chatHistory.length > 0) {
+        if (mobileChatStack) mobileChatStack.innerHTML = '';
+        if (desktopChatStack) desktopChatStack.innerHTML = '';
+        if (desktopChatEmpty) desktopChatEmpty.style.display = 'none';
+
+        const isDesktop = window.innerWidth >= 1024;
+        const messagesToRestore = isDesktop ? data.chatHistory : data.chatHistory.slice(-1);
+        messagesToRestore.forEach(msg => pushChatMessage(msg));
+    }
+
+    // Restore round history on sync/reconnect
+    if (Array.isArray(data.roundHistory) && data.roundHistory.length > 0) {
+        roomRoundHistoryLog = [];
+        if (desktopRoundHistoryList) desktopRoundHistoryList.innerHTML = '';
+        data.roundHistory.forEach(round => addRoundToHistory(round));
     }
 
     // Compute remaining time from server deadline if provided
@@ -934,6 +992,7 @@ socket.on('round_result', (data) => {
     }
 
     showOverlay(resultOverlay, resultCard);
+    addRoundToHistory(data);
 });
 
 // ── Correction Phase Start ─────────────────────────────────────
@@ -1391,12 +1450,121 @@ function showFloatingXP(targetUserId, targetUsername, amount) {
     setTimeout(() => floater.remove(), 2400);
 }
 
-// ── Bot Chat Banter Messages (Toast Notification) ─────────────
-socket.on('chat_message', ({ username, message, isBot }) => {
+// ── Bot Chat Banter Messages & Dual Stack Handlers ────────────
+function pushChatMessage({ username, message, isBot }) {
     console.log(`💬 Chat message received: [${username}]: "${message}"`);
     const botBadge = isBot ? ' 🤖' : '';
-    showToast(`<strong class="text-amber-300">${username}${botBadge}:</strong> ${message}`, '💬', 3500);
+
+    // 1. Mobile Chat Stack (Max 3, floating above bidding controls)
+    if (mobileChatStack) {
+        const item = document.createElement('div');
+        item.className = 'bg-slate-900/90 backdrop-blur-md border border-amber-500/40 text-white rounded-xl p-2.5 shadow-lg flex items-center gap-2 text-xs transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto';
+        item.innerHTML = `
+            <span class="text-base shrink-0">${isBot ? '🤖' : '💬'}</span>
+            <div class="flex-1 min-w-0">
+                <span class="font-bold text-amber-300 font-serif">${username}:</span>
+                <span class="text-white/90 font-sans ml-1">${message}</span>
+            </div>
+        `;
+        mobileChatStack.appendChild(item);
+
+        // Trigger slide-in animation
+        requestAnimationFrame(() => {
+            item.classList.remove('translate-y-4', 'opacity-0');
+            item.classList.add('translate-y-0', 'opacity-100');
+        });
+
+        // Enforce Mobile Max 1 Chat message limit (1 chat at a time on mobile)
+        const mobileItems = mobileChatStack.querySelectorAll('.pointer-events-auto');
+        if (mobileItems.length > 1) {
+            const oldest = mobileItems[0];
+            oldest.classList.remove('translate-y-0', 'opacity-100');
+            oldest.classList.add('-translate-y-4', 'opacity-0');
+            setTimeout(() => oldest.remove(), 300);
+        }
+    }
+
+    // 2. Desktop Chat Stack (Max 6, inside left sidebar)
+    if (desktopChatStack) {
+        if (desktopChatEmpty) desktopChatEmpty.style.display = 'none';
+
+        const item = document.createElement('div');
+        item.className = 'bg-slate-900/80 border border-white/10 hover:border-amber-500/30 rounded-xl p-3 shadow-md flex flex-col gap-1 text-xs transition-all duration-300 transform opacity-0 translate-y-2';
+        item.innerHTML = `
+            <div class="flex items-center justify-between">
+                <span class="font-bold font-serif text-amber-300">${username}${botBadge}</span>
+                <span class="text-[10px] text-white/40 font-sans">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+            <p class="text-white/85 font-sans leading-relaxed">${message}</p>
+        `;
+        desktopChatStack.appendChild(item);
+
+        requestAnimationFrame(() => {
+            item.classList.remove('opacity-0', 'translate-y-2');
+            item.classList.add('opacity-100', 'translate-y-0');
+        });
+
+        // Scroll to bottom of desktop chat stack
+        desktopChatStack.scrollTop = desktopChatStack.scrollHeight;
+
+        // Enforce Desktop Max 6 Stack limit
+        const desktopItems = desktopChatStack.children;
+        // Count non-hidden elements excluding placeholder
+        const activeItems = Array.from(desktopItems).filter(el => el.id !== 'desktop-chat-empty');
+        if (activeItems.length > 6) {
+            const oldest = activeItems[0];
+            oldest.classList.remove('opacity-100');
+            oldest.classList.add('opacity-0', '-translate-y-2');
+            setTimeout(() => oldest.remove(), 300);
+        }
+    }
+}
+
+socket.on('chat_message', (data) => {
+    pushChatMessage(data);
 });
+
+// ── Desktop Room Round History Logger ──────────────────────────
+function addRoundToHistory(data) {
+    if (!desktopRoundHistoryList || !data) return;
+
+    // Deduplicate by round number to prevent duplicate rendering upon reconnect/sync
+    const roundNum = data.roundNumber || data.round;
+    if (roundNum && roomRoundHistoryLog.some(r => (r.roundNumber || r.round) === roundNum)) {
+        return;
+    }
+
+    if (desktopHistoryEmpty) desktopHistoryEmpty.style.display = 'none';
+
+    roomRoundHistoryLog.push(data);
+    if (desktopHistoryCount) {
+        desktopHistoryCount.textContent = `${roomRoundHistoryLog.length} ${roomRoundHistoryLog.length === 1 ? 'Round' : 'Rounds'}`;
+    }
+
+    const lotNumber = data.lotNumber || (roundNum ? `Lot ${roundNum}` : `Lot ${roomRoundHistoryLog.length}`);
+    const isCorrect = data.isCorrect;
+    const winnerName = data.winnerUsername || 'No Winner';
+    const bidVal = data.highestBid ? formatCash(data.highestBid) : '$0';
+    const verdictBadge = isCorrect
+        ? '<span class="text-[10px] font-sans font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded-md">✓ Correct</span>'
+        : '<span class="text-[10px] font-sans font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 px-1.5 py-0.5 rounded-md">✗ Incorrect</span>';
+
+    const card = document.createElement('div');
+    card.className = 'bg-slate-900/80 border border-white/10 rounded-xl p-3 shadow-md flex flex-col gap-1.5 text-xs transition-all hover:border-cyan-500/30';
+    card.innerHTML = `
+        <div class="flex items-center justify-between border-b border-white/10 pb-1.5">
+            <span class="font-serif italic font-bold text-amber-300">${lotNumber}</span>
+            ${verdictBadge}
+        </div>
+        <p class="font-serif italic text-white/80 line-clamp-2">"${data.sentence || ''}"</p>
+        <div class="flex items-center justify-between text-[11px] font-sans pt-1 border-t border-white/5 text-white/60">
+            <span>Winner: <strong class="text-white font-serif">${winnerName}</strong></span>
+            <span class="text-emerald-300 font-bold">${bidVal}</span>
+        </div>
+    `;
+    desktopRoundHistoryList.appendChild(card);
+    desktopRoundHistoryList.scrollTop = desktopRoundHistoryList.scrollHeight;
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  Question Reporting System Client Handlers
