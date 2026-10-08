@@ -27,9 +27,9 @@ function registerBotHandlers(io, socket, rooms, socketRoomMap) {
                 return socket.emit('join_error', { message: 'Bots can only be added to private rooms.' });
             }
 
-            // Host check
+            // Host check: socket must belong to the room's host
             const host = room.players.find(p => p.isHost);
-            if (!host || host.userId !== userId) {
+            if (!host || host.socketId !== socket.id) {
                 return socket.emit('join_error', { message: 'Only the host can add bots.' });
             }
 

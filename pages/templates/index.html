@@ -49,9 +49,9 @@
             class="black-header relative z-10 w-full px-6 py-3.5 flex items-center justify-between animate-fade-in-down">
 
             <!-- Left: SVG Logo + Brand Title -->
-            <a href="#" id="brand" class="flex items-center gap-3 group">
+            <a href="#" id="brand" class="flex items-center gap-2 group whitespace-nowrap shrink-0">
                 <!-- Exact Gavel / Auction SVG Logo -->
-                <svg class="w-9 h-9 text-white transition-transform duration-300 group-hover:rotate-[-10deg]"
+                <svg class="w-6 h-6 sm:w-7 sm:h-7 text-white transition-transform duration-300 group-hover:rotate-[-10deg] shrink-0"
                     viewBox="0 0 63 63" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         d="M16.6509 39.934V42.1041C16.6509 42.7034 17.1025 43.1891 17.6596 43.1891H29.7639C30.321 43.1891 30.7726 42.7034 30.7726 42.1041V39.934C30.7726 39.3348 30.321 38.849 29.7639 38.849H17.6596C17.1025 38.849 16.6509 39.3348 16.6509 39.934Z"
@@ -82,21 +82,21 @@
                         d="M58.987 54.5323H4.01304C3.17741 54.5323 2.5 55.261 2.5 56.1599V58.8725C2.5 59.7713 3.17741 60.5 4.01304 60.5H58.987C59.8226 60.5 60.5 59.7713 60.5 58.8725V56.1599C60.5 55.261 59.8226 54.5323 58.987 54.5323Z"
                         stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <span class="font-heading text-2xl md:text-3xl italic tracking-wide text-white font-normal">
+                <span class="font-heading text-lg sm:text-xl italic tracking-wide text-white font-normal whitespace-nowrap">
                     Grammar Bid
                 </span>
             </a>
 
             <!-- Desktop Center & Right Controls -->
-            <div class="hidden lg:flex items-center gap-4">
+            <div class="hidden lg:flex items-center gap-2.5 xl:gap-3.5 shrink-0">
                 <!-- Enter 4 digit room no. input container -->
                 <div
-                    class="relative flex items-center glass-pill px-4 py-1.5 rounded-full border border-cyan-500/30 shadow-lg shadow-cyan-900/20">
+                    class="relative flex items-center glass-pill px-4 py-1.5 rounded-full border border-cyan-500/30 shadow-lg shadow-cyan-900/20 shrink-0">
                     <input id="room-input" type="text" maxlength="4" placeholder="Enter 4 digit room no."
-                        class="nav-input bg-transparent w-48 sm:w-56 text-sm italic text-white/90 outline-none placeholder-white/50" />
+                        class="nav-input bg-transparent w-44 xl:w-52 text-sm italic text-white/90 outline-none placeholder-white/50" />
 
                     <button id="room-submit"
-                        class="w-6 h-6 rounded-full border border-cyan-400/60 flex items-center justify-center text-cyan-300 hover:bg-cyan-500/20 hover:scale-110 transition-all duration-300 ml-2"
+                        class="w-6 h-6 rounded-full border border-cyan-400/60 flex items-center justify-center text-cyan-300 hover:bg-cyan-500/20 hover:scale-110 transition-all duration-300 ml-2 shrink-0"
                         aria-label="Submit room number">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5"
                             viewBox="0 0 24 24">
@@ -107,52 +107,52 @@
 
                 <!-- Power Store Pill Button -->
                 <button id="power-store-btn"
-                    class="glass-pill hover-lift flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/20 transition-all cursor-pointer">
-                    <span class="text-base">⚡</span>
-                    <span>Power Store</span>
+                    class="glass-pill hover-lift flex items-center gap-2 px-3.5 xl:px-4 py-1.5 rounded-full text-sm font-serif italic text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/20 transition-all cursor-pointer whitespace-nowrap shrink-0">
+                    <span class="text-base shrink-0">⚡</span>
+                    <span class="whitespace-nowrap">Power Store</span>
                 </button>
 
                 <!-- Mini Games Pill Button -->
                 <a href="/Mini_Games/pages/index.html" id="mini-games-btn"
-                    class="glass-pill hover-lift flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/20 transition-all cursor-pointer">
-                    <span class="text-base">🕹️</span>
-                    <span>Mini Games</span>
+                    class="glass-pill hover-lift flex items-center gap-2 px-3.5 xl:px-4 py-1.5 rounded-full text-sm font-serif italic text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/20 transition-all cursor-pointer whitespace-nowrap shrink-0">
+                    <span class="text-base shrink-0">🕹️</span>
+                    <span class="whitespace-nowrap">Mini Games</span>
                 </a>
 
                 <!-- Daily Rewards Pill Button -->
                 <button id="daily-reward-btn"
-                    class="glass-pill hover-lift flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-amber-300 border border-amber-500/40 hover:bg-amber-500/20 transition-all cursor-pointer">
-                    <span class="text-base">🎁</span>
-                    <span>Daily Reward</span>
-                    <span id="daily-reward-badge" class="w-2 h-2 rounded-full bg-amber-400 animate-ping hidden"></span>
+                    class="glass-pill hover-lift flex items-center gap-2 px-3.5 xl:px-4 py-1.5 rounded-full text-sm font-serif italic text-amber-300 border border-amber-500/40 hover:bg-amber-500/20 transition-all cursor-pointer whitespace-nowrap shrink-0">
+                    <span class="text-base shrink-0">🎁</span>
+                    <span class="whitespace-nowrap">Daily Reward</span>
+                    <span id="daily-reward-badge" class="w-2 h-2 rounded-full bg-amber-400 animate-ping hidden shrink-0"></span>
                 </button>
 
                 <!-- Leaderboard Pill Button -->
                 <button id="leaderboard-btn"
-                    class="glass-pill hover-lift flex items-center gap-2 px-5 py-1.5 rounded-full text-sm font-serif italic text-white/90 border border-cyan-500/30">
-                    <svg class="w-4 h-4 text-cyan-300/80" fill="none" stroke="currentColor" stroke-width="1.8"
+                    class="glass-pill hover-lift flex items-center gap-2 px-4 xl:px-5 py-1.5 rounded-full text-sm font-serif italic text-white/90 border border-cyan-500/30 whitespace-nowrap shrink-0">
+                    <svg class="w-4 h-4 text-cyan-300/80 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 16l-1-9 5 3 3-5 3 5 5-3-1 9H5z" />
                     </svg>
-                    Leaderboard
+                    <span class="whitespace-nowrap">Leaderboard</span>
                 </button>
 
                 <!-- Inbox Button -->
                 <button id="inbox-btn"
-                    class="glass-pill relative flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-serif italic text-white/90 border border-cyan-500/30 hover:scale-105 transition-all cursor-pointer">
-                    <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" stroke-width="2"
+                    class="glass-pill relative flex items-center gap-2 px-3.5 xl:px-4 py-1.5 rounded-full text-sm font-serif italic text-white/90 border border-cyan-500/30 hover:scale-105 transition-all cursor-pointer whitespace-nowrap shrink-0">
+                    <svg class="w-4 h-4 text-cyan-300 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <span>Inbox</span>
+                    <span class="whitespace-nowrap">Inbox</span>
                     <span id="inbox-badge"
-                        class="bg-rose-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center hidden shadow-sm">0</span>
+                        class="bg-rose-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center hidden shadow-sm shrink-0">0</span>
                 </button>
 
                 <!-- Help icon (?) -->
                 <button id="help-btn"
-                    class="w-7 h-7 rounded-full flex items-center justify-center text-white/80 border border-white/30 hover:border-white/60 hover:scale-110 transition-all duration-300 ml-2"
+                    class="w-7 h-7 rounded-full flex items-center justify-center text-white/80 border border-white/30 hover:border-white/60 hover:scale-110 transition-all duration-300 ml-1 shrink-0"
                     aria-label="Help">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <circle cx="12" cy="12" r="9" />
@@ -162,25 +162,25 @@
 
                 <!-- User Profile & Logout Pill -->
                 <div id="user-info"
-                    class="glass-pill flex items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-amber-500/30">
-                    <div id="desktop-profile-btn" class="flex items-center gap-2 cursor-pointer group"
+                    class="glass-pill flex items-center gap-2 pl-2 pr-3 py-1 rounded-full border border-amber-500/30 whitespace-nowrap shrink-0">
+                    <div id="desktop-profile-btn" class="flex items-center gap-2 cursor-pointer group shrink-0"
                         title="Click to edit profile">
                         <img id="header-avatar-img" src="https://api.dicebear.com/7.x/initials/svg?seed=GB" alt="Avatar"
-                            class="w-7 h-7 rounded-full object-cover border border-amber-400/50 group-hover:scale-105 transition-all" />
+                            class="w-7 h-7 rounded-full object-cover border border-amber-400/50 group-hover:scale-105 transition-all shrink-0" />
                         <span id="user-display-name"
-                            class="text-xs sm:text-sm font-serif italic text-white/90 group-hover:text-amber-200 transition-all">
+                            class="text-xs sm:text-sm font-serif italic text-white/90 group-hover:text-amber-200 transition-all whitespace-nowrap max-w-[130px] xl:max-w-[170px] truncate">
                             Hi, Player
                         </span>
-                        <span class="text-xs text-amber-400 opacity-70 group-hover:opacity-100 transition-all">✏️</span>
+                        <span class="text-xs text-amber-400 opacity-70 group-hover:opacity-100 transition-all shrink-0">✏️</span>
                     </div>
                     <!-- Cash Badge -->
                     <div
-                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono font-bold text-xs shadow-sm">
-                        <span>💵</span>
-                        <span id="user-cash-display">$10,000</span>
+                        class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono font-bold text-xs shadow-sm whitespace-nowrap shrink-0">
+                        <span class="shrink-0">💵</span>
+                        <span id="user-cash-display" class="whitespace-nowrap">$10,000</span>
                     </div>
                     <button id="index-logout-btn" title="Log Out"
-                        class="ml-1 px-2.5 py-0.5 rounded-full bg-rose-500/20 hover:bg-rose-500 border border-rose-500/40 text-rose-200 hover:text-white text-[11px] font-sans font-semibold transition-all cursor-pointer">
+                        class="ml-1 px-2.5 py-0.5 rounded-full bg-rose-500/20 hover:bg-rose-500 border border-rose-500/40 text-rose-200 hover:text-white text-[11px] font-sans font-semibold transition-all cursor-pointer whitespace-nowrap shrink-0">
                         Logout
                     </button>
                 </div>
@@ -948,9 +948,10 @@
         <script>
             (() => {
                 const uid = localStorage.getItem('gb_userId');
-                if (uid) {
-                    const s = io({ reconnection: true, reconnectionAttempts: 5, reconnectionDelay: 2000 });
-                    s.on('connect', () => s.emit('auth_online', { userId: uid }));
+                const token = localStorage.getItem('gb_token');
+                if (uid && token) {
+                    const s = io({ auth: { token }, reconnection: true, reconnectionAttempts: 5, reconnectionDelay: 2000 });
+                    s.on('connect', () => s.emit('auth_online', { token, userId: uid }));
                 }
             })();
         </script>

@@ -91,6 +91,26 @@ const ArcadeManager = {
         return { remainingAttempts, attemptsToday };
     },
 
+    // ─── Generic Start Attempt Session ────────────────────────────────────
+    async startAttempt(gameEndpoint) {
+        const authToken = this.getAuthToken();
+        if (authToken) {
+            try {
+                const res = await fetch(`/api/mini-games/${gameEndpoint}/start-attempt`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                return await res.json();
+            } catch (err) {
+                console.warn(`[ArcadeManager] Start attempt error for ${gameEndpoint}:`, err);
+            }
+        }
+        return { success: true, guestFallback: true };
+    },
+
     // ─── Generic Reward Submission ────────────────────────────────────────
     async submitReward(gameEndpoint, payload, dateKey, attemptsKey) {
         const authToken = this.getAuthToken();

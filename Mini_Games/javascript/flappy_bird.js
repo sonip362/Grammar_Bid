@@ -210,6 +210,9 @@ function flap() {
 function startGame() {
     if (attemptsRemaining <= 0) return;
 
+    // Start server authoritative game session
+    ArcadeManager.startAttempt('flappy');
+
     document.getElementById('start-overlay').classList.add('hidden');
     document.getElementById('gameover-overlay').classList.add('hidden');
     document.getElementById('live-hud').classList.remove('hidden');

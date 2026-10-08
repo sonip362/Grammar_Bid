@@ -372,6 +372,9 @@ const reconnectRetryBtn = document.getElementById('reconnect-retry-btn');
 
 // ── Socket Connection & Auto-Reconnect ─────────────────────────
 const socket = io({
+    auth: {
+        token: localStorage.getItem('gb_token')
+    },
     reconnection: true,
     reconnectionAttempts: 15,
     reconnectionDelay: 1000,
@@ -1335,8 +1338,9 @@ socket.on('disconnect', (reason) => {
 socket.on('connect', () => {
     console.log('⚡ Socket connected to server. Joining room:', roomCode);
     if (roomCode && userId) {
-        socket.emit('auth_online', { userId });
-        socket.emit('join_room', { roomCode, userId });
+        const token = localStorage.getItem('gb_token');
+        socket.emit('auth_online', { userId, token });
+        socket.emit('join_room', { roomCode, userId, token });
     }
 });
 

@@ -2,12 +2,13 @@
   "name": "grammar",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server/index.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node server/index.js",
+    "test": "node --test tests/*.test.js",
     "build:css": "npx @tailwindcss/cli -i pages/styles/input.css -o pages/styles/tailwind.css",
     "watch:css": "npx @tailwindcss/cli -i pages/styles/input.css -o pages/styles/tailwind.css --watch",
-    "dev": "concurrently \"node server.js\" \"npx @tailwindcss/cli -i pages/styles/input.css -o pages/styles/tailwind.css --watch\""
+    "dev": "concurrently \"node server/index.js\" \"npx @tailwindcss/cli -i pages/styles/input.css -o pages/styles/tailwind.css --watch\""
   },
   "engines": {
     "node": ">=18.0.0"
@@ -17,22 +18,24 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@tailwindcss/cli": "^4.3.3",
-    "bcrypt": "^6.0.0",
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "groq-sdk": "^1.5.0",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.9.0",
-    "ngrok": "^5.0.0-beta.2",
-    "socket.io": "^4.8.3",
-    "tailwindcss": "^4.3.3",
-    "web-push": "^3.6.7",
-    "write-good": "^1.0.8"
+    "@tailwindcss/cli": "4.3.3",
+    "bcrypt": "6.0.0",
+    "bcryptjs": "3.0.3",
+    "cors": "2.8.6",
+    "dotenv": "17.4.2",
+    "express": "5.2.1",
+    "express-rate-limit": "8.6.2",
+    "groq-sdk": "1.5.0",
+    "helmet": "8.3.0",
+    "jsonwebtoken": "9.0.3",
+    "mongoose": "9.9.0",
+    "ngrok": "5.0.0-beta.2",
+    "socket.io": "4.8.3",
+    "tailwindcss": "4.3.3",
+    "web-push": "3.6.7",
+    "write-good": "1.0.8"
   },
   "devDependencies": {
-    "concurrently": "^10.0.4"
+    "concurrently": "10.0.4"
   }
 }

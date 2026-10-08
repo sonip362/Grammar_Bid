@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        minlength: 6
+        minlength: 8
     },
     isGuest: {
         type: Boolean,
@@ -92,27 +92,33 @@ const userSchema = new mongoose.Schema({
     miniGames: {
         flappy: {
             lastPlayDate: { type: String, default: null },
-            attemptsToday: { type: Number, default: 0 }
+            attemptsToday: { type: Number, default: 0 },
+            sessionStartTime: { type: Number, default: null }
         },
         ticTacToe: {
             lastPlayDate: { type: String, default: null },
-            attemptsToday: { type: Number, default: 0 }
+            attemptsToday: { type: Number, default: 0 },
+            sessionStartTime: { type: Number, default: null }
         },
         helpAi: {
             lastPlayDate: { type: String, default: null },
-            attemptsToday: { type: Number, default: 0 }
+            attemptsToday: { type: Number, default: 0 },
+            sessionStartTime: { type: Number, default: null }
         },
         patternSequence: {
             lastPlayDate: { type: String, default: null },
-            attemptsToday: { type: Number, default: 0 }
+            attemptsToday: { type: Number, default: 0 },
+            sessionStartTime: { type: Number, default: null }
         },
         mathSequence: {
             lastPlayDate: { type: String, default: null },
-            attemptsToday: { type: Number, default: 0 }
+            attemptsToday: { type: Number, default: 0 },
+            sessionStartTime: { type: Number, default: null }
         },
         foodMemory: {
             lastPlayDate: { type: String, default: null },
-            attemptsToday: { type: Number, default: 0 }
+            attemptsToday: { type: Number, default: 0 },
+            sessionStartTime: { type: Number, default: null }
         }
     },
     pushSubscriptions: [{

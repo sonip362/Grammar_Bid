@@ -4,6 +4,7 @@
  * Handles card purchases, inventory operations, phase validation, and atomic state updates.
  */
 
+const crypto = require('crypto');
 const User = require('../../models/User');
 const Transaction = require('../../models/Transaction');
 const InboxMessage = require('../../models/InboxMessage');
@@ -69,7 +70,11 @@ async function getUserPowerCards(userId) {
  * Exchange Cash for Gold Tokens based on player's rank.
  */
 async function exchangeCashForTokens(userId, tokensToBuy = 1) {
-    const qty = Math.max(1, Math.floor(Number(tokensToBuy) || 1));
+    const parsedTokens = Number(tokensToBuy);
+    if (!Number.isInteger(parsedTokens) || parsedTokens < 1 || parsedTokens > 500) {
+        return { success: false, status: 400, message: 'Invalid tokensToBuy: must be a positive integer between 1 and 500.' };
+    }
+    const qty = parsedTokens;
 
     const user = await User.findById(userId);
     if (!user) {
@@ -105,7 +110,7 @@ async function exchangeCashForTokens(userId, tokensToBuy = 1) {
         return { success: false, status: 400, message: 'Exchange failed due to insufficient cash or concurrent request.' };
     }
 
-    const txId = `tx_ex_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const txId = `tx_ex_${crypto.randomUUID()}`;
 
     // Create transaction audit log
     try {
@@ -156,7 +161,11 @@ async function purchasePowerCard(userId, cardId, quantity = 1) {
         return { success: false, status: 400, message: 'Invalid card ID' };
     }
 
-    const qty = Math.max(1, Math.floor(Number(quantity) || 1));
+    const parsedQty = Number(quantity);
+    if (!Number.isInteger(parsedQty) || parsedQty < 1 || parsedQty > 50) {
+        return { success: false, status: 400, message: 'Invalid quantity: must be an integer between 1 and 50.' };
+    }
+    const qty = parsedQty;
     const tokenCost = (card.tokenCost || 10) * qty;
 
     const userBefore = await User.findById(userId).lean();
@@ -191,7 +200,7 @@ async function purchasePowerCard(userId, cardId, quantity = 1) {
     }
 
     const tokensAfter = updatedUser.tokens;
-    const txId = `tx_pc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+    const txId = `tx_pc_${crypto.randomUUID()}`;
 
     // Create auditable transaction record
     try {
