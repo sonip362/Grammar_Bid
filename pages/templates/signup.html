@@ -73,7 +73,7 @@
                 <p id="error-msg" class="text-rose-400 text-sm font-body hidden text-center"></p>
 
                 <!-- Submit Button -->
-                <button type="submit"
+                <button type="submit" id="signup-submit-btn"
                     class="modal-action-btn !mt-2 w-full inline-flex items-center justify-center h-14 text-lg tracking-wide">
                     Create Account
                 </button>
@@ -113,9 +113,40 @@
         const form = document.getElementById('signup-form');
         const errorMsg = document.getElementById('error-msg');
         const guestBtn = document.getElementById('guest-btn');
+        const submitBtn = document.getElementById('signup-submit-btn');
+
+        let _signupCdInterval = null;
+
+        function startSignupCountdown(seconds) {
+            if (_signupCdInterval) clearInterval(_signupCdInterval);
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+
+            function tick() {
+                const m = Math.floor(seconds / 60);
+                const s = seconds % 60;
+                submitBtn.textContent = m > 0
+                    ? `⏳ Try again in ${m}m ${String(s).padStart(2, '0')}s`
+                    : `⏳ Try again in ${s}s`;
+                if (seconds <= 0) {
+                    clearInterval(_signupCdInterval);
+                    _signupCdInterval = null;
+                    submitBtn.disabled = false;
+                    submitBtn.style.opacity = '';
+                    submitBtn.style.cursor = '';
+                    submitBtn.textContent = 'Create Account';
+                    errorMsg.classList.add('hidden');
+                }
+                seconds--;
+            }
+            tick();
+            _signupCdInterval = setInterval(tick, 1000);
+        }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (submitBtn.disabled) return;
             errorMsg.classList.add('hidden');
 
             const username = document.getElementById('username').value.trim();
@@ -136,6 +167,13 @@
                 });
 
                 const data = await res.json();
+
+                if (res.status === 429 && data.rateLimited) {
+                    errorMsg.textContent = data.error;
+                    errorMsg.classList.remove('hidden');
+                    startSignupCountdown(data.retryAfterSeconds || 60);
+                    return;
+                }
 
                 if (!res.ok) {
                     errorMsg.textContent = data.error || 'Signup failed.';

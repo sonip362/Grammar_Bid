@@ -10,6 +10,7 @@ const maxAttempts = 5;
 let board = Array(9).fill(null);
 let isGameActive = true;
 let currentPlayer = 'X';
+let attemptSessionStarted = false;
 
 async function fetchGameStatus() {
     const status = await ArcadeManager.fetchStatus('tic-tac-toe', 'gb_ttt_date', 'gb_ttt_attempts');
@@ -41,6 +42,11 @@ async function submitGameResult(result) {
 
 function makeMove(idx) {
     if (!isGameActive || board[idx] !== null || currentPlayer !== 'X' || attemptsRemaining <= 0) return;
+
+    if (!attemptSessionStarted) {
+        attemptSessionStarted = true;
+        ArcadeManager.startAttempt('tic-tac-toe');
+    }
 
     if (window.ArcadeAudio) ArcadeAudio.playClick();
     board[idx] = 'X';
@@ -161,6 +167,7 @@ function resetBoard() {
     board = Array(9).fill(null);
     isGameActive = true;
     currentPlayer = 'X';
+    attemptSessionStarted = false;
     document.getElementById('turn-indicator').textContent = 'Your Turn (❌)';
     document.getElementById('result-modal').classList.add('hidden');
     renderBoard();

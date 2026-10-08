@@ -28,15 +28,14 @@
     <div class="grain-overlay fixed inset-0 z-0 pointer-events-none"></div>
 
     <!-- ═══════════════════════════════════════
-    <!-- ═══════════════════════════════════════
          TOP NAVIGATION HEADER
          ═══════════════════════════════════════ -->
     <header
         class="fixed top-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-xl border-b border-amber-500/20 px-3 sm:px-8 py-2.5 flex items-center justify-between shadow-lg">
         <!-- Brand Logo -->
-        <a href="index.html" class="flex items-center gap-2.5 transition-transform duration-300 hover:scale-105">
-            <svg width="24" height="24" viewBox="0 0 63 63" fill="none" xmlns="http://www.w3.org/2000/svg"
-                class="sm:w-7 sm:h-7">
+        <a href="index.html" class="flex items-center gap-2 transition-transform duration-300 hover:scale-105 whitespace-nowrap shrink-0">
+            <svg width="22" height="22" viewBox="0 0 63 63" fill="none" xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5 sm:w-6 sm:h-6 shrink-0">
                 <path
                     d="M16.6509 39.934V42.1041C16.6509 42.7034 17.1025 43.1891 17.6596 43.1891H29.7639C30.321 43.1891 30.7726 42.7034 30.7726 42.1041V39.934C30.7726 39.3348 30.321 38.849 29.7639 38.849H17.6596C17.1025 38.849 16.6509 39.3348 16.6509 39.934Z"
                     stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
@@ -66,7 +65,7 @@
                     d="M58.987 54.5323H4.01304C3.17741 54.5323 2.5 55.261 2.5 56.1599V58.8725C2.5 59.7713 3.17741 60.5 4.01304 60.5H58.987C59.8226 60.5 60.5 59.7713 60.5 58.8725V56.1599C60.5 55.261 59.8226 54.5323 58.987 54.5323Z"
                     stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
-            <span class="font-heading text-lg sm:text-2xl italic tracking-wide text-white font-normal">
+            <span class="font-heading text-base sm:text-xl italic tracking-wide text-white font-normal whitespace-nowrap">
                 Grammar Bid
             </span>
         </a>
@@ -176,7 +175,9 @@
         const MAX_PLAYERS = 4;
 
         // ── Socket Connection ──────────────────────────────────
-        const socket = io();
+        const socket = io({
+            auth: { token }
+        });
 
         // Determine if joining, quick match, or creating private room
         const urlParams = new URLSearchParams(window.location.search);
@@ -184,13 +185,13 @@
         const mode = urlParams.get('mode');
 
         if (joinCode) {
-            socket.emit('join_room', { roomCode: joinCode, userId });
+            socket.emit('join_room', { roomCode: joinCode, userId, token });
             lobbyStatus.textContent = `Joining room #${joinCode}...`;
         } else if (mode === 'quick') {
-            socket.emit('quick_match', { userId });
+            socket.emit('quick_match', { userId, token });
             lobbyStatus.textContent = 'Finding an active Quick Match room...';
         } else {
-            socket.emit('create_room', { userId });
+            socket.emit('create_room', { userId, token });
             lobbyStatus.textContent = 'Creating your private room...';
         }
 
@@ -493,7 +494,7 @@
 
         socket.on('connect', () => {
             if (currentRoomCode) {
-                socket.emit('join_room', { roomCode: currentRoomCode, userId });
+                socket.emit('join_room', { roomCode: currentRoomCode, userId, token: localStorage.getItem('gb_token') });
             }
         });
 
@@ -563,7 +564,7 @@
         if (startBtn) {
             startBtn.addEventListener('click', () => {
                 if (!currentRoomCode) return;
-                socket.emit('start_game', { roomCode: currentRoomCode, userId });
+                socket.emit('start_game', { roomCode: currentRoomCode, userId, token: localStorage.getItem('gb_token') });
             });
         }
 
@@ -575,7 +576,7 @@
                 confirmText: 'Kick Player',
                 onConfirm: () => {
                     if (socket && currentRoomCode) {
-                        socket.emit('kick_player', { roomCode: currentRoomCode, userId, targetUserId });
+                        socket.emit('kick_player', { roomCode: currentRoomCode, userId, targetUserId, token: localStorage.getItem('gb_token') });
                     }
                 }
             });
