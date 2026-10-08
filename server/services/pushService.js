@@ -13,24 +13,38 @@ if (VAPID_PUBLIC_KEY && VAPID_PRIVATE_KEY) {
     console.warn('⚠️ VAPID keys not set — push notifications disabled');
 }
 
-// ─── Save Subscription to User ───────────────────────────────
 async function saveSubscription(userId, subscription) {
     try {
+        if (!subscription || typeof subscription !== 'object') {
+            return { success: false, error: 'Invalid subscription object' };
+        }
+        const { endpoint, keys } = subscription;
+        if (!endpoint || typeof endpoint !== 'string' || !endpoint.startsWith('https://') || endpoint.length > 500) {
+            return { success: false, error: 'Invalid push endpoint URL' };
+        }
+        if (!keys || typeof keys !== 'object' ||
+            typeof keys.p256dh !== 'string' || keys.p256dh.length < 10 || keys.p256dh.length > 250 ||
+            typeof keys.auth !== 'string' || keys.auth.length < 5 || keys.auth.length > 150) {
+            return { success: false, error: 'Invalid push subscription keys' };
+        }
+
         const user = await User.findById(userId);
         if (!user) return { success: false, error: 'User not found' };
 
+        user.pushSubscriptions = user.pushSubscriptions || [];
         // Avoid storing duplicate endpoints
-        const exists = (user.pushSubscriptions || []).some(
-            sub => sub.endpoint === subscription.endpoint
-        );
+        const exists = user.pushSubscriptions.some(sub => sub.endpoint === endpoint);
 
         if (!exists) {
-            user.pushSubscriptions = user.pushSubscriptions || [];
+            // Keep at most 4 previous subscriptions to limit to 5 total
+            if (user.pushSubscriptions.length >= 5) {
+                user.pushSubscriptions = user.pushSubscriptions.slice(-4);
+            }
             user.pushSubscriptions.push({
-                endpoint: subscription.endpoint,
+                endpoint,
                 keys: {
-                    p256dh: subscription.keys.p256dh,
-                    auth: subscription.keys.auth
+                    p256dh: keys.p256dh,
+                    auth: keys.auth
                 }
             });
             await user.save();
